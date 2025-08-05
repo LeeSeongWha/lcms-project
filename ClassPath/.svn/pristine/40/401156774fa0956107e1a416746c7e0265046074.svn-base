@@ -1,0 +1,121 @@
+package kr.or.ddit.pfcp.staff.program.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import kr.or.ddit.pfcp.common.vo.ProgramCertIssueVO;
+import kr.or.ddit.pfcp.common.vo.ProgramEnrollVO;
+import kr.or.ddit.pfcp.common.vo.ProgramFeedbackVO;
+import kr.or.ddit.pfcp.common.vo.ProgramVO;
+import kr.or.ddit.pfcp.common.vo.TypeVO;
+import kr.or.ddit.pfcp.staff.program.mapper.StaffProgramMapper;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class StaffProgramServiceImpl implements StaffProgramService {
+	
+	private final StaffProgramMapper mapper;
+	
+	
+	@Override
+	public List<ProgramVO> readProgramList() {
+		return mapper.selectProgramList();
+	}
+
+
+	@Override
+	public ProgramVO readProgram(String programNo) {
+		return mapper.selectProgramById(programNo);
+	}
+
+
+	@Override
+	public List<TypeVO> readProgramType() {
+		return mapper.selectProgramType();
+	}
+
+
+	@Override
+	public int saveProgram(ProgramVO program) {
+		if(program.getProgramNo()==null || program.getProgramNo().isBlank()) {
+			return mapper.insertProgram(program);
+		}else {
+			return mapper.updateProgram(program);
+		}
+	}
+
+
+	@Override
+	public int deleteProgram(String programNo) {
+		return mapper.deleteProgram(programNo);
+	}
+
+
+	@Override
+	public List<ProgramVO> readOpenProgramList() {
+		return mapper.selectOpenProgramList();
+	}
+
+
+	@Override
+	public ProgramVO readProgramWithEnroll(String programNo) {
+		return mapper.selectProgramWithEnroll(programNo);
+	}
+
+
+	@Override
+	public int updateEnrollAttended(ProgramEnrollVO enrollVO) {
+		return mapper.updateAttended(enrollVO);
+	}
+
+
+	@Override
+	public int updateEnrollCompletion(ProgramEnrollVO enrollVO) {
+		return mapper.updateCompletion(enrollVO);
+	}
+
+
+	
+
+	@Override
+	public ProgramEnrollVO readEnrollWithProgramAndCert(String enrollNo) {
+		return mapper.selectEnrollWithCertReq(enrollNo);
+	}
+
+
+	@Transactional
+	@Override
+	public void createCertIssue(ProgramCertIssueVO certIssue, String enrollNo, String certReqno) {
+		
+		Map<String, Object> param = new HashMap<>();
+		mapper.insertCertIssue(certIssue);
+	    param.put("certReqno", certReqno);
+	    mapper.updateIsCertIssued(enrollNo);
+	    mapper.updateCertReqStatus(certReqno);
+		
+	}
+
+
+	@Override
+	public ProgramCertIssueVO readProgramCertIssueWithFile(String certReqno) {
+		return mapper.selectIssueWithFileByReqno(certReqno);
+	}
+
+
+	@Override
+	public List<ProgramFeedbackVO> readFeedbackByProgram() {
+		return mapper.selectFeedbackStatsByProgram();
+	}
+
+
+	@Override
+	public List<Map<String, Object>> getFeedbackByprogramType() {
+		return mapper.selectSatisfactionGroupedByType();
+	}
+
+}

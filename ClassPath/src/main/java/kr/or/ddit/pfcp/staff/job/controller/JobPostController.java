@@ -1,0 +1,32 @@
+package kr.or.ddit.pfcp.staff.job.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import kr.or.ddit.pfcp.common.vo.JobPostingVO;
+import kr.or.ddit.pfcp.staff.job.service.JobPostService;
+
+import lombok.extern.slf4j.Slf4j;
+
+//@Slf4j
+//@RestController
+//@RequestMapping("/rest/jobs")
+//@CrossOrigin(origins = "http://localhost:3000")
+public class JobPostController {
+//    @Autowired
+//    private JobPostService service;
+//
+//    @GetMapping
+//    public List<JobPostingVO> getAllJobs() {
+//        log.info("getAllJobs() 호출됨");
+//        List<JobPostingVO> jobs = service.getAllPosts();
+//        log.info("가져온 데이터 수: {}", jobs.size());
+//        return jobs;
+//    }
+}
+

@@ -1,0 +1,32 @@
+package kr.or.ddit.pfcp.student.state.service;
+
+import java.util.List;
+
+import kr.or.ddit.pfcp.common.vo.AcademicChangeRequestVO;
+import kr.or.ddit.pfcp.common.vo.StudentVO;
+
+/**
+ * 학적 변경 -> 전공변경, 복수전공, 휴학, 복학을 한번에 처리 하였음.
+ * 
+ * @author seokyungdeok
+ * @since 250704
+ * 
+ * << 개정이력(Modification Information) >>
+ * 수정일	|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 250704	|	서경덕	|	최초 생성
+ *
+ */
+public interface StudentStateService {
+	public StudentVO readStudentInfo(String userNo);
+	
+	public List<AcademicChangeRequestVO> readAcademicChangeRequestMajorChange(String studentNo);
+	public List<AcademicChangeRequestVO> readAcademicChangeRequestLeaveApply(String studentNo);
+	public List<AcademicChangeRequestVO> readAcademicChangeRequestReturn(String studentNo);
+	public List<AcademicChangeRequestVO> readAcademicChangeRequestDouble(String studentNo);
+	
+	public void insertAcademicChangeRequestMajorChange(AcademicChangeRequestVO academicChangeRequest);
+	public void insertAcademicChangeRequestLeaveApply(AcademicChangeRequestVO academicChangeRequest);
+	public void insertAcademicChangeRequestReturn(AcademicChangeRequestVO academicChangeRequest);
+	public void insertAcademicChangeRequestDouble(AcademicChangeRequestVO academicChangeRequest);
+}

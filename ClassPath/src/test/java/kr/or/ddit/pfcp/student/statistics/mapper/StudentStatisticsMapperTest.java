@@ -1,0 +1,24 @@
+package kr.or.ddit.pfcp.student.statistics.mapper;
+
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import kr.or.ddit.pfcp.common.vo.StudentStatisticsVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@SpringBootTest
+class StudentStatisticsMapperTest {
+
+  @Autowired
+  StudentStatisticsMapper studentStatisticsMapper;
+  
+  @Test
+  void testSelectAttendanceStatList() {
+//    List<Map<String, Object>> map = studentStatisticsMapper.selectAttendanceStatList("ST20220810");
+    List<StudentStatisticsVO> map = studentStatisticsMapper.selectAttendanceStatList("ST20220810");
+     log.info("{}", map);
+  }
+
+}

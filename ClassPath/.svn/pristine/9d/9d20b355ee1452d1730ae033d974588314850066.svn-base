@@ -1,0 +1,14 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of = "schTypeNo")
+public class ScholarshipTypeVO {
+	private String schTypeNo;
+	private String schName;
+	private Integer rate;
+	private String schDesc;
+	private String schActive;
+}

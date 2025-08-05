@@ -1,0 +1,23 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+
+<title>Insert title here</title>
+<script>
+	window.onload = function () {
+	    const url = "${downloadUrl}";
+	    const a = document.createElement("a");
+	    a.href = url;
+	    a.download = "";
+	    document.body.appendChild(a);
+	    a.click();
+	    document.body.removeChild(a);
+	
+	    setTimeout(() => {
+	        window.location.href = "/student/certificate/issuedCertificateHistory.do";
+	    }, 2000);
+	};
+</script>
+
+<div>
+	<p>결제가 완료되었습니다. 잠시 후 증명서 다운로드가 시작되고 내역 페이지로 이동합니다.</p>
+</div>

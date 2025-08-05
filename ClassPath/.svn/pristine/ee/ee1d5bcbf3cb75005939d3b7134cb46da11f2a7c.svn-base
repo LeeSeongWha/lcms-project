@@ -1,0 +1,90 @@
+package kr.or.ddit.pfcp.staff.scholarship.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.pfcp.common.service.AtchFileService;
+import kr.or.ddit.pfcp.common.service.FileRefService;
+import kr.or.ddit.pfcp.common.vo.ScholarshipApplyVO;
+import kr.or.ddit.pfcp.common.vo.ScholarshipTypeVO;
+import kr.or.ddit.pfcp.student.bill.scholarship.service.StudentScholarshipService;
+import kr.or.ddit.validate.utils.ErrorsUtils;
+
+/**
+ * @author YSM
+ * @since 250628
+ * 
+ * << 개정이력(Modification Information) >>
+ * 수정일	|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 250628	|	양수민	|	최초 생성
+ * 250711	|	양수민	|	  수정
+ */
+@Controller
+@RequestMapping("/staff/scholarship")
+public class ScholarshipController {
+	
+	@Autowired
+	private StudentScholarshipService studentScholarshipService;
+	
+	@Autowired
+	private FileRefService fileRefService;
+	
+	@Autowired
+	private AtchFileService atchFileService;
+	
+	private static final String MODEL_NAME = "scholarshipApply";
+	
+	@Autowired
+	private ErrorsUtils errorsUtils;
+	
+	@ModelAttribute(MODEL_NAME)
+	public ScholarshipApplyVO scholarshipApply() {
+		return new ScholarshipApplyVO();
+	}
+	
+	/**
+	 * 장학금 목록 전체 조회
+	 * @return
+	 */
+	@GetMapping("scholarshipList.do")
+	public String scholarshipListUI(Model model) {
+		List<ScholarshipTypeVO> scholarshipTypeList = studentScholarshipService.readSholarshipTypeList();
+		model.addAttribute("scholarshipTypeList", scholarshipTypeList);
+		
+		return "pfcp/staff/scholarship/scholarshipList";
+	}
+	
+	/**
+	 * 장학금 목록 상세 조회
+	 * @return
+	 */
+	@GetMapping("scholarshipListDetail.do")
+	public String scholarshipDetailUI() {
+		return "pfcp/staff/scholarship/scholarshipListDetail";
+	}
+	
+	/**
+	 * 장학금 목록 등록
+	 * @return
+	 */
+	@GetMapping("scholarshipListInsert.do")
+	public String scholarshipInsertUI() {
+		return "pfcp/staff/scholarship/scholarshipListInsert";
+	}
+	
+	/**
+	 * 장학금 목록 수정
+	 * @return
+	 */
+	@GetMapping("scholarshipListUpdate.do")
+	public String scholarshipUpdatetUI() {
+		return "pfcp/staff/scholarship/scholarshipListDetail";
+	}
+}

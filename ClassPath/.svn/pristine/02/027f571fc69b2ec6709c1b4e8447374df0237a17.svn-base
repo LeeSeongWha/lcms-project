@@ -1,0 +1,95 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<%--
+    파일명 : facilityDetail.jsp
+    프로그렴명 : 시설 상세 조회 화면
+    설 명 : 등록된 시설물의 상세 정보와 이용가능 시간을 조회할 수 있음.
+    작성자 : 양 수 민
+    작성일 : 2025. 07. 01
+--%>	
+
+
+<%
+  boolean editable = "edit".equals(request.getParameter("mode"));
+%>
+
+  <title>시설 상세 정보 - LCMS 관리자</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <div class="max-w-4xl mx-auto bg-white rounded-xl shadow p-6">
+    <div class="flex justify-between items-center mb-6">
+      <a href="facilityList.jsp" class="text-blue-600 hover:underline text-sm">← 목록으로 돌아가기</a>
+      <div>
+        <c:choose>
+          <c:when test="<%= editable %>">
+            <form method="post" action="updateFacility.do" class="inline-block">
+              <input type="hidden" name="id" value="${facility.id}" />
+              <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">저장</button>
+              <a href="facilityDetail.jsp?id=${facility.id}" class="ml-2 text-gray-600 hover:text-red-500">취소</a>
+            </form>
+          </c:when>
+          <c:otherwise>
+            <a href="facilityDetail.jsp?id=${facility.id}&mode=edit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">수정</a>
+          </c:otherwise>
+        </c:choose>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- 기본 정보 -->
+      <div>
+        <h3 class="text-lg font-semibold mb-2">🏢 기본 정보</h3>
+        <label class="block mb-2 text-sm">시설 코드</label>
+        <input name="id" value="${facility.id}" readonly class="w-full border px-3 py-2 rounded bg-gray-100" />
+
+        <label class="block mt-4 mb-2 text-sm">시설명</label>
+        <input name="name" value="${facility.name}" <%= editable ? "" : "readonly" %> class="w-full border px-3 py-2 rounded" />
+
+        <label class="block mt-4 mb-2 text-sm">시설 유형</label>
+        <input name="type" value="${facility.type}" <%= editable ? "" : "readonly" %> class="w-full border px-3 py-2 rounded" />
+
+        <label class="block mt-4 mb-2 text-sm">위치</label>
+        <input name="location" value="${facility.location}" <%= editable ? "" : "readonly" %> class="w-full border px-3 py-2 rounded" />
+
+        <label class="block mt-4 mb-2 text-sm">수용 인원</label>
+        <input name="capacity" type="number" value="${facility.capacity}" <%= editable ? "" : "readonly" %> class="w-full border px-3 py-2 rounded" />
+      </div>
+
+      <!-- 상세 설명 -->
+      <div>
+        <h3 class="text-lg font-semibold mb-2">📄 상세 설명</h3>
+        <label class="block mb-2 text-sm">비고</label>
+        <textarea name="description" <%= editable ? "" : "readonly" %> class="w-full border px-3 py-2 rounded min-h-[150px]">${facility.description}</textarea>
+
+        <label class="block mt-4 mb-2 text-sm">등록일</label>
+        <input name="registerDate" value="${facility.registerDate}" readonly class="w-full border px-3 py-2 rounded bg-gray-100" />
+      </div>
+    </div>
+
+    <!-- 예약 가능 시간대 -->
+    <div class="mt-8">
+      <h3 class="text-lg font-semibold mb-4">⏰ 예약 가능 시간대</h3>
+      <c:if test="<%= editable %>">
+        <div class="flex items-center gap-2 mb-4">
+          <input type="time" name="newStart" class="border px-3 py-2 rounded">
+          <span>~</span>
+          <input type="time" name="newEnd" class="border px-3 py-2 rounded">
+          <button type="button" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">추가</button>
+        </div>
+      </c:if>
+      <div class="space-y-2">
+        <c:forEach var="slot" items="${facility.availableTimeSlots}">
+          <div class="flex justify-between items-center border px-4 py-2 rounded bg-gray-50">
+            <span>${slot.start} ~ ${slot.end}</span>
+            <c:if test="<%= editable %>">
+              <button type="button" class="text-red-500 hover:text-red-700">삭제</button>
+            </c:if>
+          </div>
+        </c:forEach>
+        <c:if test="${empty facility.availableTimeSlots}">
+          <p class="text-gray-400">등록된 예약 가능 시간대가 없습니다.</p>
+        </c:if>
+      </div>
+    </div>
+  </div>

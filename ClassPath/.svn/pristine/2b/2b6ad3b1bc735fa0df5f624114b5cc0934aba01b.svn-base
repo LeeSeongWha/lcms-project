@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.or.ddit.pfcp.student.lecture.material.mapper.LectureMaterialMapper">
+	<insert id="insertLectureMaterial">
+		INSERT INTO LECTURE_MATERIAL(
+			MATERIAL_NO
+			,MATERIAL_TITLE
+			,MATERIAL_DESP
+			,UPLOAD_DATE
+			,DOWNLOAD_COUNT
+			,LEC_NO
+			,FILE_REF_NO
+			,PROFESSOR_NO
+			)VALUES(
+			SEQ_MATERIAL_NO.NEXTVAL
+			,#{materialTitle}
+			,#{materialDesp}
+			,TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+			,0
+			,#{lecNo}
+			,#{fileRefNo}
+			,#{professorNo}
+			)
+	</insert>
+	
+	<select id="existsLectureMaterial">
+		SELECT 
+	    CASE 
+	        WHEN EXISTS (
+	            SELECT 1 
+	            FROM LECTURE_MATERIAL 
+	            WHERE ASSIGN_NO = #{materialNo} 
+	              AND PROFESSOR_NO = #{professorNo}
+	        ) THEN 1 
+	        ELSE 0 
+	    END AS has_submitted
+	  FROM DUAL
+	</select>
+	
+	<update id="updateLectureMaterial">
+		UPDATE LECTURE_MATERIAL
+	  	   SET 
+	    	FILE_REF_NO = #{fileRefNo}
+	    	,UPDATE_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+	    	,MATERIAL_TITLE
+			 MATERIAL_DESP
+	     WHERE LEC_NO = #{lecNo}
+	       AND PROFESSOR_NO = #{professorNo}
+	</update>
+</mapper>

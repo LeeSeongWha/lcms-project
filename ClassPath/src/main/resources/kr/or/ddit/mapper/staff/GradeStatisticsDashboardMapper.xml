@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.or.ddit.pfcp.staff.dashBoard.mapper.GradeStatisticsDashboardMapper">
+	<!-- 1. 학기별 평균 성적 변화 -->
+	<select id="selectSemesterAvgGradeList"
+		resultType="kr.or.ddit.pfcp.common.vo.semesterAvgGradeVO">
+		SELECT
+		SM.SEMESTER_NO AS semesterNo,
+		ROUND(AVG(GRADE_POINT), 2) AS avgGrade
+		FROM LECTURE L
+		JOIN LECTURE_ENR LE ON LE.LEC_NO = L.LEC_NO
+		JOIN LECTURE_REQ R ON R.REQ_NO = L.REQ_NO
+		JOIN SUBJECT S ON S.SUBJECT_CODE = R.SUBJECT_CODE
+		JOIN SEMESTER SM ON SM.SEMESTER_NO = S.SEMESTER_NO
+		WHERE LE.GRADE IS NOT NULL
+		GROUP BY SM.SEMESTER_NO
+		ORDER BY SM.SEMESTER_NO
+	</select>
+
+	<!-- 2. 성적 분포 현황 -->
+	<select id="selectGradeDistributionList"
+		resultType="kr.or.ddit.pfcp.common.vo.GradeDistributionVO">
+		SELECT
+		LE.GRADE AS grade,
+		COUNT(*) AS count
+		FROM LECTURE_ENR LE
+		WHERE LE.GRADE IS NOT NULL
+		GROUP BY LE.GRADE
+		ORDER BY LE.GRADE
+	</select>
+
+	<!-- 3. 학년별 평균 성적 통계 -->
+	<select id="selectGradeByYearList"
+		resultType="kr.or.ddit.pfcp.common.vo.GradeByYearVO">
+		SELECT
+		S.STUDENT_GRADE AS studentGrade,
+		ROUND(AVG(GRADE_POINT), 2) AS avgGrade
+		FROM STUDENT S
+		JOIN LECTURE_ENR LE ON S.USER_NO = LE.USER_NO
+		WHERE LE.GRADE IS NOT NULL
+		GROUP BY S.STUDENT_GRADE
+		ORDER BY S.STUDENT_GRADE
+	</select>
+
+	<!-- 4. 성별 평균 성적 비교 -->
+	<select id="selectGradeByGenderList"
+		resultType="kr.or.ddit.pfcp.common.vo.GradeByGenderVO">
+		SELECT
+		U.GENDER AS gender,
+		ROUND(AVG(GRADE_POINT), 2) AS avgGrade
+		FROM TB_USER U
+		JOIN STUDENT S ON U.USER_NO = S.USER_NO
+		JOIN LECTURE_ENR LE ON S.USER_NO = LE.USER_NO
+		WHERE LE.GRADE IS NOT NULL
+		AND U.GENDER IN ('M', 'W')
+		GROUP BY U.GENDER
+	</select>
+</mapper>

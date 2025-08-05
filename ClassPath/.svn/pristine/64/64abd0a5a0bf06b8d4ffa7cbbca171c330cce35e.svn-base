@@ -1,0 +1,28 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of = "reqNo")
+public class LectureReqVO {
+	
+	private int rnum;
+	
+	private String reqNo;
+	private String subjectCode;
+	private String userNo;
+	private String preDay;
+	private String preTime;
+	private String preClassrm;
+	private String status;
+	private String rejReason;
+	private String reqDate;
+	private Integer maxCapacity;
+	private String fileRefNo;
+	private String lecName;
+	private String lecCategory;
+	
+	private String subjectName; 
+	private String userName;    
+}

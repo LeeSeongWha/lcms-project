@@ -1,0 +1,19 @@
+package kr.or.ddit.pfcp.staff.applyGraduation.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import kr.or.ddit.pfcp.common.vo.GraduationRequirementVO;
+
+@Mapper
+public interface ApplyGrdMapper {
+	public List<GraduationRequirementVO> selectGraduationList(Map<String, Object> paramMap);
+	
+	public int selectGraduationCount(String searchType, String keyword, String eligible);
+	
+	public List<String> selectGraduatableUserNos(Map<String, Object> paramMap);
+	
+	public int updateUserGradustatus(String userNo);
+}

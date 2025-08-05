@@ -1,0 +1,50 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>일정 관리</title>
+  
+  <!-- ✅ FullCalendar CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/locales-all.min.js"></script>
+
+  <style>
+    #calendar {
+      max-width: 900px;
+      margin: 50px auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h2 style="text-align:center;">교직원 일정 관리</h2>
+  <div id="calendar"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'ko',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,listWeek'
+        },
+        events: '/staff/schedule/list', // ✅ 우리가 만든 API 연동
+        eventClick: function(info) {
+        	const title = info.event.title;
+            const start = info.event.startStr;
+            const end = info.event.endStr;
+            const refType = info.event.extendedProps.refType || '기타';
+        	
+          alert("[" + info.event.title + "]\n시작일: " + info.event.startStr + "\n종료일: " + info.event.endStr);
+        }
+      });
+      calendar.render();
+    });
+  </script>
+
+</body>
+</html>

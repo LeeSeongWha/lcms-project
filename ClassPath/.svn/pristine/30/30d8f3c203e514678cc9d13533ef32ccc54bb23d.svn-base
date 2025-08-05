@@ -1,0 +1,150 @@
+package kr.or.ddit.pfcp.student.lecture.grade.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.vo.CounselReqVO;
+import kr.or.ddit.pfcp.common.vo.GradeVO;
+import kr.or.ddit.pfcp.common.vo.LectureEnrVO;
+import kr.or.ddit.pfcp.common.vo.SemesterVO;
+import kr.or.ddit.pfcp.student.lecture.grade.mapper.StudentGradeMapper;
+
+/**
+ * @author seokyungdeok
+ * @since 2025. 7. 10.
+ *
+ * << 개정이력(Modification Information) >>
+ * 수정일		|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 2025. 7. 10.	|	서경덕	|	최초 생성
+ */
+@Service(value = "studentGradeService")
+public class StudentGradeServiceImpl implements StudentGradeService {
+	@Autowired
+	private StudentGradeMapper studentGradeMapper;
+	
+	@Override
+	public List<LectureEnrVO> readStudentGradeList(String userNo, String semesterNo) {
+		
+		return studentGradeMapper.selectStudentGradeList(userNo, semesterNo);
+	}
+
+	@Override
+	public List<SemesterVO> readSemesterList() {
+		
+		return studentGradeMapper.selectSemesterList();
+	}
+
+	@Override
+	public List<LectureEnrVO> readStudentGradeListSearch(String studentNo, String semesterNo) {
+		
+		return studentGradeMapper.selectStudentGradeListSearch(studentNo, semesterNo);
+	}
+
+	@Override
+	public List<CounselReqVO> readStudentGradeAppealList(Map<String, Object> paramMap) {
+		
+		return studentGradeMapper.selectStudentGradeAppealList(paramMap);
+	}
+
+	@Override
+	public void createStudentGradeAppeal(CounselReqVO counselReq) {
+		// TODO Auto-generated method stub
+		studentGradeMapper.insertStudentGradeAppeal(counselReq);
+	}
+
+	@Override
+	public CounselReqVO readStudentGradeAppeal(String counselReqno) {
+		// TODO Auto-generated method stub
+		return studentGradeMapper.selectStudentGradeAppeal(counselReqno);
+	}
+
+	@Override
+	public List<LectureEnrVO> readSubjectList(String userNo) {
+		// TODO Auto-generated method stub
+		return studentGradeMapper.selectSubjectList(userNo);
+	}
+
+	@Override
+	public GradeVO readGradeByUserAndLecture(String userNo, String lecNo) {
+		// TODO Auto-generated method stub
+		return studentGradeMapper.selectGradeByUserAndLecture(userNo, lecNo);
+	}
+
+	@Override
+	public void upsertGrade(GradeVO grade) {
+		// TODO Auto-generated method stub
+		studentGradeMapper.upsertGrade(grade);
+	}
+
+	@Override
+	public String readLecNoByExamNo(String examNo) {
+		// TODO Auto-generated method stub
+		return studentGradeMapper.selectLecNoByExamNo(examNo);
+	}
+
+	@Override
+	public int readStudentGradeAppealTotalCount(String userNo) {
+		// TODO Auto-generated method stub
+		return studentGradeMapper.selectStudentGradeAppealTotalCount(userNo);
+	}
+	
+	public Map<String, Object> calculateAcademicStatus(String userNo) {
+	    List<LectureEnrVO> allGrades = readStudentGradeList(userNo, null); // 전체 학기
+	    Map<String, Object> status = new HashMap<>();
+	    
+	    double totalGradePoints = 0;
+	    int totalCredits = 0;
+	    int passedCredits = 0;
+	    
+	    String currentSemesterNo = "2025_1"; // 구현 필요;
+	    int currentSemesterCredits = 0;
+
+	    for (LectureEnrVO enr : allGrades) {
+	        String grade = enr.getGrade();
+	        int credit = enr.getCredit() != null ? enr.getCredit() : 0;
+	        
+	        double gradePoint = 0;
+	        if (grade != null) {
+	            switch (grade) {
+	                case "A+": gradePoint = 4.5; break;
+	                case "A0": gradePoint = 4.0; break;
+	                case "B+": gradePoint = 3.5; break;
+	                case "B0": gradePoint = 3.0; break;
+	                case "C+": gradePoint = 2.5; break;
+	                case "C0": gradePoint = 2.0; break;
+	                case "D+": gradePoint = 1.5; break;
+	                case "D0": gradePoint = 1.0; break;
+	                case "F": gradePoint = 0.0; break;
+	            }
+	            enr.setGradePoint(gradePoint);
+	            totalGradePoints += gradePoint * credit;
+	            totalCredits += credit;
+
+	            if (!"F".equals(grade)) {
+	                passedCredits += credit;
+
+	                if (enr.getSemester().getSemesterNo().equals(currentSemesterNo)) {
+	                    currentSemesterCredits += credit;
+	                }
+	            }
+	        }
+	    }
+
+	    double gpa = totalCredits > 0 ? totalGradePoints / totalCredits : 0.0;
+	    int graduationRequiredCredits = 130; // 예시 기준
+	    int graduationProgress = (int) (((double) passedCredits / graduationRequiredCredits) * 100);
+
+	    status.put("gpa", gpa);
+	    status.put("totalCredits", passedCredits);
+	    status.put("currentSemesterCredits", currentSemesterCredits);
+	    status.put("graduationProgress", graduationProgress);
+
+	    return status;
+	}
+
+}

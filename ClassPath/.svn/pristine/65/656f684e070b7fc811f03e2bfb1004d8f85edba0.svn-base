@@ -1,0 +1,46 @@
+package kr.or.ddit.pfcp.common.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import kr.or.ddit.member.service.MemberService;
+import kr.or.ddit.pfcp.common.service.MyPageService;
+import kr.or.ddit.pfcp.common.service.UserService;
+import kr.or.ddit.pfcp.common.vo.UserVO;
+import kr.or.ddit.security.auth.RealUserWrapper;
+import kr.or.ddit.vo.MemberVO;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * @author 김태수
+ * @since 2025. 7. 12.
+ *
+ * << 개정이력(Modification Information) >>
+ * 	수정일		|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 2025. 7. 12.	|	김태수	|	최초 생성
+ */
+@Slf4j
+@Controller
+public class MyPageController {
+
+  @Autowired
+  private MyPageService myPageSerivce;
+
+  @GetMapping("/mypage")
+  public String mypage(
+      Authentication authAuthentication,
+      @AuthenticationPrincipal RealUserWrapper<UserVO> principal,
+      @AuthenticationPrincipal(expression = "realUser") UserVO realUser,
+      Model model
+      ) {
+
+    String userId = authAuthentication.getName();
+
+    model.addAttribute("user", myPageSerivce.readMyPage(userId));
+    return "user/mypage";
+  }
+}

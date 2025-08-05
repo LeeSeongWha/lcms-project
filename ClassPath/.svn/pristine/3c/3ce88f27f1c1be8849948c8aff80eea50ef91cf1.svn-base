@@ -1,0 +1,26 @@
+package kr.or.ddit.pfcp.student.facility.reservation.mapper;
+
+import java.util.List;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import kr.or.ddit.pfcp.common.vo.FacilityReservationVO;
+
+/**
+ * 시설 예약 매퍼 인터페이스
+ * @author LSH
+ * @since 2025-07-16
+ */
+@Mapper
+public interface FacilityReservationMapper {
+
+//예약 등록
+  int insertFacilityReservation(FacilityReservationVO reservation);
+
+  // 특정 날짜와 시설에 이미 예약이 있는지 확인 (중복 방지)
+  FacilityReservationVO selectReservationByDate(@Param("facilityNo") String facilityNo,
+                                                 @Param("preferredDate") String preferredDate,
+                                                 @Param("userNo") String userNo);
+  
+  List<FacilityReservationVO> selectReservationsByFacilityNo(String faclilityNo);
+  
+}

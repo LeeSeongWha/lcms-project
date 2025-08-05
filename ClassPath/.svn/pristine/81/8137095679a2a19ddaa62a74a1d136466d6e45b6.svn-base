@@ -1,0 +1,19 @@
+package kr.or.ddit.pfcp.student.lecture.enroll.service;
+
+import java.util.List;
+import org.springframework.stereotype.Service;
+import kr.or.ddit.pfcp.common.vo.LectureEnrVO;
+import kr.or.ddit.pfcp.student.lecture.enroll.mapper.LectureEnrMapper;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class LectureEnrServiceImpl implements LectureEnrService {
+  private final LectureEnrMapper lectureEnrMapper;
+  
+  @Override
+  public List<LectureEnrVO> retrieveLectureEnrByUserNo(String studentNo) {
+    return lectureEnrMapper.selectLectureEnrollmentsByUserNo(studentNo);
+  }
+
+}

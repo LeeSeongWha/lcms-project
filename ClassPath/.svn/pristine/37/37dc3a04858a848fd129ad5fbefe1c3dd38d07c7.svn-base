@@ -1,0 +1,207 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>수강신청</title>
+<!-- LCMS 스타일 가이드 적용 -->
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css" />
+<style type="text/css">
+.container {
+	max-width: 1000px;
+	margin: 0 auto;
+	padding: 2rem;
+}
+
+.summary-grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin-bottom: 2rem;
+}
+
+.summary-grid>div {
+	flex: 1;
+	background: #fff;
+	padding: 1rem;
+	border: 1px solid #ddd;
+	border-radius: 0.5rem;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+	text-align: center;
+}
+
+.summary-grid span {
+	display: block;
+	margin-top: 0.5rem;
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #2b77ef;
+}
+
+.tab-menu {
+	display: flex;
+	gap: 0.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.tab-menu button {
+	padding: 0.5rem 1rem;
+	background: #e9ecef;
+	border: none;
+	border-radius: 1.5rem;
+	cursor: pointer;
+	font-weight: 500;
+}
+
+.tab-menu button.active {
+	background: #2b77ef;
+	color: white;
+}
+
+.add-button {
+	text-align: right;
+	margin-bottom: 1rem;
+}
+
+.btn-add {
+	background: #2b77ef;
+	color: white;
+	padding: 0.5rem 1rem;
+	border: none;
+	border-radius: 0.5rem;
+	cursor: pointer;
+	font-size: 1rem;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	background-color: white;
+	border: 1px solid #dee2e6;
+}
+
+table th, table td {
+	padding: 0.75rem;
+	text-align: center;
+	border-bottom: 1px solid #dee2e6;
+}
+
+table th {
+	background-color: #f1f3f5;
+	font-weight: 600;
+}
+
+table td a {
+	margin: 0 0.25rem;
+	text-decoration: none;
+	font-size: 1.1rem;
+}
+</style>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function () {
+	  document.querySelectorAll('[data-tab]').forEach(tab => {
+	    tab.addEventListener('click', function () {
+	      const selected = this.dataset.tab;
+
+	      // 탭 활성화 처리
+	      document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
+	      this.classList.add('active');
+
+	      // 콘텐츠 보이기 처리
+	      document.querySelectorAll('[data-tab-content]').forEach(div => {
+	        div.style.display = div.dataset.tabContent === selected ? 'block' : 'none';
+	      });
+	    });
+	  });
+	});
+</script>
+</head>
+<body>
+${lectureList }
+	<div class="container">
+		<h1>수강신청 페이지</h1>
+
+		<div class="tab-menu">
+			<button data-tab="enroll" class="tab active">수강신청</button>
+			<button data-tab="enrollEdit" class="tab">정정/취소</button>
+			<button data-tab="timetable" class="tab">시간표</button>
+			<button data-tab="request" class="tab">개설요청</button>
+			<button data-tab="cart" class="tab">예비신청</button>
+
+		</div>
+
+
+
+		<div class="tab-content" data-tab-content="enroll">
+			<table>
+				<h3>신청 가능한 교과목</h3>
+				<span>총 3개의 강의가 검색되었습니다.</span>
+
+				<table>
+					<thead>
+						<tr>
+							<th>과목명</th>
+							<th>교수명</th>
+							<th>학점</th>
+							<th>시간</th>
+							<th>정원</th>
+							<th>신청</th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach var="lecture" items="${lectureList}">
+							<tr>
+								<td>${lecture.subject.subjectName}</td>
+								<td>${lecture.user.userName}</td>
+								<td>${lecture.subject.credit}</td>
+								<td>${lecture.lectureReq.preDay} - ${lecture.lectureReq.preTime}</td>
+								<td>${lecture.lectureReq.maxCapacity}</td>
+								<td>
+									<button class="btn-add"
+										onclick="applyLecture('${lecture.lecNo}')">신청</button>
+								</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+
+			</table>
+		</div>
+
+
+		<div class="tab-content" data-tab-content="enrollEdit"
+			style="display: none;">
+			<table>
+				<p>2</p>
+			</table>
+		</div>
+
+		<div class="tab-content" data-tab-content="timetable"
+			style="display: none;">
+			<table>
+				<p>사후관리</p>
+			</table>
+		</div>
+		<!-- <div class="tab-content" data-tab-content="listenLog"
+			style="display: none;">
+			<table>
+				<p>통계분석</p>
+			</table>
+		</div> -->
+		<div class="tab-content" data-tab-content="request"
+			style="display: none;">
+			<table>
+				<p>설문관리</p>
+			</table>
+		</div>
+
+		<div class="tab-content" data-tab-content="cart"
+			style="display: none;">
+			<table>
+				<p>예비 수강신청</p>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

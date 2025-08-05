@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.professor.data.mapper.ProfessorDataRestMapper">
+
+	<select id="totalStd" parameterType="string" resultType="int">
+	  SELECT COUNT(*) FROM STUDENT WHERE DEPARTMENT_NO = #{departmentNo}
+	</select>
+	
+	<select id="currentStd" parameterType="string" resultType="int">
+	  SELECT COUNT(*) FROM STUDENT
+	  WHERE DEPARTMENT_NO = #{departmentNo}
+	    AND STUDENT_GDATE IS NULL
+	    AND STU_STATUS = '재학'
+	</select>
+	
+	<select id="gradStd" parameterType="string" resultType="int">
+	  SELECT COUNT(*) FROM STUDENT
+	  WHERE DEPARTMENT_NO = #{departmentNo}
+	    AND STUDENT_GDATE IS NOT NULL
+	</select>
+	
+	<select id="leaveStd" parameterType="string" resultType="int">
+	  SELECT COUNT(*) FROM STUDENT
+	  WHERE DEPARTMENT_NO = #{departmentNo}
+	    AND STU_STATUS = '휴학'
+	</select>
+	
+	<select id="admYearCnt" parameterType="string" resultType="map">
+	  SELECT TO_CHAR(TO_DATE(STUDENT_EDATE, 'YYYY-MM-DD'), 'YYYY') AS ADMISSION_YEAR,
+	         COUNT(*) AS COUNT
+	  FROM STUDENT
+	  WHERE DEPARTMENT_NO = #{departmentNo}
+	  GROUP BY TO_CHAR(TO_DATE(STUDENT_EDATE, 'YYYY-MM-DD'), 'YYYY')
+	  ORDER BY ADMISSION_YEAR
+	</select>
+	
+	<select id="gradeCnt" parameterType="string" resultType="map">
+		SELECT STUDENT_GRADE, COUNT(*) AS count FROM STUDENT
+			WHERE DEPARTMENT_NO = #{departmentNo}
+		GROUP BY STUDENT_GRADE
+		ORDER BY STUDENT_GRADE
+	</select>	
+
+</mapper>

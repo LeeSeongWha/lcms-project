@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.schedule.mapper.ScheduleMapper">
+
+
+    <!-- 1. 일정 등록 -->
+    <insert id="insertSchedule" parameterType="kr.or.ddit.pfcp.common.vo.ScheduleVO">
+        INSERT INTO SCHEDULE (
+            SCHEDULE_NO, SCHEDULE_TITLE, SCHEDULE_TYPE, START_DATE, END_DATE,
+            START_TIME, END_TIME, SCHEDULE_DESP, LEC_NO, SCHEDULE_TARGET_ID
+        ) VALUES (
+            #{scheduleNo}, #{scheduleTitle}, #{scheduleType}, #{startDate}, #{endDate},
+            #{startTime}, #{endTime}, #{scheduleDesp}, #{lecNo}, #{scheduleTargetId}
+        )
+    </insert>
+
+    <!-- 2. 일정 참조 등록 -->
+    <insert id="insertScheduleRef" parameterType="kr.or.ddit.pfcp.common.vo.ScheduleRefVO">
+        INSERT INTO SCHEDULE_REF (
+            SCHEDULE_NO, REF_TYPE, REF_TARGET_ID, REF_NO
+        ) VALUES (
+            #{scheduleNo}, #{refType}, #{refTargetId}, #{refNo}
+        )
+    </insert>
+
+    <!-- 3. 일정 + 참조 조인 조회 -->
+    <select id="selectScheduleWithRef" resultMap="scheduleWithRefMap">
+        SELECT
+            S.SCHEDULE_NO, S.SCHEDULE_TITLE, S.SCHEDULE_TYPE, S.START_DATE, S.END_DATE,
+            S.START_TIME, S.END_TIME, S.SCHEDULE_DESP, S.LEC_NO, S.SCHEDULE_TARGET_ID,
+            R.REF_TYPE, R.REF_TARGET_ID, R.REF_NO
+        FROM SCHEDULE S
+        LEFT JOIN SCHEDULE_REF R ON S.SCHEDULE_NO = R.SCHEDULE_NO
+    </select>
+
+    <!-- 4. ResultMap - 조인된 Schedule + Ref 매핑 -->
+    <resultMap id="scheduleWithRefMap" type="kr.or.ddit.pfcp.common.vo.ScheduleVO">
+        <id property="scheduleNo" column="SCHEDULE_NO"/>
+        <result property="scheduleTitle" column="SCHEDULE_TITLE"/>
+        <result property="scheduleType" column="SCHEDULE_TYPE"/>
+        <result property="startDate" column="START_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+        <result property="startTime" column="START_TIME"/>
+        <result property="endTime" column="END_TIME"/>
+        <result property="scheduleDesp" column="SCHEDULE_DESP"/>
+        <result property="lecNo" column="LEC_NO"/>
+        <result property="scheduleTargetId" column="SCHEDULE_TARGET_ID"/>
+
+        <association property="ref" javaType="kr.or.ddit.pfcp.common.vo.ScheduleRefVO">
+            <result property="refType" column="REF_TYPE"/>
+            <result property="refTargetId" column="REF_TARGET_ID"/>
+            <result property="refNo" column="REF_NO"/>
+        </association>
+    </resultMap>
+
+
+
+
+</mapper>

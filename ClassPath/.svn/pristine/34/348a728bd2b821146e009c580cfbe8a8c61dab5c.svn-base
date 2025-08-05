@@ -1,0 +1,12 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of="reservationNo")
+public class FacilityReservationVO {
+	private String reservationNo;
+	private String facilityNo;
+	private String userNo;
+}

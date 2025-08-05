@@ -1,0 +1,25 @@
+/**
+ * 
+ */
+document.addEventListener("DOMContentLoaded", () => {
+	const departmentNoSel = document.getElementById("departmentNo");
+	const noInitVal = departmentNoSel.dataset.initVal;
+	
+	const CPATH = document.body.dataset.contextPath;
+	
+	axios.get(`${CPATH}/ajax/department`)
+			.then(resp => {
+				const { deparmentList } = resp.data;
+				if (deparmentList) {
+					// map()을 통해 옵션을 생성하고 join()을 map() 이후에 실행
+					const options = deparmentList.map(({ deparmentNo, deparmentName }) =>
+						`<option value="${deparmentNo}">${deparmentName}</option>`
+					).join("\n");
+
+					departmentNoSel.innerHTML += options;
+
+					//            if(initVal)
+					departmentNoSel.value = noInitVal ?? "";
+				}
+			})
+})

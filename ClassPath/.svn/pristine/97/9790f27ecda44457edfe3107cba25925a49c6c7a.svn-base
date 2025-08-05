@@ -1,0 +1,30 @@
+package kr.or.ddit.pfcp.staff.reservationTimestamp.consult.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.vo.ReservationTimestampVO;
+import kr.or.ddit.pfcp.staff.reservationTimestamp.consult.mapper.ConsultRTMapper;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class ConsultRTServiceImpl implements ConsultRTService {
+	private final ConsultRTMapper mapper;
+	
+	@Override
+	public List<ReservationTimestampVO> readConsultRT(String professorNo) {
+		return mapper.selectConsultRT(professorNo);
+	}
+
+	@Override
+	public void insertConsultRT(ReservationTimestampVO reservationTimestamp) {
+		mapper.insertConsultRT(reservationTimestamp);
+	}
+
+	@Override
+	public void deleteConsultRT(String professorNo) {
+		mapper.deleteConsultRT(professorNo);
+	}
+}

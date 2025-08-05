@@ -1,0 +1,14 @@
+package kr.or.ddit.pfcp.staff.applyGraduation.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.pfcp.common.vo.GraduationRequirementVO;
+
+public interface ApplyGrdSerive {
+	public List<GraduationRequirementVO> readGradutionList(Map<String, Object> paramMap);
+	
+	public int readTotalGradutionCount(String searchType, String keyword, String eligible);
+	
+	public int bulkApply(Map<String, Object> paramMap);
+}

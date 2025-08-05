@@ -1,0 +1,30 @@
+package kr.or.ddit.pfcp.student.notice.controller;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import kr.or.ddit.pfcp.common.vo.BoardVO;
+import kr.or.ddit.pfcp.staff.notice.service.NoticeService;
+
+@Controller
+@RequestMapping("/student/notice")
+public class StudentNoticeController {
+  
+  @Autowired
+  private NoticeService noticeService;
+  
+  @GetMapping("noticeList.do")
+  public String goNoticeList(
+        Model model
+      ) {
+    
+    List<BoardVO> noticeList = noticeService.readBoardList(0, 0);
+    
+    model.addAttribute("noticeList", noticeList);
+    return "pfcp/student/notice/noticeList";
+  }
+  
+}

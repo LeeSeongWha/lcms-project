@@ -1,0 +1,15 @@
+@charset "UTF-8";
+
+.error-message {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #333;
+    text-align: center;
+}
+.error-image {
+    display: block;
+    margin: auto;
+    max-width: 80%;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+}

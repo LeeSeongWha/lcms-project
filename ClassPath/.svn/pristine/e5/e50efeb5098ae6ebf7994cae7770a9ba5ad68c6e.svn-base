@@ -1,0 +1,127 @@
+package kr.or.ddit.pfcp.staff.schedule.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import jakarta.validation.Valid;
+import kr.or.ddit.pfcp.common.vo.ScheduleRefVO;
+import kr.or.ddit.pfcp.common.vo.ScheduleVO;
+import kr.or.ddit.pfcp.staff.schedule.service.StaffScheduleService;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * @author YSM
+ * @since 250628
+ * 
+ *        * << 개정이력(Modification Information) >> 수정일 | 수정자 | 수정 내용
+ *        ----------------------------------------------- 250701 | 이상진 | 수정
+ */
+@Controller
+@Slf4j
+@RequestMapping("/staff/schedule")
+public class StaffScheduleController {
+
+	@ModelAttribute("scheduleVO")
+	public ScheduleVO newScheduleVO() {
+		ScheduleVO vo = new ScheduleVO();
+		vo.setRef(new ScheduleRefVO()); // 명시 초기화
+		return vo;
+	}
+
+	/**
+	 * 1. 일정 관리 진입 폼
+	 * 
+	 * @return url
+	 */
+
+	@Autowired
+	private StaffScheduleService scheduleService;
+
+	@GetMapping
+	public String scheduleMain(Model model) {
+		model.addAttribute("scheduleVO", new ScheduleVO());
+		model.addAttribute("refTypeList", scheduleService.readScheduleRefType());
+		return "pfcp/staff/schedule/scheduleMain";
+	}
+
+	/**
+	 * 2. 풀캘린더 불러옴
+	 * 
+	 * @param type
+	 * @return
+	 */
+
+	@GetMapping("/list")
+	@ResponseBody
+	public List<Map<String, Object>> getScheduleList(@RequestParam(required = false) String start,
+			@RequestParam(required = false) String end) {
+		System.out.println("start=" + start);
+		System.out.println("end=" + end);
+
+		List<ScheduleVO> scheduleList = scheduleService.readScheduleList(); // 파라미터 활용 시, 서비스 수정 가능
+
+		return scheduleList.stream().map(s -> {
+			Map<String, Object> map = new HashMap<>();
+			String refType = (s.getRef() != null && s.getRef().getRefType() != null) ? s.getRef().getRefType() : "기타";
+
+			map.put("title", s.getScheduleTitle());
+			map.put("start", s.getStartDate());
+			map.put("end", s.getEndDate());
+			map.put("scheduleNo", s.getScheduleNo());
+			map.put("refType", refType);
+			map.put("backgroundColor", switch (refType) {
+			case "EXAM" -> "#4285F4";
+			case "STATUS_CHANGE" -> "#34A853";
+			case "MEETING" -> "#FBBC05";
+			case "EVENT" -> "#EA4335";
+			default -> "#6c757d";
+			});
+
+			return map;
+		}).collect(Collectors.toList());
+	}
+	/**
+	 * 풀캘린더 수정 및 등록 통합
+	 * @param scheduleVO
+	 * @param bindingResult
+	 * @param model
+	 * @param formMode
+	 * @return
+	 */
+
+	@PostMapping("/save")
+	public String InsertSchedule(
+			@Valid @ModelAttribute ScheduleVO scheduleVO
+			, BindingResult bindingResult
+			, Model model
+			,@RequestParam String formMode) {
+		
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("refTypeList", scheduleService.readScheduleRefType()); 
+			return "pfcp/staff/schedule/scheduleMain";
+		}
+		
+		if ("update".equals(formMode)) {
+			scheduleService.updateSchedule(scheduleVO);
+		} else if ("insert".equals(formMode)){
+			scheduleService.insertSchedule(scheduleVO);
+		}
+
+		
+		return "redirect:/staff/schedule";
+	}
+
+}

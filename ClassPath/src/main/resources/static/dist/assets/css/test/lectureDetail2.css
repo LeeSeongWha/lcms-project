@@ -1,0 +1,482 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   교수용 학생 목록 조회 시스템 - 업무성 디자인
+   ========================================================================== */
+
+/* 전체 컨테이너 */
+.lectureDetail {
+    max-width: 1600px;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #212529;
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   섹션 헤더
+   ========================================================================== */
+
+.lectureDetail .sectionHeaderLine {
+    border-bottom: 1px solid #2b6cb0;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.lectureDetail .sectionHeaderTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 4px 0;
+}
+
+.lectureDetail .sectionHeaderDescription {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* 등록 버튼 */
+.lectureDetail .submitButton {
+    background: #2b6cb0;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+
+.lectureDetail .submitButton:hover {
+    background: #2a5298;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(43, 108, 176, 0.3);
+}
+
+/* ==========================================================================
+   검색 폼
+   ========================================================================== */
+
+.lectureDetail form {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap;
+}
+
+.lectureDetail form select {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    background: #ffffff;
+    color: #2d3748;
+    min-width: 120px;
+}
+
+.lectureDetail form select:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+}
+
+.lectureDetail form input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    background: #ffffff;
+    color: #2d3748;
+}
+
+.lectureDetail form input[type="text"]:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+}
+
+.lectureDetail form input[type="text"]::placeholder {
+    color: #a0aec0;
+}
+
+/* ==========================================================================
+   테이블 컨테이너
+   ========================================================================== */
+
+.lectureDetail .tableContainer {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    border-radius:0;
+}
+
+/* 학생 목록 테이블 */
+.lectureDetail .defaultTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    background: #ffffff;
+    margin: 0;
+}
+
+.lectureDetail .tableHead {
+    background: #f7fafc;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.lectureDetail .tableTh {
+    padding: 14px 12px;
+    text-align: center;
+    font-weight: 600;
+    color: #2d3748;
+    border-bottom: 2px solid #cbd5e0;
+    border-right: 1px solid #e2e8f0;
+    white-space: nowrap;
+    vertical-align: middle;
+    background: #f7fafc;
+}
+
+.lectureDetail .tableTh:last-child {
+    border-right: none;
+}
+
+.lectureDetail .defaultTable tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.lectureDetail .tableRowHover {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.lectureDetail .tableRowHover:nth-child(even) {
+    background-color: #fefefe;
+}
+
+.lectureDetail .tableRowHover:hover {
+    background-color: #edf2f7;
+}
+
+.lectureDetail .tableTd {
+    padding: 12px;
+    text-align: center;
+    color: #2d3748;
+    border-right: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.lectureDetail .tableTd:last-child {
+    border-right: none;
+}
+
+/* 학번 열 - 고정폭 폰트 */
+.lectureDetail .tableTd:nth-child(2) {
+    color: #4a5568;
+    font-weight: 500;
+}
+
+/* 이름 열 - 강조 */
+.lectureDetail .tableTd:nth-child(3) {
+    font-weight: 600;
+    color: #1a202c;
+}
+
+/* 학과명 열 */
+.lectureDetail .tableTd:nth-child(4) {
+    text-align: center;
+    padding-left: 16px;
+}
+
+/* 학년 열 */
+.lectureDetail .tableTd:nth-child(5) {
+    font-weight: 600;
+    color: #2b6cb0;
+}
+
+/* 재학 상태 열 - 상태별 색상 */
+.lectureDetail .tableTd:nth-child(6) {
+    font-weight: 500;
+}
+
+/* 재학 상태별 색상 구분 */
+.lectureDetail .tableTd:nth-child(6):contains("재학") {
+    color: #22543d;
+    background: #f0fff4;
+}
+
+.lectureDetail .tableTd:nth-child(6):contains("휴학") {
+    color: #744210;
+    background: #fefcbf;
+}
+
+.lectureDetail .tableTd:nth-child(6):contains("졸업") {
+    color: #2a69ac;
+    background: #ebf8ff;
+}
+
+.lectureDetail .tableTd:nth-child(6):contains("제적") {
+    color: #742a2a;
+    background: #fed7d7;
+}
+
+/* 전화번호 열 */
+.lectureDetail .tableTd:nth-child(7) {
+    font-size: 0.8rem;
+}
+
+/* 이메일 열 - 좌측 정렬 및 넓은 폭 */
+.lectureDetail .tableTd:nth-child(8) {
+    text-align: left !important;
+    width: 20% !important;
+    font-size: 0.8rem;
+    color: #4a5568;
+}
+
+/* 데이터 없음 메시지 */
+.lectureDetail .noticeInfo {
+    text-align: center !important;
+    padding: 40px 20px !important;
+    color: #718096 !important;
+    font-style: italic !important;
+    background: #f7fafc !important;
+}
+
+/* ==========================================================================
+   페이지네이션
+   ========================================================================== */
+
+.lectureDetail .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    margin-top: 20px;
+    padding: 20px;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-top: none;
+}
+
+.lectureDetail .pageButton {
+    padding: 8px 12px;
+    background: #ffffff;
+    border: 1px solid #cbd5e0;
+    color: #4a5568;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    border-radius: 0;
+}
+
+.lectureDetail .pageButton:hover {
+    background: #edf2f7;
+    color: #2d3748;
+}
+
+.lectureDetail .pageButton.active {
+    background: #2b6cb0;
+    color: #ffffff;
+    border-color: #2b6cb0;
+    font-weight: 600;
+}
+
+/* 이전/다음 버튼 */
+.lectureDetail .pagination a[href*="이전"],
+.lectureDetail .pagination a[href*="다음"] {
+    font-weight: 600;
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.lectureDetail .pagination a[href*="이전"]:hover,
+.lectureDetail .pagination a[href*="다음"]:hover {
+    background: #cbd5e0;
+    color: #2d3748;
+}
+
+/* ==========================================================================
+   반응형 디자인
+   ========================================================================== */
+
+@media (max-width: 1400px) {
+    .lectureDetail {
+        max-width: 100%;
+        padding: 16px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .lectureDetail .defaultTable {
+        font-size: 0.8rem;
+    }
+    
+    .lectureDetail .tableTh,
+    .lectureDetail .tableTd {
+        padding: 10px 8px;
+    }
+    
+    .lectureDetail .sectionHeaderTitle {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .lectureDetail .sectionHeaderLine {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .lectureDetail .submitButton {
+        align-self: flex-end;
+    }
+    
+    .lectureDetail form {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .lectureDetail form select,
+    .lectureDetail form input[type="text"] {
+        min-width: 0;
+        width: 100%;
+    }
+    
+    .lectureDetail .tableTh,
+    .lectureDetail .tableTd {
+        padding: 8px 6px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .lectureDetail {
+        padding: 12px;
+    }
+    
+    .lectureDetail .sectionHeaderLine {
+        padding: 16px;
+    }
+    
+    .lectureDetail .sectionHeaderTitle {
+        font-size: 1.125rem;
+    }
+    
+    .lectureDetail .sectionHeaderDescription {
+        font-size: 0.8rem;
+    }
+    
+    .lectureDetail form {
+        padding: 16px;
+    }
+    
+    .lectureDetail .defaultTable {
+        font-size: 0.7rem;
+    }
+    
+    .lectureDetail .tableTh,
+    .lectureDetail .tableTd {
+        padding: 6px 4px;
+    }
+    
+    /* 모바일에서 이메일 컬럼 숨기기 또는 축소 */
+    .lectureDetail .tableTd:nth-child(8) {
+        display: none;
+    }
+    
+    .lectureDetail .tableTh:nth-child(8) {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .lectureDetail {
+        padding: 8px;
+    }
+    
+    .lectureDetail .sectionHeaderLine {
+        padding: 12px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .lectureDetail .submitButton {
+        align-self: center;
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .lectureDetail form {
+        padding: 12px;
+    }
+    
+    .lectureDetail .defaultTable {
+        font-size: 0.65rem;
+    }
+    
+    .lectureDetail .tableTh,
+    .lectureDetail .tableTd {
+        padding: 5px 3px;
+    }
+    
+    /* 초소형 화면에서 전화번호도 숨기기 */
+    .lectureDetail .tableTd:nth-child(7),
+    .lectureDetail .tableTh:nth-child(7) {
+        display: none;
+    }
+    
+    .lectureDetail .pagination {
+        padding: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .lectureDetail .pageButton {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+}
+
+/* ==========================================================================
+   상태별 특별 스타일링 (JavaScript로 동적 적용 가능)
+   ========================================================================== */
+
+/* 재학생 행 강조 (선택사항) */
+.lectureDetail .status-active {
+    border-left: 3px solid #38a169;
+}
+
+/* 휴학생 행 */
+.lectureDetail .status-leave {
+    border-left: 3px solid #ed8936;
+}
+
+/* 졸업생 행 */
+.lectureDetail .status-graduate {
+    border-left: 3px solid #4299e1;
+}
+
+/* 제적생 행 */
+.lectureDetail .status-expelled {
+    border-left: 3px solid #e53e3e;
+}

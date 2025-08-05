@@ -1,0 +1,84 @@
+<%--
+ * == 개정이력(Modification Information) ==
+ * 수정일			수정자	수정내용
+ * ========================================
+ * 2025-07-17  	양수민	최초 생성
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<title>증명서 목록</title>
+<%-- 기존 external CSS 링크 유지 --%>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+<link rel="stylesheet" href="/dist/assets/css/staff/certificationList.css">
+
+	<!-- ======================================== -->
+	<div class="sectionHeaderLine">
+		<div>
+			<div class="sectionHeaderTitle">증명서 목록</div>
+			<div class="sectionHeaderDescription">전체 ${totalCount}개의 증명서</div>
+		</div>
+	</div>
+	<!-- ======================================== -->
+
+	<div class="lecture-list-container-flex">
+		<!-- 왼쪽: 카드 리스트 -->
+		<div class="lecture-list-left">
+			<c:set var="displayedCount" value="0" />
+			<c:choose>
+				<c:when test="${not empty certificationList}">
+					<c:forEach items="${certificationList}" var="certification" varStatus="status">
+						<div class="college-item-card lecture-item-link" data-college-no="${certification.certCode}">
+							<div class="lecture-info-group">
+<!-- 								<div class="lecture-icon-wrapper"> -->
+									<!-- 증명서/문서 아이콘으로 변경 -->
+<!-- 									<svg xmlns="http://www.w3.org/2000/svg" class="lecture-icon" -->
+<!-- 									fill="none" viewBox="0 0 24 24" stroke="currentColor"> -->
+<!-- 									<path stroke-linecap="round" stroke-linejoin="round" -->
+<!-- 									stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /> -->
+<!-- 									</svg> -->
+<!-- 								</div> -->
+								<div>
+									<span class="lecture-name">${certification.certName}</span>
+									<p class="lecture-details">・ 증명서 번호: ${certification.certCode}</p>
+									<p class="lecture-details">・ ${certification.certDesc}</p>
+									<p class="lecture-details">・ 발급 수수료: ${certification.issueFee}</p>
+								</div>
+							</div>
+						</div>
+						<c:set var="displayedCount" value="${displayedCount + 1}" />
+					</c:forEach>
+				</c:when>
+			</c:choose>
+
+<!-- 증명서 추가 시작 -->
+    <div class="college-item-card add-college-card" data-college-no="add-new">
+        <div class="lecture-info-group">
+            <div class="lecture-icon-wrapper">
+                <svg xmlns="http://www.w3.org/2000/svg" class="lecture-icon"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+            </div>
+        </div>
+    </div>
+<!-- 증명서 추가 끗 -->
+
+			<c:if test="${displayedCount == 0}">
+				<div class="no-lecture-message">증명서 목록이 존재하지 않습니다.</div>
+			</c:if>
+		</div>
+		
+
+		<!-- 오른쪽: 세부 정보 출력 영역 -->
+		<div  class="lecture-details-right card" >
+			<div id="collegeDetailArea" >
+				<div class="detail-placeholder">증명서를 선택하면 증명서PDF 예시가 여기에 표시됩니다.</div>
+			</div>
+		</div>
+	</div>
+
+

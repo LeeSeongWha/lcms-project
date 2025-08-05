@@ -1,0 +1,259 @@
+/* sidebar-specific.css */
+
+/* nav-item2 최상위 메뉴 */
+.nav-item2 {
+  position: relative;
+  display: block;
+}
+
+/* 최상단 메뉴 링크 */
+.nav-item2 > a {
+  display: flex;
+  align-items: center;              /* 세로 정렬 통일 */
+  justify-content: space-between;  /* 내부 요소 사이 간격 확보 */
+  padding: 1rem 1.5rem;             /* 패딩 더 넓게 */
+  color: #ffffff;                  /* 글씨 흰색 */
+  text-decoration: none;
+  font-weight: 600;                /* 더 두껍게 */
+  font-size: 1.05rem;              /* 더 크게 */
+  transition: all 0.3s ease;
+  border-radius: 0.35rem;
+}
+
+.nav-item2 > a:hover,
+.nav-item2 > a[aria-expanded="true"] {
+  background-color: rgba(255, 255, 255, 0.08); /* 기존보다 밝고 투명한 느낌 */
+}
+
+/* 왼쪽 아이콘 크기와 여백 */
+.nav-item2 i {
+  margin-right: 1rem;
+  font-size: 1.3rem; /* 더 큼 */
+}
+
+/* 텍스트 (p) 요소 스타일 */
+.nav-item2 p {
+  margin: 0;
+  flex-grow: 1;
+  font-size: 1.05rem;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* caret 토글 아이콘 */
+.nav-item2 .caret {
+  font-size: 1rem;
+  color: #ffffff;
+  transition: transform 0.3s ease;
+}
+
+/* 열렸을 때 회전 */
+.nav-item2 > a[aria-expanded="true"] .caret {
+  transform: rotate(90deg);
+}
+
+/* 하위 메뉴 wrapper */
+.nav-collapse {
+  padding-left: 2rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+/* 하위 메뉴 항목 스타일 */
+.nav-item2 .sub-item {
+  display: block;
+  color: #e1e1e1;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-radius: 0.25rem;
+}
+
+/* 하위 메뉴 hover 시 */
+.nav-item2 .sub-item:hover {
+  color: #ffffff;
+  background-color: #495057;
+}
+
+
+
+
+
+/* Ensures no transitions on sidebar elements */
+.sidebar-wrapper,
+.sidebar-content,
+.nav {
+    transition: none !important;
+}
+
+/* ALL TEXT ELEMENTS WITHIN THE SIDEBAR AND MODAL ARE ALWAYS WHITE */
+.sidebar p,
+.sidebar span,
+.sidebar a,
+.sidebar .nav-item a,
+.sidebar .nav-collapse .nav-item a,
+.sidebar .sub-item,
+.sidebar .role-selector label,
+.sidebar .role-selector select,
+.sidebar .role-selector option,
+#alarm .modal-content,
+#alarm .modal-header,
+#alarm .modal-title,
+#alarm .form-label,
+#alarm .form-check-label,
+#alarm .textareaField,
+#alarm .submitButton,
+#alarm .deleteButton {
+    color: white !important; /* Forces text to white */
+}
+
+/* Explicitly ensure text is white on hover for nav links */
+.sidebar .nav-item a:hover {
+    color: white !important; /* Ensures white text even on hover */
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle hover background */
+}
+
+
+/* Specific styles for active states within the sidebar, ensuring white text */
+.sidebar p.active,
+.sidebar span.active,
+.sidebar .active p,
+.sidebar .active span {
+    color: white !important;
+}
+
+/* Styling for the role selector to blend with the dark background */
+.sidebar .role-selector select {
+    background-color: #203A8A; /* Matches sidebar background */
+    border: 1px solid #4a5c9f; /* Slightly lighter border for subtle definition */
+    padding: 8px 12px;
+    border-radius: 5px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+
+/* Style for the dropdown arrow (if not using custom select) */
+.sidebar .role-selector select::-ms-expand {
+    display: none;
+}
+
+/* Focus state for role selector */
+.sidebar .role-selector select:focus {
+    outline: none;
+    border-color: #7abaff;
+    box-shadow: 0 0 0 0.25rem rgba(122, 186, 255, 0.25);
+}
+
+/* Styles for navigation items and links (default state, color handled by top rule) */
+.sidebar .nav-item a {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+/* Active state for navigation items */
+.sidebar .nav-item.active > a {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-left: 3px solid white;
+    padding-left: 12px;
+}
+
+/* Background color for expanded nav-items (toggle is down) */
+.sidebar .nav-item > a[data-bs-toggle="collapse"]:not(.collapsed) {
+    background-color: #2c4a9c; /* A slightly lighter shade of the sidebar background */
+    border-left: 3px solid white;
+    padding-left: 12px;
+}
+
+/* Sub-items within collapsed menus */
+.sidebar .nav-collapse .nav-item a {
+    padding-left: 40px;
+}
+
+/* Explicitly ensure sub-item text is white on hover */
+.sidebar .nav-collapse .nav-item a:hover {
+    color: white !important; /* Ensures white text even on hover for sub-items */
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar .nav-collapse .nav-item.active a {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-left: 3px solid white;
+    padding-left: 37px;
+}
+
+/* Icon styling */
+.sidebar .nav-item i {
+    color: #ADD8E6 !important;
+    font-size: 1.1em;
+}
+
+.sidebar .nav-item.active i {
+    color: white !important;
+}
+
+/* Caret icon for collapsible menus */
+.sidebar .caret {
+    border-bottom: 4px solid white;
+    border-right: 4px solid white;
+    content: "";
+    display: inline-block;
+    height: 0;
+    width: 0;
+    vertical-align: middle;
+    -webkit-transition: all 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: all 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    position: absolute;
+    right: 20px;
+}
+
+.sidebar .nav-item a[aria-expanded="true"] .caret {
+    -webkit-transform: rotate(135deg);
+    transform: rotate(135deg);
+}
+
+/* Modal specific styles for better integration */
+#alarm .modal-content {
+    background-color: #2c3e50;
+}
+
+#alarm .modal-header {
+    border-bottom: 1px solid #4a5c9f;
+}
+
+#alarm .textareaField {
+    background-color: #3b506b;
+    border: 1px solid #4a5c9f;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+#alarm .textareaField:focus {
+    outline: none;
+    border-color: #7abaff;
+    box-shadow: 0 0 0 0.25rem rgba(122, 186, 255, 0.25);
+}
+
+#alarm .submitButton {
+    background-color: #28a745;
+    border: none;
+}
+
+#alarm .submitButton:hover {
+    background-color: #218838;
+}
+
+#alarm .deleteButton {
+    background-color: #dc3545;
+    border: none;
+}
+
+#alarm .deleteButton:hover {
+    background-color: #c82333;
+}

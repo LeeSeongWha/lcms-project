@@ -1,0 +1,85 @@
+package kr.or.ddit.common.component;
+
+import java.security.Principal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import kr.or.ddit.common.util.StringUtils;
+import kr.or.ddit.pfcp.common.service.NotificationService;
+import kr.or.ddit.pfcp.common.vo.NotificationVO;
+import kr.or.ddit.security.auth.UserVOWrapper;
+
+/**
+ * @author seokyungdeok
+ * @since 2025. 7. 17.
+ *
+ * << 개정이력(Modification Information) >>
+ * 수정일		|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 2025. 7. 17.	|	서경덕	|	최초 생성
+ */ 
+@Component
+public class NotificationInterceptor implements HandlerInterceptor {
+	@Autowired
+	private NotificationService notificationService;
+	
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+	        throws Exception {
+		if (request.getDispatcherType() != jakarta.servlet.DispatcherType.REQUEST) {
+	        // 에러 처리, forward, include 요청은 무시
+	        return true;
+	    }
+		
+		String uri = request.getRequestURI();
+		if(StringUtils.startsWithOr(uri, "/dist/","/js/", "/images/", "/ws" )) {
+			
+		}
+	    if (uri.startsWith("/dist/") || uri.startsWith("/js/") 
+	    	|| uri.startsWith("/images/")
+	        || uri.startsWith("/ws") 
+	        || uri.contains("/notif/notifications/")) {
+	    	
+	        return true; // 정적 자원, WebSocket, 알림 AJAX 요청은 무시
+	    }
+	    
+	    Principal principalObj = request.getUserPrincipal();
+
+	    if (principalObj instanceof Authentication authentication) {
+	        Object principal = authentication.getPrincipal();
+
+	        if (principal instanceof UserVOWrapper userWrapper) {
+	            // Form Login 사용자 처리
+	            String userNo = userWrapper.getRealUser().getUserNo();
+	            List<NotificationVO> unread = notificationService.readUnreadNotifications(userNo);
+	            request.setAttribute("unreadNotis", unread);
+
+	        } else if (principal instanceof Jwt jwt) {
+	            // JWT 토큰 사용자 처리
+	            String userNo = jwt.getClaimAsString("userNo");
+
+	            if (userNo != null) {
+	                List<NotificationVO> unread = notificationService.readUnreadNotifications(userNo);
+	                request.setAttribute("unreadNotis", unread);
+	            }
+	            
+	        } else if (principal instanceof String anonymous && anonymous.equals("anonymousUser")) {
+	            // 로그인 안 된 경우
+	            // 아무 처리 안 함
+	        	
+	        } else {
+	            // 혹시 모를 커스텀 인증 전략 또는 기타 처리
+	            System.out.println("[알림 인터셉터] 미지원 인증 타입 : " + principal.getClass());
+	        }
+	    }
+
+	    return true;
+	}
+}

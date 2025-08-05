@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.staff.CurriculumMapper">
+
+	<select id="selectCurriculum">
+		<!-- 커리큘럼 상세조회 -->
+		SELECT
+			CUR_NO
+			,DEPARTMENT_NO
+			,SUBJECT_CODE
+			,REQ_CODE
+		FROM CURRICULUM
+		WHERE DEPARTMENT_NO = #{departmentNo}
+	</select>
+
+</mapper>

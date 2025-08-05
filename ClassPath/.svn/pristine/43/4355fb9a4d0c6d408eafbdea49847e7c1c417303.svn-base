@@ -1,0 +1,49 @@
+package kr.or.ddit.pfcp.staff.tuition.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * @author YSM
+ * @since 250628
+ */
+@Controller
+@RequestMapping("/staff/tuition")
+public class StaffTuitionController {
+	/**
+	 * 등록금 폼 조회
+	 * @return
+	 */
+	@GetMapping("tuitionList.do")
+	public String tuitionListUI() {
+		return "pfcp/staff/tuition/tuitionList";
+	}
+	
+	/**
+	 * 등록금 폼 상세 조회
+	 * @return
+	 */
+	@GetMapping("tuitionDetail.do")
+	public String tuitionDetailUI() {
+		return "pfcp/staff/tuition/tuitionDetail";
+	}
+	
+	/**
+	 * 등록금 폼 등록
+	 * @return
+	 */
+	@GetMapping("tuitionInsert.do")
+	public String tuitionInsertUI() {
+		return "pfcp/staff/tuition/tuitionInsert";
+	}
+	
+	/**
+	 * 등록금 폼 수정
+	 * @return
+	 */
+	@GetMapping("tuitionUpdate.do")
+	public String tuitionUpdateUI() {
+		return "pfcp/staff/tuition/tuitionDetail";
+	}
+}

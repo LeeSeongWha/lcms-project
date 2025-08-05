@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.professor.evaluation.mapper.ProfessorLectureEvalMapper">
+	
+	<select id="selectEvals" resultType="kr.or.ddit.pfcp.common.vo.LectureEvalVO">
+        SELECT
+            LE.EVAL_NO,
+            LE.ENROLL_NO,
+            LE.EVAL_DATE,
+            LE.OVERALL_SCORE,
+            LE.EVAL_COMMENT,
+            L.LEC_NO
+        FROM
+            LECTURE L
+        INNER JOIN LECTURE_ENR E ON E.LEC_NO =L.LEC_NO
+        INNER JOIN LECTURE_EVAL LE ON LE.ENROLL_NO = E.ENROLL_NO
+        WHERE
+            E.LEC_NO = #{lecNo}
+        ORDER BY LE.EVAL_DATE DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+    </select>
+
+    <select id="countEvals" resultType="int">
+		SELECT COUNT(*)
+			FROM LECTURE_ENR LE
+				JOIN LECTURE_EVAL LEE ON LE.ENROLL_NO = LEE.ENROLL_NO
+				JOIN LECTURE L ON LE.LEC_NO =L.LEC_NO
+		WHERE L.LEC_NO = #{lecNo}
+     </select>
+    
+     <select id="selectEvalDetail" parameterType="String" resultType="kr.or.ddit.pfcp.common.vo.LectureEvalVO">
+         SELECT
+            LE.EVAL_NO,
+            LES.CRITERIA_NO,           
+            EC.CRITERIA_DESC,
+            LES.EVAL_SCORE,            
+            LE.OVERALL_SCORE,
+            LE.EVAL_DATE
+                    
+        FROM
+            LECTURE_EVAL_SCORE LES
+        JOIN
+            LECTURE_EVAL LE ON LES.EVAL_NO = LE.EVAL_NO
+        JOIN
+            EVAL_CRITERIA EC ON LES.CRITERIA_NO = EC.CRITERIA_NO
+        WHERE
+            LES.EVAL_NO = #{evalNo}
+        ORDER BY
+            EC.EVAL_NO ASC
+            
+            
+    </select>
+
+    <select id="selectEvalComment" parameterType="String" resultType="String">
+        SELECT
+            EVAL_COMMENT   
+        FROM
+            LECTURE_EVAL
+        WHERE
+            EVAL_NO = #{evalNo}
+    </select>
+    
+	
+<!-- 	<select id="totalScore" resultType="kr.or.ddit.pfcp.common.vo.LectureEvalVO">
+        SELECT
+		    LE.LEC_NO,               
+		    LEE.ENROLL_NO,           
+		    LEE.EVAL_NO,             
+		    LEE.EVAL_DATE,           
+		    LEE.OVERALL_SCORE,       
+		    LEE.EVAL_COMMENT         
+		FROM
+		    LECTURE_ENR LE
+		JOIN
+		    LECTURE_EVAL LEE ON LE.ENROLL_NO = LEE.ENROLL_NO
+		ORDER BY
+		    LE.LEC_NO, LEE.EVAL_DATE
+    </select>  -->
+	
+</mapper>

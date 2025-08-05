@@ -1,0 +1,11 @@
+package kr.or.ddit.pfcp.staff.reservationTimestamp.facility.service;
+
+import kr.or.ddit.pfcp.common.vo.ReservationTimestampVO;
+
+public interface FacilityRTService {
+
+	public ReservationTimestampVO readFacilityRT(String facilityNo);
+
+	public void insertFacility(ReservationTimestampVO reservationTimestamp);
+
+}

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.grademanage.mapper.GrademanageMapper">
+	<select id="selectGradeList" parameterType="String">
+		SELECT
+		    GRADE_NO,
+		    LEC_NO,
+		    USER_NO,
+		    FINAL_GRADE,
+		    GRADE_DATE,
+		    MIDTERM_SCORE,
+		    FINAL_SCORE,
+		    ASSIGNMENT_SCORE,
+		    ATTENDANCE_SCORE
+		FROM
+		    GRADE
+		ORDER BY GRADE_NO
+		WHERE LEC_NO = ${lecNo} 
+		  AND USER_NO = ${userNo}
+	</select>
+	
+	
+	
+	
+
+</mapper>

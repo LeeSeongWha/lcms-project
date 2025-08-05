@@ -1,0 +1,20 @@
+package kr.or.ddit.pfcp.staff.college.service;
+
+import java.util.List;
+
+import kr.or.ddit.pfcp.common.vo.CurriculumVO;
+
+/**
+ * @author KGM
+ * @since 250702
+ * @see
+ */
+public interface CurriculumService {
+	public List<CurriculumVO> readCurriculumList();
+	public List<CurriculumVO> readCurriculum(String departmentNo);
+	
+	
+	public void createCurriculum(CurriculumVO curriculum);
+	public void modifyCurriculum(CurriculumVO curriculum);
+	public void removeCurriculum(String curNo);
+}

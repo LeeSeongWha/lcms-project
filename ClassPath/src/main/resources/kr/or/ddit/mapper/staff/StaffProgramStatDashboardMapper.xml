@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.or.ddit.pfcp.staff.dashBoard.mapper.StaffProgramStatDashboardMapper">
+	<select id="selectMonthlyProgramCount" resultType="kr.or.ddit.pfcp.common.vo.StaffMonthlyProgramCountVO">
+	    SELECT
+	        TO_CHAR(TO_DATE(START_DATE, 'YYYY-MM-DD'), 'MM') AS MONTH,
+	        COUNT(*) AS PROGRAM_COUNT
+	    FROM PROGRAM
+	    GROUP BY TO_CHAR(TO_DATE(START_DATE, 'YYYY-MM-DD'), 'MM')
+	    ORDER BY MONTH
+	</select>
+	
+	<select id="selectProgramTypeCount" resultType="kr.or.ddit.pfcp.common.vo.StaffProgramTypeCountVO">
+    SELECT
+	        P.TYPE_CODE,
+	        COUNT(*) AS PROGRAM_COUNT
+	    FROM PROGRAM P 
+	    JOIN TYPE T ON T.TYPE_CODE = P.TYPE_CODE
+	    WHERE T.TYPE_GROUP = 'PROGRAM'
+	    GROUP BY P.TYPE_CODE
+	    ORDER BY PROGRAM_COUNT
+	</select>
+	<select id="selectMonthlyApplyCount">
+	    SELECT
+	        TO_CHAR(TO_DATE(APPLY_DATE, 'YYYY-MM-DD'), 'MM') AS MONTH,
+	        COUNT(*) AS APPLY_COUNT
+	    FROM PROGRAM_ENROLL
+	    GROUP BY TO_CHAR(TO_DATE(APPLY_DATE, 'YYYY-MM-DD'), 'MM')
+	    ORDER BY MONTH
+	</select>
+	
+	<select id="selectCollegeParticipationRate" resultType="kr.or.ddit.pfcp.common.vo.CollegeParticipationRateVO">
+    SELECT
+	        C.COLLEGE_NAME,
+	        ROUND(
+	            COUNT(DISTINCT PE.USER_NO) * 100.0 / 
+	            (SELECT COUNT(*) 
+	             FROM STUDENT S2 
+	             WHERE S2.DEPARTMENT_NO = D.DEPARTMENT_NO),
+	            1
+	        ) AS PARTICIPATION_RATE
+	    FROM PROGRAM_ENROLL PE
+	    JOIN STUDENT S ON PE.USER_NO = S.USER_NO
+	    JOIN DEPARTMENT D ON S.DEPARTMENT_NO = D.DEPARTMENT_NO
+	    JOIN COLLEGE C ON C.COLLEGE_NO = D.COLLEGE_NO
+	    GROUP BY C.COLLEGE_NAME, D.DEPARTMENT_NO
+	    ORDER BY PARTICIPATION_RATE DESC
+	</select>
+</mapper>

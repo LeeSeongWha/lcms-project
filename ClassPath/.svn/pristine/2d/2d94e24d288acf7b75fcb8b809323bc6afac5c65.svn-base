@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.or.ddit.pfcp.student.lecture.enroll.mapper.LectureEnrMapper">
+	<resultMap id="lectureEnrResultMap"
+		type="kr.or.ddit.pfcp.common.vo.LectureEnrVO">
+		<id property="enrollNo" column="ENROLL_NO" />
+		<result property="lecNo" column="LEC_NO" />
+		<result property="userNo" column="USER_NO" />
+		<result property="enrollTime" column="ENROLL_TIME" />
+		<result property="enrollStatus" column="ENROLL_STATUS" />
+		<result property="enrollType" column="ENROLL_TYPE" />
+		<result property="priority" column="PRIORITY" />
+		<result property="attendance" column="ATTENDANCE" />
+		<result property="evalYn" column="EVAL_YN" />
+		<result property="grade" column="GRADE" />
+		<result property="gradePoint" column="GRADE_POINT" />
+		<result property="semesterName" column="SEMESTER_NAME" />
+
+		<association property="subject"
+			javaType="kr.or.ddit.pfcp.common.vo.SubjectVO">
+			<id property="subjectCode" column="SUBJECT_CODE" />
+			<result property="departmentNo" column="DEPARTMENT_NO" />
+			<result property="gradeLevel" column="GRADE_LEVEL" />
+			<result property="subjectName" column="SUBJECT_NAME" />
+			<result property="credit" column="CREDIT" />
+			<result property="subjectDesp" column="SUBJECT_DESP" />
+			<result property="semesterNo" column="SEMESTER_NO" />
+		</association>
+	</resultMap>
+
+	<resultMap id="lectureResultMap"
+		type="kr.or.ddit.pfcp.common.vo.LectureVO">
+		<!-- LectureVO 필드 -->
+		<id property="lecNo" column="LEC_NO" />
+		<result property="reqNo" column="REQ_NO" />
+		<result property="userNo" column="USER_NO" />
+		<result property="lecStatus" column="LEC_STATUS" />
+		<result property="lrNo" column="LR_NO" />
+
+		<!-- LectureReqVO -->
+		<association property="lectureReq"
+			javaType="kr.or.ddit.pfcp.common.vo.LectureReqVO">
+			<id property="reqNo" column="REQ_NO" />
+			<result property="lecName" column="LEC_NAME" />
+			<result property="preDay" column="RPRE_DAY" />
+			<result property="preTime" column="PRE_TIME" />
+			<result property="maxCapacity" column="MAX_CAPACITY" />
+		</association>
+
+		<!-- SubjectVO -->
+		<association property="subject"
+			javaType="kr.or.ddit.pfcp.common.vo.SubjectVO">
+			<id property="subjectCode" column="SUBJECT_CODE" />
+			<result property="subjectName" column="SUBJECT_NAME" />
+			<result property="credit" column="CREDIT" />
+			<result property="semesterNo" column="SEMESTER_NO" />
+		</association>
+
+		<!-- UserVO -->
+		<association property="user"
+			javaType="kr.or.ddit.pfcp.common.vo.UserVO">
+			<id property="userNo" column="USER_USER_NO" />
+			<result property="userName" column="USER_USER_NAME" />
+		</association>
+	</resultMap>
+
+
+
+	<select id="selectLectureEnrollmentsByUserNo"
+		parameterType="string" resultMap="lectureEnrResultMap">
+		SELECT
+		e.ENROLL_NO,
+		e.LEC_NO,
+		e.USER_NO,
+		e.ENROLL_TIME,
+		e.ENROLL_STATUS,
+		e.ENROLL_TYPE,
+		e.PRIORITY,
+		e.ATTENDANCE,
+		e.EVAL_YN,
+		s.SUBJECT_CODE,
+		s.DEPARTMENT_NO,
+		s.GRADE_LEVEL,
+		s.SUBJECT_NAME,
+		s.CREDIT,
+		s.SUBJECT_DESP,
+		s.SEMESTER_NO
+
+		FROM
+		LECTURE_ENR e
+		JOIN LECTURE l ON e.LEC_NO = l.LEC_NO
+		JOIN LECTURE_REQ r ON l.REQ_NO =
+		r.REQ_NO
+		JOIN SUBJECT s ON r.SUBJECT_CODE = s.SUBJECT_CODE
+		WHERE
+		e.USER_NO = #{userNo}
+	</select>
+
+	<!-- 현재 학기 -->
+	<select id="getCurrentSemester" resultType="String">
+		SELECT SEMESTER_NO
+		FROM SEMESTER
+		WHERE SEMESTER_ACT = 'Y'
+	</select>
+	<!-- 수강신청가능한 강의 리스트 -->
+	<select id="selectLectureListBySemester"
+		resultMap="lectureResultMap"
+		resultType="kr.or.ddit.pfcp.common.vo.LectureVO">
+		SELECT
+		-- LectureVO
+		L.LEC_NO AS LEC_NO,
+		L.REQ_NO AS REQ_NO,
+		L.USER_NO AS USER_NO,
+		L.LEC_STATUS AS LEC_STATUS,
+		L.LR_NO AS LR_NO,
+
+		-- LectureReqVO
+		R.REQ_NO AS REQ_REQ_NO,
+		R.LEC_NAME AS REQ_LEC_NAME,
+		R.PRE_DAY AS REQ_PRE_DAY,
+		R.PRE_TIME AS REQ_PRE_TIME,
+		R.MAX_CAPACITY AS REQ_MAX_CAPACITY,
+
+		-- SubjectVO
+		S.SUBJECT_CODE AS SUB_SUBJECT_CODE,
+		S.SUBJECT_NAME AS SUB_SUBJECT_NAME,
+		S.CREDIT AS SUB_CREDIT,
+		S.SEMESTER_NO AS SUB_SEMESTER_NO,
+
+		-- UserVO
+		U.USER_NO AS USER_USER_NO,
+		U.USER_NAME AS USER_USER_NAME
+
+		FROM LECTURE L
+		JOIN LECTURE_REQ R ON L.REQ_NO = R.REQ_NO
+		JOIN SUBJECT S ON R.SUBJECT_CODE = S.SUBJECT_CODE
+		JOIN PROFESSOR P ON L.USER_NO = P.USER_NO
+		JOIN TB_USER U ON P.USER_NO = U.USER_NO
+		WHERE S.SEMESTER_NO = #{semesterNo}
+
+	</select>
+
+
+
+
+
+
+</mapper>

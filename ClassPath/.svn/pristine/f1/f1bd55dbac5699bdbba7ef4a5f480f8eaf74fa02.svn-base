@@ -1,0 +1,60 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%--  
+   파일명 : departmentList.jsp  
+   프로그램명 : 단과 대학 상세 조회(학과)
+   설명 : 
+   작성자 : 김규민
+   작성일 : 2025. 07. 03
+--%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css"> 
+</head>
+<body>
+   <h1>학과 리스트</h1>
+   <p>선택된 단과 대학 학과 리스트입니다</p>
+   <table>
+   
+        <thead>
+            <tr>
+                <th>학과번호</th>
+                <th>이름</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+        
+            <c:choose>
+                <c:when test="${not empty departmentList}">
+                    <c:forEach var="dept" items="${departmentList}">
+                        <tr>
+                            <td>${dept.departmentNo}</td>
+                            <td>
+                               <a href="/staff/college/departmentDetail.do?departmentNo=${dept.departmentNo}">
+                                  ${dept.departmentName}
+                               </a>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </c:when>
+                
+                <c:otherwise>
+                    <tr>
+                        <td colspan="2" style="text-align: center; padding: 15px;">등록된 학과가 없습니다.</td>
+                    </tr>
+                </c:otherwise>
+            </c:choose>
+            
+        </tbody>
+        
+    </table>
+    
+    <hr>
+        
+</body>
+</html>

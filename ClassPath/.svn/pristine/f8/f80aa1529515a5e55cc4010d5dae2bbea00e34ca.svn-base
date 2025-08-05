@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.common.mapper.FileRefMapper">
+	<insert id="insertFileRef" parameterType="kr.or.ddit.pfcp.common.vo.FileRefVO">
+		INSERT INTO FILE_REF (
+	        FILE_REF_NO,
+	        FILE_REF_TYPE,
+	        FILE_REF_TARGET_ID,
+	        ATCH_ID
+	    ) VALUES (
+	        #{fileRefNo},
+	        #{fileRefType},
+	        #{fileRefTargetId},
+	        #{atchId}
+	    )
+	</insert>
+
+	<select id="selectFileRef">
+		SELECT FILE_REF_NO
+			   , FILE_REF_TYPE
+			   , FILE_REF_TARGET_ID
+			   , ATCH_ID
+		  FROM FILE_REF
+		 WHERE FILE_REF_NO=#{fileRefNo}
+	</select>
+</mapper>

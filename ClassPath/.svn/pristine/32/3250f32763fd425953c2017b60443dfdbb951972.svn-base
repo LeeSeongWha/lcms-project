@@ -1,0 +1,189 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+
+<link rel="stylesheet" href="/dist/assets/css/test/staffDetail2.css">
+
+<title>교직원 상세 정보</title>
+
+<c:if test="${not empty success}">
+  <script>
+    alert("${success}");
+  </script>
+</c:if>
+
+<style>
+.staffDetail .deleteButton {
+        background: #ef4444;
+	    color: #ffffff;
+	    border: none;
+	    padding: 12px 24px;
+	    font-size: 0.9rem;
+	    font-weight: 600;
+	    border-radius: 4px;
+	    cursor: pointer;
+	    transition: all 0.2s ease;
+	    min-width: 50px;
+    }
+</style>
+
+
+
+<div class="staffDetail">
+	<form action="/staff/staffmanage/staffUpdateProcess.do" method="post">
+		
+		<div class="title" style="display:flex; justify-content: space-between; align-items: center;">
+			<h1>교직원 상세 정보</h1>
+			
+		</div>
+			
+		<hr class="h1-hr">
+		 
+		<input type="hidden" name="no" value="${staff.user.userNo}" />
+	
+		<div class="tableContainer">
+			<table class="defaultTable">
+				<tbody>
+					<tr class="tableRowHover">
+						<th class="tableTh">사번</th>
+						<td class="tableTd">
+							<input class="inputField" type="text" name="user.userNo" value="${staff.userNo}" readonly />
+						</td>
+						<th class="tableTh">이름</th>
+						<td class="tableTd">
+							<input class="inputField" type="text" name="user.userName" value="${staff.user.userName}" />
+						</td>
+					</tr>
+	
+					<tr class="tableRowHover">
+						<th class="tableTh">부서</th>
+						<td class="tableTd">
+							<input class="inputField" type="text" name="staffDepartment" value="${staff.staffDepartment}" />
+						</td>
+						<th class="tableTh">직위</th>
+						<td class="tableTd">
+							<input class="inputField" type="text" name="staffPosition" value="${staff.staffPosition}" />
+						</td>
+					</tr>
+	
+					<tr class="tableRowHover">
+						<th class="tableTh">입사일</th>
+						<td class="tableTd">
+							<input class="inputField" type="date" name="staffHiredate" value="${staff.staffHiredate}" readonly/>
+						</td>
+						<th class="tableTh">퇴사일</th>
+						<td class="tableTd">
+							<input class="inputField" type="date" name="staffRdate" value="${staff.staffRdate}" readonly/>
+						</td>
+					</tr>
+	
+					<tr class="tableRowHover">
+						<th class="tableTh">이메일</th>
+						<td class="tableTd">
+							<input class="inputField" type="email" name="user.userEmail" value="${staff.user.userEmail}" />
+						</td>
+						<th class="tableTh">전화번호</th>
+						<td class="tableTd">
+							<input class="inputField" type="text" name="user.userTel" value="${staff.user.userTel}" />
+						</td>
+					</tr>
+	
+					<tr class="tableRowHover">
+						<th class="tableTh">생년월일</th>
+						<td class="tableTd">
+							<input class="inputField" type="text" name="user.userRegno1" value="${staff.user.userRegno1}" />
+						</td>
+						<th class="tableTh">성별</th>
+						<td class="tableTd">
+							<input class="inputField" type="text" name="user.gender" value="${staff.user.gender}" readonly/>
+						</td>
+					</tr>
+	
+					<tr class="tableRowHover">
+					    <th class="tableTh">은행</th>
+					    <td class="tableTd">
+						    <select id="bankCd" name="user.bankCd"
+						            class="selectBox"
+						            data-init-bank="${staff.type.typeCode}">
+						        
+						        <c:forEach var="bank" items="${bankList}">
+						            <option value="${bank.typeCode}" ${staff.type.typeCode eq bank.typeCode ? 'selected' : ''}>
+						                ${bank.typeName}
+						            </option>
+						        </c:forEach>
+						    </select>
+					    </td>
+					    <th class="tableTh">계좌번호</th>
+					    <td class="tableTd">
+					        <input class="inputField" type="text" name="user.userBankno" value="${staff.user.userBankno}" />
+					    </td>
+					</tr>
+	
+	
+					<tr class="tableRowHover">
+						<th class="tableTh">우편번호</th>
+						<td class="tableTd">
+							<div class="input-with-icon"> <%-- Changed class name for clarity --%>
+								<input type="text" name="user.userZip" id="sample4_postcode" class="inputField" placeholder="우편번호" readonly value="${staff.user.userZip}"/>
+								<i class="fas fa-search search-icon" onclick="sample4_execDaumPostcode()"></i>
+							</div>
+						</td>
+					</tr>
+	
+					<tr class="tableRowHover">
+						<th class="tableTh">기본주소</th>
+						<td class="tableTd">
+							<input class="inputField" type="text" id="sample4_roadAddress" name="user.userAdd1" value="${staff.user.userAdd1}" placeholder="도로명주소" />
+						</td>
+						<th class="tableTh">상세주소</th>
+						<td class="tableTd">
+							<input class="inputField" type="text" id="sample4_detailAddress" name="user.userAdd2" value="${staff.user.userAdd2}" placeholder="상세주소" />
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	
+		<div style="margin-top:20px; display: flex; justify-content: space-between; gap: 10px;">
+			<div>
+			    <button type="button" class="cancelButton" onclick="moveToList()">목록으로</button>
+			</div>
+		    <div>
+			    <button type="button" class="deleteButton" onclick="updateRdate()" style="margin-top:15px">퇴직 처리</button>
+			    <button type="submit" class="submitButton">저장</button>
+		    </div>
+		    
+		</div>
+	</form>
+</div>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+	function moveToList(){
+		window.location.href="/staff/staffmanage/staffmanageList.do";
+	}
+	
+	function updateRdate(){
+		const no = "${staff.userNo}";
+		
+		if(confirm("정말로 퇴직처리하시겠습니까?")){
+			window.location.href="/staff/staffmanage/updateRdate.do?no=" + no;
+		}
+		
+	}
+	
+	function sample4_execDaumPostcode() {
+	    new daum.Postcode({
+	        oncomplete: function(data) {
+	            // 도로명 주소 변수
+	            var roadAddr = data.roadAddress;
+
+	            // 우편번호와 도로명 주소만 필드에 넣기
+	            document.getElementById('sample4_postcode').value = data.zonecode;
+	            document.getElementById('sample4_roadAddress').value = roadAddr;
+
+	            // 상세주소는 사용자가 직접 입력하는 필드이므로 초기화하지 않음
+	        }
+	    }).open();
+	}
+</script>
+

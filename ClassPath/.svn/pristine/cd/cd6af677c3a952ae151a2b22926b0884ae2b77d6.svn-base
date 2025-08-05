@@ -1,0 +1,250 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+
+<title>Insert title here</title>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+	    var IMP = window.IMP;
+	    
+	    IMP.init("imp31705713");
+	});
+	
+	function requestPay() {
+		const certName = "${certificateInfo.certName}";
+        const amount = ${certificateInfo.issueFee};
+        
+	    IMP.request_pay({
+	        pg: "kakaopay.TC0ONETIME",
+	        pay_method: "card",
+	        merchant_uid: Date.now().toString(),
+	        name: certName,
+	        amount: amount,
+	        buyer_email: "good@portone.io",
+	        buyer_name: "포트원 기술지원팀",
+	        buyer_tel: "010-1234-5678",
+	        buyer_addr: "서울특별시 강남구 삼성동",
+	        buyer_postcode: "123-456"
+	    }, function (rsp) {
+	        if (rsp.success) {
+	            const path = window.location.pathname; 
+                const certCode = path.split("/").pop().replace(".do", "");
+                
+	            axios.post("/student/certificate/paymentComplete", {
+		                imp_uid: rsp.imp_uid,
+		                merchant_uid: rsp.merchant_uid,
+		                certCode: certCode 
+		            }, 
+		            { 
+						responseType: 'arraybuffer' 
+					}
+	            ).then(res => {
+	                const blob = new Blob(
+	                	[res.data], 
+	                	{ 
+							type: 'application/pdf' 
+						}
+	                );
+	                const url = URL.createObjectURL(blob);
+	                
+	                window.open(url, "_blank");
+	            })
+	            .catch(err => {
+	                console.error("서버 요청 실패", err);
+	                
+	                alert("서버 결제 처리 중 오류가 발생했습니다.");
+	            });
+	        } else {
+	            alert("결제 실패: " + rsp.error_msg);
+	        }
+	    });
+	}
+</script>
+
+
+<style>
+.section {
+  max-width: 1400px; /* 더 넓게 */
+  margin: 10px auto;
+  padding: 32px;
+  background-color: #fefefe;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  line-height: 1.6;
+}
+
+/* 제목 */
+.section h5 {
+  font-size: 26px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  border-bottom: 4px solid #fee500;
+  padding: 4px 12px;
+  border-radius: 8px;
+  margin: 0 auto 24px auto;
+}
+
+/* 기본 텍스트 */
+.section p {
+  font-size: 17px;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+/* 2열 정보 그리드 */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 40px;
+  margin-bottom: 15px;
+}
+
+/* 신청절차 + 유의사항 나란히 */
+.flex-row {
+  display: flex;
+  gap: 32px;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+/* 공통 박스 스타일 */
+.notice-box {
+  flex: 1;
+  background-color: #f9f9f9;
+  border-left: 4px solid #fee500;
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #444;
+}
+
+/* 목록 스타일 */
+.notice-box ul, .notice-box ol {
+  padding-left: 20px;
+  margin-top: 8px;
+}
+
+/* FAQ 박스 */
+.faq-box {
+  background-color: #f1f1f1;
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  margin-bottom: 32px;
+  color: #444;
+}
+
+/* 결제 영역 */
+#certificate {
+  background-color: #fafafa;
+  padding: 24px;
+  border-radius: 14px;
+  border: 1px dashed #ddd;
+  text-align: center;
+}
+
+/* 결제 버튼 */
+#certificate button {
+  margin-top: 8px;
+  background-color: #fee500;
+  color: #3c1e1e;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 30px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: background-color 0.2s;
+}
+
+#certificate button:hover {
+  background-color: #ffef3a;
+}
+</style>
+
+<div class="section">
+	<div style="text-align: center;">
+		<h5>${certificateInfo.certName}신청</h5>
+	</div>
+
+	<!-- 정보 그리드 -->
+	<div class="info-grid">
+		<p>
+			<strong>· 증명서 종류:</strong> ${certificateInfo.certName}
+		</p>
+		<p>
+			<strong>· 발급 비용:</strong> ${certificateInfo.issueFee}원
+		</p>
+		<p>
+			<strong>· 처리 소요 시간:</strong> 신청 후 1~2일 이내 발급
+		</p>
+		<p>
+			<strong>· 발급 방식:</strong> PDF 다운로드 또는 행정실 직접 수령
+		</p>
+	</div>
+
+	<!-- 절차와 유의사항: 가로 정렬 -->
+	<div class="flex-row">
+		<div class="notice-box">
+			<p>
+				<strong>📌 신청 절차 안내</strong>
+			</p>
+			<ol>
+				<li>1단계: 발급 신청 정보 확인</li>
+				<li>2단계: 결제 완료</li>
+				<li>3단계: 증명서 처리 및 발급</li>
+				<li>4단계: 알림 또는 이메일로 수령 안내</li>
+			</ol>
+		</div>
+
+		<div class="notice-box">
+			<p>
+				<strong>⚠️ 유의사항</strong>
+			</p>
+			<ul>
+				<li>입력한 정보가 사실과 다를 경우, 발급이 지연되거나 거부될 수 있습니다.</li>
+				<li>결제 완료 후에는 <strong>환불이 불가</strong>하오니 반드시 확인 후 결제해 주세요.
+				</li>
+				<li>발급 완료 후, 마이페이지 > 증명서 내역에서 다운로드할 수 있습니다.</li>
+				<li>출력용 PDF는 QR코드 및 인증 코드로 진위 확인이 가능합니다.</li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- FAQ -->
+	<div class="faq-box">
+		<p>
+			<strong>❓ 자주 묻는 질문</strong>
+		</p>
+		<p>
+			<strong>Q.</strong> 결제 후 언제 받을 수 있나요?<br> <strong>A.</strong>
+			일반적으로 1~2일 이내 처리되며, 완료 시 문자 또는 이메일로 알림을 드립니다.
+		</p>
+
+		<p>
+			<strong>Q.</strong> 직접 수령도 가능한가요?<br> <strong>A.</strong> 네, 신청
+			시 '직접 수령'을 선택하면 행정실에서 수령 가능합니다.
+		</p>
+
+		<p>
+			<strong>Q.</strong> 영문 증명서도 발급되나요?<br> <strong>A.</strong> 네, 영문
+			발급 가능 여부는 각 증명서 상세정보를 참고해 주세요.
+		</p>
+	</div>
+
+	<!-- 결제 버튼 -->
+	<div id="certificate">
+		<button type="button" onclick="requestPay()">결제하기</button>
+	</div>
+</div>
+
+
+<!-- <script src="/js/app/pfcp/student/studentPayment.js"></script> -->

@@ -1,0 +1,5 @@
+package kr.or.ddit.pfcp.staff.college.service;
+
+public interface GraduationRequestService {
+	
+}

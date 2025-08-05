@@ -1,0 +1,339 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="en">
+<%@taglib uri="jakarta.tags.core" prefix="c"%>
+<head>
+<title>Login | Pathfinder University</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<%@ include file="/WEB-INF/fragments/mantisPreStyle.jsp"%>
+
+<style>
+/* 전체 페이지 스타일 */
+body, html {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	overflow: hidden;
+}
+
+/* 비디오 백그라운드 */
+.video-bg {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	z-index: -2;
+}
+
+.video-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, rgba(0, 33, 71, 0.8) 0%,
+		rgba(0, 66, 137, 0.7) 50%, rgba(25, 118, 210, 0.6) 100%);
+	z-index: -1;
+}
+
+/* 메인 컨테이너 */
+.auth-main {
+	position: relative;
+	width: 100%;
+	height: 100vh;
+	display: grid;
+	grid-template-columns: 1fr 480px;
+	align-items: center;
+}
+
+/* 왼쪽 브랜딩 영역 */
+.branding-section {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+	padding: 0 80px;
+	color: white;
+	z-index: 1;
+}
+
+.university-logo {
+	width: 220px;
+	margin-bottom: 40px;
+	filter: brightness(1.1);
+}
+
+.welcome-text {
+	margin-bottom: 30px;
+}
+
+.welcome-text h1 {
+	font-size: 3.2rem;
+	font-weight: 300;
+	margin: 0 0 20px 0;
+	line-height: 1.2;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-text p {
+	font-size: 1.3rem;
+	font-weight: 300;
+	margin: 0;
+	opacity: 0.95;
+	line-height: 1.5;
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.university-info {
+	font-size: 1rem;
+	opacity: 0.85;
+	line-height: 1.6;
+	max-width: 500px;
+}
+
+/* 오른쪽 로그인 영역 */
+.login-section {
+	height: 100vh;
+	background: rgba(255, 255, 255, 0.95);
+	backdrop-filter: blur(10px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-left: 1px solid rgba(255, 255, 255, 0.2);
+	box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+}
+
+.auth-wrapper {
+	width: 100%;
+	max-width: 400px;
+	padding: 50px 40px;
+}
+
+.auth-header {
+	margin-bottom: 40px;
+	text-align: center;
+}
+
+.auth-header h2 {
+	color: #1e3a8a;
+	font-size: 2rem;
+	font-weight: 600;
+	margin: 0 0 10px 0;
+}
+
+.auth-header p {
+	color: #64748b;
+	font-size: 1rem;
+	margin: 0;
+}
+
+/* 기존 Bootstrap 클래스 스타일 오버라이드 */
+.card {
+	border: none !important;
+	background: transparent !important;
+	box-shadow: none !important;
+}
+
+.card-body {
+	padding: 0 !important;
+}
+
+/* 임시 로그인 섹션 스타일링 */
+.auth-wrapper>p {
+	color: #6b7280;
+	font-size: 0.9rem;
+	margin: 30px 0 15px 0;
+	padding-top: 20px;
+	border-top: 1px solid #e5e7eb;
+}
+
+.auth-wrapper>input[type="radio"] {
+	margin: 5px 8px 5px 0;
+}
+
+.auth-wrapper>label {
+	color: #374151;
+	margin-right: 15px;
+	font-size: 0.95rem;
+	cursor: pointer;
+}
+
+/* 반응형 디자인 */
+@media ( max-width : 1024px) {
+	.auth-main {
+		grid-template-columns: 1fr 420px;
+	}
+	.branding-section {
+		padding: 0 50px;
+	}
+	.welcome-text h1 {
+		font-size: 2.5rem;
+	}
+}
+
+@media ( max-width : 768px) {
+	.auth-main {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto 1fr;
+	}
+	.branding-section {
+		height: auto;
+		padding: 30px 20px 20px;
+		text-align: center;
+	}
+	.university-logo {
+		max-width: 100%;
+		width: 240px;
+		height: auto;
+		margin-bottom: 40px;
+		filter: brightness(1.1);
+		transition: transform 0.3s ease;
+	}
+	@media ( max-width : 1024px) {
+		.university-logo {
+			width: 200px;
+		}
+	}
+	@media ( max-width : 768px) {
+		.university-logo {
+			width: 180px;
+		}
+	}
+	@media ( max-width : 480px) {
+		.university-logo {
+			width: 160px;
+		}
+	}
+	.welcome-text h1 {
+		font-size: 2rem;
+		margin-bottom: 10px;
+	}
+	.welcome-text p {
+		font-size: 1.1rem;
+	}
+	.university-info {
+		display: none;
+	}
+	.login-section {
+		height: auto;
+		background: rgba(255, 255, 255, 0.98);
+		border-left: none;
+		border-top: 1px solid rgba(255, 255, 255, 0.3);
+		box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.1);
+	}
+	.auth-wrapper {
+		padding: 30px 20px;
+		max-width: 100%;
+	}
+}
+
+@media ( max-width : 480px) {
+	.welcome-text h1 {
+		font-size: 1.8rem;
+	}
+	.auth-wrapper {
+		padding: 20px 15px;
+	}
+	.form-control {
+		padding: 12px 14px;
+	}
+	.btn-primary {
+		padding: 12px;
+		font-size: 1rem;
+	}
+}
+
+/* 애니메이션 효과 */
+.branding-section {
+	animation: fadeInLeft 1s ease-out;
+}
+
+.login-section {
+	animation: fadeInRight 1s ease-out 0.3s both;
+}
+
+@
+keyframes fadeInLeft {from { opacity:0;
+	transform: translateX(-50px);
+}
+
+to {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+}
+@
+keyframes fadeInRight {from { opacity:0;
+	transform: translateX(50px);
+}
+
+to {
+	opacity: 1;
+	transform: translateX(0);
+}
+}
+</style>
+</head>
+
+<body>
+
+	<!-- 동영상 배경 -->
+	<video autoplay muted loop playsinline class="video-bg">
+		<source src="/dist/assets/video/booeong.mp4" type="video/mp4">
+	</video>
+	<div class="video-overlay"></div>
+
+	<c:if test="${not empty message}">
+		<script>
+			alert("${message}");
+		</script>
+		<c:remove var="message" scope="session" />
+	</c:if>
+
+	<div class="auth-main">
+		<!-- 왼쪽 브랜딩 영역 -->
+		<div class="branding-section">
+			<img src="/dist/assets/img/kaiadmin/booeong.png"
+				alt="Pathfinder University" class="university-logo">
+
+			<div class="welcome-text">
+				<h1>
+					Welcome to<br>Bueong University
+				</h1>
+				<p>Discover Your Path to Excellence</p>
+			</div>
+
+			<div class="university-info">Bueong University is committed to
+				providing world-class education and fostering innovation. Join our
+				community of learners, researchers, and leaders who are shaping the
+				future.</div>
+		</div>
+
+		<!-- 오른쪽 로그인 영역 -->
+		<div class="login-section">
+			<div class="auth-wrapper">
+				<div class="auth-header">
+					<h2>부엉대학교</h2>
+				</div>
+
+				<!-- 로그인 폼 영역 (sitemesh로 대체됨) -->
+				<sitemesh:write property="body" />
+			</div>
+		</div>
+	</div>
+
+	<!-- 모달 및 스크립트 -->
+	<%@ include file="/WEB-INF/fragments/modalId.jsp"%>
+	<%@ include file="/WEB-INF/fragments/modalPass.jsp"%>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+	<script src="/js/app/elcass/modal.js"></script>
+	<%@ include file="/WEB-INF/fragments/mantisPostScript.jsp"%>
+</body>
+</html>

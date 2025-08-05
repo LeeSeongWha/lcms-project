@@ -1,0 +1,95 @@
+@charset "UTF-8";
+
+.lecture-split-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: center; 
+    gap: 20px; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    align-items: flex-start; 
+}
+
+
+.semester-section {
+
+    width: 45%; 
+    max-width: 800px; 
+    min-width: 800px; 
+    padding: 20px;
+    display: flex; 
+    flex-direction: column; 
+  
+}
+
+.semester-section-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 15px;
+/*     color: #147262; 메인 컬러로 변경 */
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #147262; /* 메인 컬러로 변경 */
+}
+
+.no-lecture-message {
+    color: #607d79; /* 메인 컬러 계열의 짙은 색으로 변경 */
+    text-align: center;
+    padding: 20px 0;
+    font-style: italic;
+    margin-top: auto; 
+    margin-bottom: auto; 
+}
+
+
+.semester-section .lecture-item-link {
+    display: block;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.semester-section .lecture-item-content {
+    background-color: #fff;
+    border: 1px solid #c7d8d6; /* 메인 컬러 계열의 연한 색으로 변경 */
+    border-radius: 5px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease-in-out;
+}
+
+.semester-section .lecture-item-content:hover {
+    box-shadow: 0 4px 8px rgba(20, 114, 98, 0.2); /* 메인 컬러 계열의 그림자 색상으로 변경 */
+    transform: translateY(-2px);
+}
+
+.semester-section .lecture-info-group {
+    display: flex;
+    align-items: flex-start;
+}
+
+.semester-section .lecture-icon-wrapper {
+    margin-right: 15px;
+    padding-top: 5px;
+}
+
+.semester-section .lecture-icon {
+    width: 24px;
+    height: 24px;
+    color: #147262; /* 메인 컬러로 변경 */
+}
+
+.semester-section .lecture-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #147262; /* 메인 컬러로 변경 */
+    margin-bottom: 5px;
+}
+
+.semester-section .lecture-details {
+    font-size: 0.9em;
+/*     color: #607d79; 메인 컬러 계열의 짙은 색으로 변경 */
+    line-height: 1.5;
+    margin: 0;
+}

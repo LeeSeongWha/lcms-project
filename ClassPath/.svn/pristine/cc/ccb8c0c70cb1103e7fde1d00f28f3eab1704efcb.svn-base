@@ -1,0 +1,107 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+<%--  
+	파일명 : departmentList.jsp  
+	프로그램명 : 학과 상세 조회
+	설명 : 
+	작성자 : 김규민
+	작성일 : 2025. 07. 10
+--%>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+	<h1>커리큘럼 등록</h1>
+	
+	
+	
+	<form action="/staff/college/insertCurriculum.do" method="post">
+		<!-- 시퀀스 -->
+		<!-- <div>
+            <label for="curNo">커리큘럼 코드 :</label>
+            <input type="text" id="curNo" name="curNo" required>
+        </div> -->
+        
+		<!-- select ajax -->
+        <!-- <div>
+            <label for="collegeSelect">단과 대학 :</label>
+            <select id="collegeSelect" name="collegeNo" required></select>
+        </div> -->
+        
+        <div>
+            <label for="subjectName">커리큘럼 코드 :</label>
+            <select id="subjectName" name="subjectName" required></select>
+        </div>
+
+        <div>
+            <label for="departmentNo">학과코드 :</label>
+            <select id="departmentNo" name="departmentNo" required></select>
+        </div>
+        
+        <div>
+            <label for="reqCode">커리큘럼 명 :</label>
+            <input type="text" id="reqCode" name="reqCode" required>
+        </div>
+        
+        <div>
+            <label for="reqCode">커리큘럼 명 :</label>
+            <input type="text" id="reqCode" name="reqCode" required>
+        </div>
+        frags
+        
+        
+		<div>
+			
+            <button type="submit">등록</button>
+            <button type="button" onclick="history.back()">돌아가기</button>
+        			
+		</div>
+	
+	</form>
+	
+<script type="text/javascript">
+$(function(){
+	let subjectSelect = $("#subjectName");
+	
+	$.ajax({
+		url : "/staff/subjectList.do",
+		type : "get",
+		success : function(res){
+			let html = ``;
+			if(res != null){
+				res.map(function(v,i){
+					html += `
+						<option value="\${v.subjectCode}">\${v.subjectName}</option>
+					`; 
+				});
+				subjectSelect.html(html);
+			}
+		},
+		error : function(){
+			
+		}
+	});
+	
+	let departmentSelect = $("#departmentNo");
+	
+	$.ajax({
+		url : "/departmentList",
+		type : "get",
+		success : function(res){
+			let html = ``;
+			if(res != null){
+				res.map(function(v,i){
+					html += `
+						<option value="\${v.departmentCode}">\${v.departmentName}</option>
+					`; 
+				});
+				departmentSelect.html(html);
+			}
+		},
+		error : function(){
+
+
+		}
+	});
+});
+</script>

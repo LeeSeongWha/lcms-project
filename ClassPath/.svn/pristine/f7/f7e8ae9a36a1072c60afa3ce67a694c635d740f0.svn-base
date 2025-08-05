@@ -1,0 +1,23 @@
+package kr.or.ddit.common.zoomapi.dto;
+
+public enum ProgramType {
+  LECTURE("강의"),
+  SEMINAR("세미나"), 
+  WORKSHOP("워크샵"),
+  WEBINAR("웨비나"),
+  CONFERENCE("컨퍼런스"),
+  TRAINING("교육"),
+  MEETING("회의"),
+  DISCUSSION("토론"),
+  PRESENTATION("발표");
+  
+  private final String value;
+  
+  ProgramType(String value) {
+      this.value = value;
+  }
+  
+  public String getValue() {
+      return value;
+  }
+}

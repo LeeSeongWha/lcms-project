@@ -1,0 +1,68 @@
+<%--
+ * == 개정이력(Modification Information) ==
+ * 수정일			수정자	수정내용
+ * ========================================
+ * 2025-07-15 	서경덕	최초 생성
+ * 2025-07-18 	김태수	구조 수정
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+<title>시험관리</title>
+<%-- 기존 external CSS 링크 유지 --%>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+<link rel="stylesheet" href="/dist/assets/css/attendclass.css">
+<div class="sectionHeaderLine">
+  	<!-- 왼쪽 제목 및 설명 -->
+	<div>
+		<div class="sectionHeaderTitle">시험관리</div>
+		<div class="sectionHeaderDescription">전체 ${count}개의 게시글</div>
+	</div>
+
+	<!-- 오른쪽 등록 버튼 -->
+	<button type="button" class="submitButton" onclick="location.href='/professor/exam/examInsert.do'">+ 등록</button>
+</div>
+
+<div class="section">
+	<div class="lecture-list-container">
+		<c:set var="displayedCount" value="0" />
+		<c:choose>
+			<c:when test="${not empty examList }">
+				<c:forEach items="${examList }" var="exam" varStatus="status">
+						<c:url value="/professor/exam/examDetail.do" var="detailURL">
+							<c:param name="examNo" value="${exam.examNo }"/>
+						</c:url>
+						<a href="${detailURL}" class="lecture-item-link">
+							<div class="lecture-item-content">
+								<div class="lecture-info-group">
+									<div class="lecture-icon-wrapper">
+										<svg xmlns="http://www.w3.org/2000/svg" class="lecture-icon"
+											fill="none" viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round"
+												stroke-width="2" d="M9 5l7 7-7 7" />
+										</svg>
+									</div>
+									<div>
+										<span class="lecture-name">${exam.examName}</span>
+										<p class="lecture-details">
+											・ 강의명: ${exam.lectureReq.lecName } <br>
+											・ 분류: ${exam.examType } <br>
+											・ 시간: ${exam.examLimit } <br>
+											
+										</p>
+									</div>
+								</div>
+							</div>
+						</a>
+						<c:set var="displayedCount" value="${displayedCount + 1}" />
+				</c:forEach>
+			</c:when>
+		</c:choose>
+		
+		<c:if test="${displayedCount == 0}">
+			<div class="no-lecture-message">
+				등록된 시험이 존재하지 않습니다.
+			</div>
+		</c:if>
+	</div>
+</div>

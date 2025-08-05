@@ -1,0 +1,72 @@
+{
+  "groups": [
+    {
+      "name": "cors",
+      "type": "kr.or.ddit.conf.CorsConfig",
+      "sourceType": "kr.or.ddit.conf.CorsConfig"
+    },
+    {
+      "name": "myapp",
+      "type": "kr.or.ddit.conf.SpringSecurityConfig",
+      "sourceType": "kr.or.ddit.conf.SpringSecurityConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "cors.allow-credentials",
+      "type": "java.lang.Boolean",
+      "sourceType": "kr.or.ddit.conf.CorsConfig"
+    },
+    {
+      "name": "cors.allowed-headers",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "kr.or.ddit.conf.CorsConfig"
+    },
+    {
+      "name": "cors.allowed-methods",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "kr.or.ddit.conf.CorsConfig"
+    },
+    {
+      "name": "cors.allowed-origins",
+      "type": "java.util.List<java.lang.String>",
+      "sourceType": "kr.or.ddit.conf.CorsConfig"
+    },
+    {
+      "name": "cors.cookie-bearer-token-resolver",
+      "type": "kr.or.ddit.security.jwt.CookieBearerTokenResolver",
+      "sourceType": "kr.or.ddit.conf.RestSpringSecurityConfig"
+    },
+    {
+      "name": "cors.rest-cors-configuration-source",
+      "type": "org.springframework.web.cors.CorsConfigurationSource",
+      "sourceType": "kr.or.ddit.conf.RestSpringSecurityConfig"
+    },
+    {
+      "name": "cors.secret-key",
+      "type": "java.lang.Byte[]",
+      "sourceType": "kr.or.ddit.conf.RestSpringSecurityConfig"
+    },
+    {
+      "name": "myapp.login-url",
+      "type": "java.lang.String",
+      "sourceType": "kr.or.ddit.conf.SpringSecurityConfig"
+    },
+    {
+      "name": "myapp.logout-url",
+      "type": "java.lang.String",
+      "sourceType": "kr.or.ddit.conf.SpringSecurityConfig"
+    },
+    {
+      "name": "myapp.mapper",
+      "type": "kr.or.ddit.pfcp.common.mapper.UserMapper",
+      "sourceType": "kr.or.ddit.conf.SpringSecurityConfig"
+    },
+    {
+      "name": "myapp.register-url",
+      "type": "java.lang.String",
+      "sourceType": "kr.or.ddit.conf.SpringSecurityConfig"
+    }
+  ],
+  "hints": []
+}

@@ -1,0 +1,513 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   학생 상세 조회 시스템 - 업무성 디자인
+   ========================================================================== */
+
+/* 전체 컨테이너 */
+.gradeDetail {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 20px;
+    background-color: #f8f9fa;
+    font-family: 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #212529;
+    min-height: 100vh;
+}
+
+.gradeDetail .sectionHeaderLine {
+    border-bottom: 1px solid #2b6cb0;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.gradeDetail .sectionHeaderTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 4px 0;
+}
+
+.gradeDetail .sectionHeaderDescription {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+    font-weight: 500;
+}
+
+
+/* ==========================================================================
+   페이지 제목
+   ========================================================================== */
+
+.gradeDetail h1 {
+     font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a202c;
+    padding: 20px 0 0 0;
+/*     border-bottom: 3px solid #2b6cb0; */
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.gradeDetail .h1-hr{
+	border: 1px solid #2b6cb0;
+}
+
+/* ==========================================================================
+   테이블 컨테이너
+   ========================================================================== */
+
+.gradeDetail .tableContainer {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    margin-bottom: 20px;
+    border-radius:0;
+}
+
+/* 상세 정보 테이블 */
+.gradeDetail .defaultTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    background: #ffffff;
+    margin: 0;
+}
+
+.gradeDetail .tableRowHover {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background-color 0.15s ease;
+}
+
+.gradeDetail .tableRowHover:nth-child(even) {
+    background-color: #fefefe;
+}
+
+.gradeDetail .tableRowHover:hover {
+    background-color: #edf2f7;
+}
+
+.gradeDetail .tableTh {
+    width: 15%;
+    padding: 5px 20px;
+    text-align: center;
+    font-weight: 600;
+    color: #2d3748;
+    background: #f7fafc;
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.gradeDetail .tableTd {
+    padding: 5px 20px;
+    color: #2d3748;
+    border-right: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.gradeDetail .tableTd:last-child {
+    border-right: none;
+}
+
+/* ==========================================================================
+   폼 요소 스타일링
+   ========================================================================== */
+
+/* 입력 필드 */
+.gradeDetail .inputField {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    background: #ffffff;
+    color: #2d3748;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+
+.gradeDetail .inputField:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+}
+
+.gradeDetail .inputField:read-only {
+    background-color: #f7fafc;
+    color: #718096;
+    cursor: not-allowed;
+}
+
+.gradeDetail .inputField::placeholder {
+    color: #a0aec0;
+}
+
+/* 선택 박스 */
+.gradeDetail .selectBox {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    background: #ffffff;
+    color: #2d3748;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.gradeDetail .selectBox:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+}
+
+.gradeDetail .selectBox:hover {
+    border-color: #a0aec0;
+}
+
+/* 우편번호 찾기 버튼 */
+.gradeDetail .searchButton {
+    background: #4a5568;
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    min-width: 120px;
+}
+
+.gradeDetail .searchButton:hover {
+    background: #2d3748;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(74, 85, 104, 0.3);
+}
+
+/* ==========================================================================
+   버튼 스타일링
+   ========================================================================== */
+
+/* 저장 버튼 */
+.gradeDetail .submitButton {
+    background: #2b6cb0;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+
+.gradeDetail .submitButton:hover {
+    background: #2a5298;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(43, 108, 176, 0.3);
+}
+
+/* 취소/목록 버튼 */
+.gradeDetail .cancelButton {
+    background: #718096;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+
+.gradeDetail .cancelButton:hover {
+    background: #4a5568;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(113, 128, 150, 0.3);
+}
+
+/* ==========================================================================
+   특별 스타일링
+   ========================================================================== */
+
+/* 학번 필드 - 읽기 전용 강조 */
+.gradeDetail input[name="user.userNo"] {
+    background-color: #e2e8f0 !important;
+    font-weight: 600;
+    color: #2d3748 !important;
+}
+
+/* 주소 관련 특별 스타일 */
+.gradeDetail tr:has(th:contains("우편번호")) .tableTd {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gradeDetail tr:has(th:contains("우편번호")) .inputField {
+    flex: 1;
+}
+
+/* 필수 입력 필드 표시 (선택사항) */
+.gradeDetail .required::after {
+    content: " *";
+    color: #e53e3e;
+    font-weight: bold;
+}
+
+/* ==========================================================================
+   반응형 디자인
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+    .gradeDetail {
+        max-width: 100%;
+        padding: 16px;
+    }
+    
+    .gradeDetail .pageTitle {
+        font-size: 1.5rem;
+        padding: 16px 20px;
+    }
+}
+
+@media (max-width: 992px) {
+    .gradeDetail .defaultTable {
+        font-size: 0.85rem;
+    }
+    
+    .gradeDetail .tableTh,
+    .gradeDetail .tableTd {
+        padding: 5px 16px;
+    }
+    
+    .gradeDetail .tableTh {
+        width: 18%;
+    }
+}
+
+@media (max-width: 768px) {
+    .gradeDetail {
+        padding: 12px;
+    }
+    
+    .gradeDetail .pageTitle {
+        font-size: 1.25rem;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+    }
+    
+    .gradeDetail .defaultTable {
+        font-size: 0.8rem;
+    }
+    
+    .gradeDetail .tableTh,
+    .gradeDetail .tableTd {
+        padding: 5px 12px;
+    }
+    
+    .gradeDetail .tableTh {
+        width: 25%;
+    }
+    
+    .gradeDetail .inputField,
+    .gradeDetail .selectBox {
+        font-size: 0.8rem;
+        padding: 8px 10px;
+    }
+    
+    .gradeDetail .searchButton {
+        font-size: 0.8rem;
+        padding: 8px 12px;
+        min-width: 100px;
+    }
+    
+    .gradeDetail .submitButton,
+    .gradeDetail .cancelButton {
+        font-size: 0.85rem;
+        padding: 10px 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .gradeDetail {
+        padding: 8px;
+    }
+    
+    .gradeDetail .pageTitle {
+        font-size: 1.125rem;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+    }
+    
+    /* 모바일에서 테이블을 세로 레이아웃으로 변경 */
+    .gradeDetail .defaultTable,
+    .gradeDetail .defaultTable tbody,
+    .gradeDetail .tableRowHover {
+        display: block;
+        width: 100%;
+    }
+    
+    .gradeDetail .tableRowHover {
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        background: #ffffff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .gradeDetail .tableTh,
+    .gradeDetail .tableTd {
+        display: block;
+        width: 100%;
+        text-align: left;
+        border: none;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 5px 12px;
+    }
+    
+    .gradeDetail .tableTh {
+        background: #f7fafc;
+        font-weight: 600;
+        color: #2d3748;
+        border-radius: 4px 4px 0 0;
+    }
+    
+    .gradeDetail .tableTd {
+        background: #ffffff;
+        padding: 8px;
+    }
+    
+    .gradeDetail .tableTd:last-child {
+        border-radius: 0 0 4px 4px;
+    }
+    
+    /* 우편번호 행 특별 처리 */
+    .gradeDetail tr:has(th:contains("우편번호")) .tableTd {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .gradeDetail tr:has(th:contains("우편번호")) .inputField {
+        flex: none;
+        width: 100%;
+    }
+    
+    .gradeDetail .searchButton {
+        width: 100%;
+        margin-top: 8px;
+    }
+    
+    /* 버튼 영역 */
+    .gradeDetail div[style*="margin-top"] {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 10px;
+        margin-top: 16px !important;
+    }
+    
+    .gradeDetail .submitButton,
+    .gradeDetail .cancelButton {
+        float: none !important;
+        margin: 0 !important;
+        width: 100%;
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+}
+
+/* ==========================================================================
+   접근성 및 사용성 개선
+   ========================================================================== */
+
+/* 포커스 표시 개선 */
+.gradeDetail .inputField:focus,
+.gradeDetail .selectBox:focus,
+.gradeDetail .searchButton:focus,
+.gradeDetail .submitButton:focus,
+.gradeDetail .cancelButton:focus {
+    outline: 2px solid #4299e1;
+    outline-offset: 2px;
+}
+
+/* 버튼 비활성화 상태 */
+.gradeDetail .submitButton:disabled,
+.gradeDetail .cancelButton:disabled {
+    background: #cbd5e0;
+    color: #a0aec0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 로딩 상태 (선택사항) */
+.gradeDetail .loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.gradeDetail .loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Container for the input and icon */
+.input-with-icon {
+    position: relative; /* This is crucial for positioning the icon inside */
+    width: 100%; /* Ensures the container takes up the full available width */
+    display: inline-block; /* Helps the container behave correctly in the layout */
+}
+
+/* Styling for the input field itself */
+.input-with-icon .inputField {
+    width: 100%; /* Make the input fill its container */
+    padding-right: 2.5rem; /* **Important:** Create space for the icon on the right inside the input */
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total width */
+}
+
+/* Styling for the magnifying glass icon */
+.search-icon {
+    position: absolute; /* Takes the icon out of the normal flow for precise placement */
+    right: 0.8rem; /* Adjust this value to control the icon's distance from the right edge */
+    top: 50%; /* Moves the icon's top edge to the vertical middle of its parent */
+    transform: translateY(-50%); /* **Crucial:** Shifts the icon up by half its own height to perfectly center it vertically */
+    cursor: pointer; /* Changes the mouse cursor to a pointer when hovering, indicating it's clickable */
+    color: #888; /* Sets the color of the icon */
+    font-size: 1.2rem; /* Sets the size of the icon */
+    pointer-events: all; /* Ensures the icon is clickable, even if visually within the input area */
+}
+
+/* Hover effect for the icon */
+.search-icon:hover {
+    color: #555; /* Darkens the icon when hovered over */
+}

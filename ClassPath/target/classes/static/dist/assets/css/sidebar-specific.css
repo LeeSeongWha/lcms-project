@@ -1,0 +1,389 @@
+/* Sidebar 전용 스타일 - 다른 파일에 영향 없이 독립적으로 작동 */
+
+
+
+
+
+
+
+
+
+.sidebar .logo-header {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+/*     background-color: #203A8A !important; */
+    border-bottom: 1px solid #e9ecef;
+}
+
+.sidebar .nav-item > a[aria-expanded="false"] {
+    background-color: transparent !important;
+}
+
+.sidebar .logo-header .logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.sidebar .logo-header .navbar-brand {
+    max-height: 50px;
+    width: auto;
+}
+
+.sidebar .nav-toggle,
+.sidebar .topbar-toggler {
+    background: none;
+    border: none;
+    color: #ffffff;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar .nav-toggle:hover,
+.sidebar .topbar-toggler:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 역할 선택기 */
+.sidebar .role-selector {
+    padding: 15px;
+    border-bottom: 1px solid #e9ecef;
+    background-color: #f8f9fa;
+}
+
+.sidebar .role-selector .form-select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #333333;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sidebar .role-selector .form-select:focus {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.25);
+    outline: none;
+}
+
+/* 사이드바 래퍼 */
+.sidebar .sidebar-wrapper {
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+}
+
+.sidebar .sidebar-content {
+    padding: 0;
+}
+
+/* 네비게이션 기본 스타일 */
+.sidebar .nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar .nav-secondary {
+    padding: 10px 0;
+}
+
+/* 네비게이션 아이템 */
+.sidebar .nav-item {
+    margin: 0;
+    position: relative;
+}
+
+/* 메인 네비게이션 링크 */
+.sidebar .nav-item > a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #333333;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    background-color: transparent;
+    position: relative;
+}
+
+.sidebar .nav-item > a i {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+}
+
+.sidebar .nav-item > a p {
+    margin: 0;
+    flex: 1;
+    transition: color 0.3s ease;
+}
+
+.sidebar .nav-item > a .caret {
+    font-size: 12px;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* 호버 효과 */
+.sidebar .nav-item > a:hover {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(59, 130, 246, 0.1));
+    color: #7c3aed;
+    transform: translateX(2px);
+}
+
+.sidebar .nav-item > a:hover i,
+.sidebar .nav-item > a:hover p,
+.sidebar .nav-item > a:hover .caret {
+    color: #7c3aed;
+}
+
+/* Active 상태 */
+.sidebar .nav-item.active > a {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(59, 130, 246, 0.15));
+    color: #7c3aed;
+    border-left: 4px solid #7c3aed;
+    padding-left: 16px;
+}
+
+.sidebar .nav-item.active > a i,
+.sidebar .nav-item.active > a p,
+.sidebar .nav-item.active > a .caret {
+    color: #7c3aed;
+}
+
+/* 펼쳐진 상태의 caret */
+.sidebar .nav-item > a[aria-expanded="true"] .caret {
+    transform: rotate(180deg);
+}
+
+/* 콜랩스 컨테이너 */
+.sidebar .collapse {
+    background-color: #f8f9fa;
+    border-left: 2px solid #e9ecef;
+    margin-left: 20px;
+    transition: all 0.3s ease;
+}
+
+.sidebar .collapse.show {
+    border-left-color: rgba(124, 58, 237, 0.3);
+}
+
+/* 서브 네비게이션 */
+.sidebar .nav-collapse {
+    list-style: none;
+    padding: 5px 0;
+    margin: 0;
+}
+
+.sidebar .nav-collapse .nav-item {
+    margin: 0;
+}
+
+.sidebar .nav-collapse .nav-item a {
+    display: block;
+    padding: 10px 20px 10px 40px;
+    color: #666666;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 400;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.sidebar .nav-collapse .nav-item a .sub-item {
+    display: block;
+    transition: color 0.3s ease;
+}
+
+/* 서브 메뉴 호버 효과 */
+.sidebar .nav-collapse .nav-item a:hover {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(59, 130, 246, 0.08));
+    color: #7c3aed;
+    padding-left: 42px;
+}
+
+.sidebar .nav-collapse .nav-item a:hover .sub-item {
+    color: #7c3aed;
+}
+
+/* 서브 메뉴 Active 상태 */
+.sidebar .nav-collapse .nav-item.active a {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.12), rgba(59, 130, 246, 0.12));
+    color: #7c3aed;
+    border-left: 3px solid #7c3aed;
+    padding-left: 37px;
+}
+
+.sidebar .nav-collapse .nav-item.active a .sub-item {
+    color: #7c3aed;
+    font-weight: 500;
+}
+
+/* 모달 스타일 (알림 보내기) */
+.sidebar ~ .modal .modal-content {
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar ~ .modal .modal-header {
+    background: linear-gradient(135deg, #7c3aed, #3b82f6);
+    color: white;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom: none;
+}
+
+.sidebar ~ .modal .modal-title {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.sidebar ~ .modal .modal-body {
+    padding: 25px;
+}
+
+.sidebar ~ .modal .form-check-input:checked {
+    background-color: #7c3aed;
+    border-color: #7c3aed;
+}
+
+.sidebar ~ .modal .textareaField {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    resize: none;
+}
+
+.sidebar ~ .modal .textareaField:focus {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.25);
+    outline: none;
+}
+
+.sidebar ~ .modal .submitButton {
+    background: linear-gradient(135deg, #7c3aed, #3b82f6);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sidebar ~ .modal .submitButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.sidebar ~ .modal .deleteButton {
+    background-color: #6c757d;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar ~ .modal .deleteButton:hover {
+    background-color: #5a6268;
+}
+
+/* 스크롤바 스타일 */
+.sidebar .scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar .scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.sidebar .scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #7c3aed, #3b82f6);
+    border-radius: 3px;
+}
+
+.sidebar .scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #6d28d9, #2563eb);
+}
+
+/* 반응형 처리 */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .sidebar .nav-item > a {
+        padding: 15px 20px;
+        font-size: 16px;
+    }
+    
+    .sidebar .nav-collapse .nav-item a {
+        padding: 12px 20px 12px 40px;
+        font-size: 14px;
+    }
+}
+
+/* 접근성 개선 */
+.sidebar .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* 포커스 표시 */
+.sidebar .nav-item > a:focus,
+.sidebar .nav-collapse .nav-item a:focus {
+    outline: 2px solid #7c3aed;
+    outline-offset: 2px;
+}
+
+/* 로딩 상태 */
+.sidebar .nav-item.loading > a {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.sidebar .nav-item.loading > a::after {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e9ecef;
+    border-top: 2px solid #7c3aed;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

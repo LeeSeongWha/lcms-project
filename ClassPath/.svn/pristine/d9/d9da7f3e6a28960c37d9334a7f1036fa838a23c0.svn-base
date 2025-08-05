@@ -1,0 +1,19 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%--  
+	파일명 : departmentList.jsp  
+	프로그램명 : 학과 상세 조회
+	설명 : 
+	작성자 : 김규민
+	작성일 : 2025. 07. 04
+--%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+학과 상세 조회 창
+</body>
+</html>

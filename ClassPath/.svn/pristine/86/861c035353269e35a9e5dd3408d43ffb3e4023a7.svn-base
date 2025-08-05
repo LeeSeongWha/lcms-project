@@ -1,0 +1,31 @@
+package kr.or.ddit.pfcp.staff.applyGraduation.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.vo.GraduationRequirementVO;
+import kr.or.ddit.pfcp.staff.applyGraduation.mapper.ApplyGrdMapper;
+
+@Service
+public class ApplyGrdServiceImpl implements ApplyGrdSerive {
+
+	@Autowired
+	private ApplyGrdMapper mapper;
+	
+	
+	@Override
+	public List<GraduationRequirementVO> readGradutionList(Map<String, Object> paramMap) {
+		// TODO Auto-generated method stub
+		return mapper.selectGraduationList(paramMap);
+	}
+
+	@Override
+	public int readTotalGradutionCount(String searchType, String keyword) {
+		// TODO Auto-generated method stub
+		return mapper.selectGraduationCount(searchType, keyword);
+	}
+
+}

@@ -1,0 +1,85 @@
+package kr.or.ddit.common.base;
+
+import java.util.HashMap;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+public class ParamMap extends HashMap<String,Object> {
+
+	public static ParamMap init() { 
+		return new ParamMap(); 
+	}
+	
+	public String getString(String key) {
+		Object object = this.get(key);
+		
+		if(object==null) {
+			return null; 
+		} else {
+			return String.valueOf(object); 
+		}
+	}
+
+	public ParamPage getPageInfo() {
+		return (ParamPage) this.get("pageInfo");
+	}
+	
+	public static ParamMap init(HttpServletRequest request) {
+		if(request==null) { 
+			return null; 
+		}
+		
+		ParamMap param = new ParamMap(); 
+		
+		String pageNo = request.getParameter("pageNo");
+		String pageSize = request.getParameter("pageSize");
+		
+		ParamPage pageInfo =  new ParamPage(pageNo, pageSize);
+		param.put("pageInfo",pageInfo); // ${pageInfo.startIndex}, ${pageInfo.endIndex}
+		
+		return param;
+	}
+	
+	public static class ParamPage {
+		private int pageNo = 1;
+		private int pageSize = 10;  // 10
+		private int startIndex = 1;
+		private int endIndex = 1; 
+
+		public ParamPage(String pageNo, String pageSize) {
+			
+			if(pageNo!=null) {
+				this.pageNo = Integer.parseInt(pageNo);
+			}
+			
+			if(pageSize!=null) {
+				this.pageSize = Integer.parseInt(pageSize);
+			}
+			
+			startIndex = (this.pageNo-1)*this.pageSize; 
+			endIndex = (this.pageNo)*this.pageSize; 
+			
+			
+			// 첫번째 조회 번호 // 1
+			// 마지막 조회 번호 // 10
+			
+		}
+		public int getPageNo() {
+			return pageNo;
+		}
+
+		public void setPageNo(int pageNo) {
+			this.pageNo = pageNo;
+		}
+
+		public int getPageSize() {
+			return pageSize;
+		}
+
+		public void setPageSize(int pageSize) {
+			this.pageSize = pageSize;
+		}
+	}
+	
+	
+}

@@ -1,0 +1,44 @@
+package kr.or.ddit.pfcp.staff.college.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import kr.or.ddit.pfcp.common.vo.DepartmentVO;
+import kr.or.ddit.pfcp.staff.college.mapper.DepartmentMapper;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class DepartmentServiceImpl implements DepartmentService {
+	private final DepartmentMapper mapper;
+	
+
+	@Override
+	public List<DepartmentVO> readDepartmentByCollege(String departmentNo) {
+		return mapper.selectAllDepartmentList(departmentNo);
+	}
+	
+	@Override
+	public DepartmentVO readDepartment(String departmentNo) {
+		return mapper.selectDepartment(departmentNo);
+	}
+	
+	@Override
+	@Transactional
+	public int createDepartment(DepartmentVO department) {
+		return mapper.insertDepartment(department);
+	}
+
+	@Override
+	public void modifyDepartment(DepartmentVO department) {
+		mapper.updateDepartment(department);
+	}
+
+	@Override
+	public void removeDepartment(String departmentNo) {
+		mapper.deleteDepartment(departmentNo);
+	}
+
+}

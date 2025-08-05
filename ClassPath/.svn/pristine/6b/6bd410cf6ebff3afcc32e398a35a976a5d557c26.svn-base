@@ -1,0 +1,13 @@
+package kr.or.ddit.pfcp.student.statistics.mapper;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.ibatis.annotations.Mapper;
+import kr.or.ddit.pfcp.common.vo.StudentStatisticsVO;
+
+@Mapper
+public interface StudentStatisticsMapper {
+//  public List<StudentStatisticsVO> selectAttendanceStatList(String studentId);
+  public List<Map<String, Object>> selectAttendanceStatList(String studentId);
+}

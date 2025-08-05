@@ -1,0 +1,28 @@
+package kr.or.ddit.pfcp.student.lecture.grade.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.vo.LectureEnrVO;
+import kr.or.ddit.pfcp.common.vo.SemesterVO;
+import kr.or.ddit.pfcp.student.lecture.grade.mapper.StudentGradeMapper;
+
+@Service(value = "studentGradeService")
+public class StudentGradeServiceImpl implements StudentGradeService {
+	@Autowired
+	private StudentGradeMapper studentGradeMapper;
+	
+	@Override
+	public List<LectureEnrVO> readStudentGradeList(String studentNo) {
+		
+		return studentGradeMapper.selectStudentGradeList(studentNo);
+	}
+
+	@Override
+	public List<SemesterVO> readSemesterList() {
+		
+		return studentGradeMapper.selectSemesterList();
+	}
+}

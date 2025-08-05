@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.subject.mapper.StaffSubjectMapper">
+	<select id="selectLectureReqList">
+		SELECT REQ_NO
+	           , SUBJECT_CODE
+	           , SUBJECT_NAME
+	           , USER_NO
+	           , USER_NAME
+	           , PRE_DAY
+	           , PRE_TIME
+	           , PRE_CLASSRM
+	           , STATUS
+	           , REJ_REASON
+	           , REQ_DATE
+	           , MAX_CAPACITY
+	           , FILE_REF_NO
+	           , LEC_NAME
+	           , LEC_CATEGORY
+	      FROM LECTURE_REQ
+	NATURAL JOIN SUBJECT
+	NATURAL JOIN TB_USER
+	     WHERE STATUS='대기'
+	</select>
+</mapper>

@@ -1,0 +1,113 @@
+/**
+ * 
+ */
+
+function findUserId() {
+	const name = document.getElementById('findIdName').value;
+	const birth = document.getElementById('findBirth').value;
+
+	if (!name || !birth) {
+		alert('이름과 학번을 입력해주세요.');
+		return;
+	}
+
+	// AJAX 요청을 통해 서버에 아이디 찾기 요청
+	// 여기서는 예시로 간단한 응답을 보여줍니다
+
+	// 실제 구현시에는 다음과 같이 AJAX 요청을 보내면 됩니다:
+	/*
+	fetch('/findUserId', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			name: name,
+			email: email,
+			phone: phone
+		})
+	})
+	.then(response => response.json())
+	.then(data => {
+		if (data.success) {
+			document.getElementById('findIdResult').innerHTML = 
+				'찾은 아이디: <strong>' + data.userId + '</strong>';
+			document.getElementById('findIdResult').style.display = 'block';
+		} else {
+			document.getElementById('findIdResult').innerHTML = 
+				'일치하는 정보를 찾을 수 없습니다.';
+			document.getElementById('findIdResult').className = 'alert alert-warning';
+			document.getElementById('findIdResult').style.display = 'block';
+		}
+	})
+	.catch(error => {
+		console.error('Error:', error);
+		alert('오류가 발생했습니다. 다시 시도해주세요.');
+	});
+	*/
+
+	// 임시 응답 (실제로는 위의 AJAX 코드를 사용하세요)
+	setTimeout(() => {
+		document.getElementById('findIdResult').innerHTML =
+			'찾은 아이디: <strong>user123</strong>';
+		document.getElementById('findIdResult').style.display = 'block';
+	}, 1000);
+}
+
+// 비밀번호 찾기 함수
+function findUserPassword() {
+	const userId = document.getElementById('findPasswordId').value;
+	const email = document.getElementById('findPasswordEmail').value;
+
+	if (!userId || !email) {
+		alert('아이디와 이메일을 입력해주세요.');
+		return;
+	}
+
+	// 실제 구현시에는 AJAX 요청을 보내면 됩니다
+	/*
+	fetch('/findUserPassword', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			userId: userId,
+			email: email
+		})
+	})
+	.then(response => response.json())
+	.then(data => {
+		if (data.success) {
+			document.getElementById('findPasswordResult').innerHTML = 
+				'비밀번호 재설정 링크가 이메일로 발송되었습니다.';
+			document.getElementById('findPasswordResult').style.display = 'block';
+		} else {
+			document.getElementById('findPasswordResult').innerHTML = 
+				'일치하는 정보를 찾을 수 없습니다.';
+			document.getElementById('findPasswordResult').className = 'alert alert-warning';
+			document.getElementById('findPasswordResult').style.display = 'block';
+		}
+	});
+	*/
+
+	// 임시 응답 (실제로는 위의 AJAX 코드를 사용하세요)
+	setTimeout(() => {
+		document.getElementById('findPasswordResult').innerHTML =
+			'비밀번호 재설정 링크가 이메일로 발송되었습니다.';
+		document.getElementById('findPasswordResult').style.display = 'block';
+	}, 1000);
+}
+
+// 모달이 닫힐 때 폼 초기화
+document.getElementById('findIdModal').addEventListener('hidden.bs.modal', function() {
+	document.getElementById('findIdForm').reset();
+	document.getElementById('findIdResult').style.display = 'none';
+	document.getElementById('findIdResult').className = 'alert alert-info';
+});
+
+document.getElementById('findPasswordModal').addEventListener('hidden.bs.modal', function() {
+	document.getElementById('findPasswordForm').reset();
+	document.getElementById('findPasswordResult').style.display = 'none';
+	document.getElementById('findPasswordResult').className = 'alert alert-info';
+});

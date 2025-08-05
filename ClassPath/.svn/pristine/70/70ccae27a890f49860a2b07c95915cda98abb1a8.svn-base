@@ -1,0 +1,11 @@
+package kr.or.ddit.pfcp.common.vo;
+
+public class AtchFile {
+
+	private String atchId;
+	private String atchMime;
+	private String atchOriginName;
+	private String atchSaveName;
+	private Integer atchSize;
+	private String atchDate;
+}

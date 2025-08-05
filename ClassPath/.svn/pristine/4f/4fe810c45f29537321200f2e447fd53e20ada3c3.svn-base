@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.professor.exam.mapper.ProfessorExamMapper">
+	<resultMap type="kr.or.ddit.pfcp.common.vo.ExamVO" id="examMap">
+	    <id property="examNo" column="EXAM_NO"/>
+	    <result property="lecNo" column="LEC_NO"/>
+	    <result property="examName" column="EXAM_NAME"/>
+	    <result property="examDate" column="EXAM_DATE"/>
+	    <result property="examType" column="EXAM_TYPE"/>
+	    <result property="examLimit" column="EXAM_LIMIT"/>
+	    <result property="facilityNo" column="FACILITY_NO"/>
+	    
+	    <association property="user" javaType="kr.or.ddit.pfcp.common.vo.UserVO">
+	        <id property="userNo" column="USER_NO"/>
+	        <result property="userName" column="USER_NAME"/>
+	    </association>
+	    
+	    <association property="facility" javaType="kr.or.ddit.pfcp.common.vo.FacilityVO">
+	        <id property="facilityNo" column="FACILITY_NO"/>
+	        <result property="facilityName" column="FACILITY_NAME"/>
+	    </association>
+	</resultMap>
+
+
+	<select id="selectExamList" resultMap="examMap">
+	    SELECT EXAM_NO
+	           , A.LEC_NO
+	           , A.EXAM_NAME
+	           , A.EXAM_DATE
+	           , A.EXAM_TYPE
+	           , A.EXAM_LIMIT
+	           , A.FACILITY_NO
+	           , C.USER_NO
+	           , C.USER_NAME
+	           , D.FACILITY_NO
+	           , D.FACILITY_NAME
+	      FROM EXAM A
+	INNER JOIN LECTURE B ON A.LEC_NO=B.LEC_NO
+	INNER JOIN TB_USER C ON B.USER_NO=C.USER_NO
+	INNER JOIN FACILITY D ON A.FACILITY_NO=D.FACILITY_NO
+	     WHERE C.USER_NO=#{userNo}
+	</select>
+
+	<insert id="insertExam">
+		INSERT INTO EXAM (
+			EXAM_NO
+			, LEC_NO
+			, EXAM_NAME
+			, EXAM_DATE
+			, EXAM_TYPE
+			, EXAM_LIMIT
+			, FACILITY_NO
+			, FILE_REF_NO
+		) VALUES (
+			#{examNo}
+			, #{lecNo}
+			, #{examName}
+			, #{examDate}
+			, #{examType}
+			, #{examLimit}
+			, #{facilityNo}
+			, #{fileRefNo}
+		)
+	</insert>
+	
+	<insert id="insertQuestionAnswer">
+		
+	</insert>
+</mapper>

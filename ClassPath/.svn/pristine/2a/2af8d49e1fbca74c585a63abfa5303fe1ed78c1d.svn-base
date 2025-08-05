@@ -1,0 +1,174 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://www.springframework.org/security/tags"
+	prefix="security"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+.custom-btn-wrapper {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px; /* 버튼 사이 간격 */
+	margin-top: 20px;
+}
+
+.custom-btn {
+	padding: 10px 24px;
+	font-size: 16px;
+	font-weight: bold;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.btn-save {
+	background-color: #0d6efd; /* Bootstrap 기본 파랑 */
+	color: white;
+}
+
+.btn-cancel {
+	background-color: #6c757d; /* Bootstrap 기본 회색 */
+	color: white;
+}
+
+.btn-save:hover {
+	background-color: #0b5ed7;
+}
+
+.btn-cancel:hover {
+	background-color: #5c636a;
+}
+
+.mypage-form-label{
+	font-weight: 600;
+}
+</style>
+
+</head>
+<body>
+	<div class="card">
+		<div class="card-header">
+			<h5>개인정보 수정</h5>
+		</div>
+		<div class="card-body">
+			<div class="row">
+				<form:form modelAttribute="user" method="post"
+					action="/mypage/updateProcess.do">
+					<!-- 사용자 번호 (수정 불가) -->
+					<div class="form-group mb-3">
+						<form:label path="userNo" cssClass="mypage-form-label">학번</form:label>
+						<form:input path="userNo" cssClass="form-control" readonly="true" />
+					</div>
+
+					<!-- 이름 -->
+					<div class="form-group mb-3">
+						<form:label path="userName" cssClass="mypage-form-label">이름</form:label>
+						<form:input path="userName" cssClass="form-control"
+							placeholder="이름" />
+					</div>
+
+					<!-- 성별 -->
+					<div class="form-group mb-3">
+						<form:label path="gender" cssClass="mypage-form-label">성별</form:label>
+						<form:select path="gender" cssClass="form-control">
+							<form:option value="">선택</form:option>
+							<form:option value="M">남성</form:option>
+							<form:option value="F">여성</form:option>
+						</form:select>
+					</div>
+
+					<!-- 전화번호 -->
+					<div class="form-group mb-3">
+						<form:label path="userTel" cssClass="mypage-form-label">연락처</form:label>
+						<form:input path="userTel" cssClass="form-control" type="tel"
+							placeholder="연락처" />
+					</div>
+
+					<!-- 우편번호 -->
+					<div class="form-group mb-3">
+						<form:label path="userZip" cssClass="mypage-form-label">우편번호</form:label>
+						<form:input path="userZip" cssClass="form-control"
+							placeholder="우편번호" />
+					</div>
+
+					<!-- 기본주소 -->
+					<div class="form-group mb-3">
+						<form:label path="userAdd1" cssClass="mypage-form-label">기본주소</form:label>
+						<form:input path="userAdd1" cssClass="form-control"
+							placeholder="기본주소" />
+					</div>
+
+					<!-- 상세주소 -->
+					<div class="form-group mb-3">
+						<form:label path="userAdd2" cssClass="mypage-form-label">상세주소</form:label>
+						<form:input path="userAdd2" cssClass="form-control"
+							placeholder="상세주소" />
+					</div>
+
+					<!-- 이메일 -->
+					<div class="form-group mb-3">
+						<form:label path="userEmail" cssClass="mypage-form-label">이메일</form:label>
+						<form:input path="userEmail" cssClass="form-control" type="email"
+							placeholder="이메일" />
+					</div>
+
+					<!-- 은행코드 -->
+					<div class="form-group mb-3">
+						<form:label path="bankCd" cssClass="mypage-form-label">은행명</form:label>
+						<form:select path="bankCd" cssClass="form-control" id="bankCd">
+							<form:option value="">선택</form:option>
+						</form:select>
+					</div>
+
+					<!-- 계좌번호 -->
+					<div class="form-group mb-3">
+						<form:label path="userBankno" cssClass="mypage-form-label">계좌번호</form:label>
+						<form:input path="userBankno" cssClass="form-control"
+							placeholder="계좌번호" />
+					</div>
+
+					<!-- 버튼 -->
+					<div class="form-group mb-3">
+						<div class="custom-btn-wrapper">
+							<button type="submit" class="custom-btn btn-save">저장</button>
+							<button type="button" class="custom-btn btn-cancel"
+								onclick="history.back()">취소</button>
+						</div>
+					</div>
+				</form:form>
+			</div>
+		</div>
+	</div>
+	<script>
+	const initBank = '${user.bankCd}';
+
+	document.addEventListener("DOMContentLoaded", () => {
+	  const bankCdSelect = document.getElementById("bankCd");
+
+	  axios.get("/staff/professorManagement/bankCodeList.do")
+	    .then(resp => {
+	      const bankCodeList = resp.data;
+
+	      if (Array.isArray(bankCodeList)) {
+	        bankCodeList.forEach(item => {
+	          const option = document.createElement("option");
+	          option.value = item.typeCode;
+	          option.textContent = item.typeName;
+	          bankCdSelect.appendChild(option);
+	        });
+
+	        if (initBank) {
+	          bankCdSelect.value = initBank;
+	        }
+	      }
+	    })
+	    .catch(err => console.error("은행 코드 로딩 오류:", err));
+	});
+	</script>
+</body>
+</html>

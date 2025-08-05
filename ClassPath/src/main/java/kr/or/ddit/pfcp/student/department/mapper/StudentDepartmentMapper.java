@@ -1,0 +1,9 @@
+package kr.or.ddit.pfcp.student.department.mapper;
+
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface StudentDepartmentMapper {
+  public String departmentName(String userName);
+  public String selectDepartmentNo(String userName);
+}

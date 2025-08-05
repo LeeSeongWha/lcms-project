@@ -1,0 +1,185 @@
+package kr.or.ddit.pfcp.staff.studentmanage.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.security.Principal;
+import java.util.List;
+
+import kr.or.ddit.pfcp.common.vo.DepartmentVO;
+import kr.or.ddit.pfcp.common.vo.ProfessorVO;
+import kr.or.ddit.pfcp.common.vo.StudentVO;
+import kr.or.ddit.pfcp.common.vo.UserVO;
+import kr.or.ddit.pfcp.staff.professormanage.service.StaffProfessorManageService;
+import kr.or.ddit.pfcp.staff.studentmanage.service.StudentmanageService;
+import kr.or.ddit.validate.utils.ErrorsUtils;
+
+/**
+ * @author YSM
+ * @since 250628
+ */
+@Controller
+@RequestMapping("/staff/studentmanage")
+public class StudentmanageController {
+	
+	static final String MODELNAME = "student";
+	
+	@ModelAttribute(MODELNAME)
+	public StudentVO student() {
+		return new StudentVO();
+	}
+	
+	@Autowired
+	private ErrorsUtils errorsUtils;
+	
+	@Autowired
+	private StudentmanageService service;
+	
+	
+	
+	/**
+	 * 학생 목록 전체 조회
+	 * @return
+	 */
+	@GetMapping("studentList.do")
+	public String studentListUI(Model model) {
+		List<StudentVO> student = service.readStudentList();
+		model.addAttribute("student", student);
+		
+		int totalCount = service.readTotalCount();
+		model.addAttribute("totalCount", totalCount);
+		
+		return "pfcp/staff/studentmanage/studentList";
+	}
+	
+	/**
+	 * 학생 상세 조회
+	 * @return
+	 */
+	@GetMapping("studentDetail.do")
+	public String studentDetailUI(
+			@RequestParam String what,
+			Model model) {
+		StudentVO student = service.readStudent(what);
+		model.addAttribute("student", student);
+		return "pfcp/staff/studentmanage/studentDetail";
+	}
+	
+	/** 
+	 * 학생 등록
+	 * @return
+	 */
+	@GetMapping("studentInsert.do")
+	public String studentInsertFormUI(
+			Principal principal
+	) {
+		return "pfcp/staff/studentmanage/studentInsert";
+	}
+	
+	/** 
+	 * 학생 등록 fromProcess
+	 * @return
+	 */
+	@PostMapping("studentInsertProcess.do")
+	public String studentInsertFormProcess(
+		@ModelAttribute(MODELNAME) StudentVO student,
+		BindingResult errors,
+		RedirectAttributes redirectAttributes
+	) {
+		String lvn;
+		
+		if(!errors.hasErrors()) {
+			service.createStudent(student);
+			
+			lvn = "redirect:/staff/studentmanage/studentList.do";
+		} else {
+			redirectAttributes.addFlashAttribute(MODELNAME, student);
+			
+			MultiValueMap<String, String> customErrors = errorsUtils.errorsToMap(errors);
+			redirectAttributes.addFlashAttribute("errors", customErrors);
+			
+			lvn = "redirect:/staff/studentmanagement/studentInsert.do";
+		}
+		return lvn;
+	}
+	
+	/**
+	 * 학생 상세 정보 수정
+	 * @return
+	 */
+	@GetMapping("studentUpdate.do")
+	public String studentUpdateUI(
+		String what,
+		Model model
+	) {
+		StudentVO student = service.readStudent(what);
+		model.addAttribute("student", student);
+		model.addAttribute("mode", "edit");
+		return "pfcp/staff/studentmanage/studentDetail";
+	}
+	
+	/**
+	 * 학생 상세 정보 수정 fromProcess
+	 * @return
+	 */
+	@PostMapping("studentUpdateProcess.do")
+	public String studentUpdateProcessUI(
+		String what,
+		@ModelAttribute(MODELNAME) StudentVO student,
+		BindingResult errors,
+		RedirectAttributes redirectAttributes
+	) {
+		String lvn;
+		
+		student.setUserNo(student.getUser().getUserNo());
+		
+		if(!errors.hasErrors()) {
+			service.modifyStudent(student);
+			lvn = "redirect:/staff/studentmanage/studentList.do";
+		}else {
+			redirectAttributes.addFlashAttribute(MODELNAME, student);
+			MultiValueMap<String, String> customErrors = errorsUtils.errorsToMap(errors);
+			redirectAttributes.addFlashAttribute("errors", customErrors);
+			lvn= "redirect:/staff/studentmanage/studentUpdate.do?what="+what;
+		}
+		
+		
+		return lvn;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

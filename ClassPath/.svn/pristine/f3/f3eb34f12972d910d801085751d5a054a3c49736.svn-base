@@ -1,0 +1,198 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+
+<%-- 이 파일은 AJAX로 로드될 시간표 테이블 부분만 포함합니다. --%>
+<%-- Controller에서 전달받는 professor (사용되지 않음)와 consultRT, mode 변수를 사용합니다. --%>
+
+
+
+<h3 class="text-xl font-semibold text-gray-800 mb-6">예약 가능 시간표</h3>
+<div class="overflow-x-auto">
+    <table class="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+        <thead>
+            <tr class="bg-gray-50">
+                <th class="border border-gray-300 p-3 text-center font-semibold text-gray-700 bg-gray-100">시간</th>
+                <th class="border border-gray-300 p-3 text-center font-semibold text-gray-700">월요일</th>
+                <th class="border border-gray-300 p-3 text-center font-semibold text-gray-700">화요일</th>
+                <th class="border border-gray-300 p-3 text-center font-semibold text-gray-700">수요일</th>
+                <th class="border border-gray-300 p-3 text-center font-semibold text-gray-700">목요일</th>
+                <th class="border border-gray-300 p-3 text-center font-semibold text-gray-700">금요일</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="hour" begin="9" end="17">
+                <tr>
+                    <td class="border border-gray-300 p-3 text-center font-medium bg-gray-50">
+                        ${hour}:00-${hour+1}:00</td>
+                    
+                    <td
+                        class="border border-gray-300 p-3 text-center relative
+                        <c:set var="found" value="false"/>
+                        <c:forEach items="${consultRT}" var="item">
+                        <c:if test="${item.reservationDay eq 'MON' && item.startHour eq hour}">
+                        <c:set var="found" value="true"/>
+                        </c:if>
+                        </c:forEach>
+                        <c:choose>
+                        <c:when test="${found}">bg-blue-200 hover:bg-blue-300</c:when>
+                        <c:otherwise>bg-white hover:bg-gray-100</c:otherwise>
+                        </c:choose>
+                        <c:if test="${mode == 'edit'}"> cursor-pointer transition-colors duration-200</c:if>
+                        "
+                        <c:if test="${mode == 'edit'}">
+                            onclick="toggleTimeSlot(this, 'MON', ${hour})"
+                        </c:if>
+                        data-day="MON" data-hour="${hour}">
+                        <c:set var="found" value="false" />
+                        <c:forEach items="${consultRT}" var="item">
+                            <c:if test="${item.reservationDay eq 'MON' && item.startHour eq hour}">
+                                <span class="text-blue-700 font-medium">예약가능</span>
+                                <c:set var="found" value="true" />
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${!found}">
+                            <span class="text-gray-400">-</span>
+                        </c:if>
+                    </td>
+                    
+                    <td
+                        class="border border-gray-300 p-3 text-center relative
+                        <c:set var="found" value="false"/>
+                        <c:forEach items="${consultRT}" var="item">
+                        <c:if test="${item.reservationDay eq 'TUE' && item.startHour eq hour}">
+                        <c:set var="found" value="true"/>
+                        </c:if>
+                        </c:forEach>
+                        <c:choose>
+                        <c:when test="${found}">bg-blue-200 hover:bg-blue-300</c:when>
+                        <c:otherwise>bg-white hover:bg-gray-100</c:otherwise>
+                        </c:choose>
+                        <c:if test="${mode == 'edit'}"> cursor-pointer transition-colors duration-200</c:if>
+                        "
+                        <c:if test="${mode == 'edit'}">
+                            onclick="toggleTimeSlot(this, 'TUE', ${hour})"
+                        </c:if>
+                        data-day="TUE" data-hour="${hour}">
+                        <c:set var="found" value="false" />
+                        <c:forEach items="${consultRT}" var="item">
+                            <c:if test="${item.reservationDay eq 'TUE' && item.startHour eq hour}">
+                                <span class="text-blue-700 font-medium">예약가능</span>
+                                <c:set var="found" value="true" />
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${!found}">
+                            <span class="text-gray-400">-</span>
+                        </c:if>
+                    </td>
+                    
+                    <td
+                        class="border border-gray-300 p-3 text-center relative
+                        <c:set var="found" value="false"/>
+                        <c:forEach items="${consultRT}" var="item">
+                        <c:if test="${item.reservationDay eq 'WED' && item.startHour eq hour}">
+                        <c:set var="found" value="true"/>
+                        </c:if>
+                        </c:forEach>
+                        <c:choose>
+                        <c:when test="${found}">bg-blue-200 hover:bg-blue-300</c:when>
+                        <c:otherwise>bg-white hover:bg-gray-100</c:otherwise>
+                        </c:choose>
+                        <c:if test="${mode == 'edit'}"> cursor-pointer transition-colors duration-200</c:if>
+                        "
+                        <c:if test="${mode == 'edit'}">
+                            onclick="toggleTimeSlot(this, 'WED', ${hour})"
+                        </c:if>
+                        data-day="WED" data-hour="${hour}">
+                        <c:set var="found" value="false" />
+                        <c:forEach items="${consultRT}" var="item">
+                            <c:if test="${item.reservationDay eq 'WED' && item.startHour eq hour}">
+                                <span class="text-blue-700 font-medium">예약가능</span>
+                                <c:set var="found" value="true" />
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${!found}">
+                            <span class="text-gray-400">-</span>
+                        </c:if>
+                    </td>
+                    
+                    <td
+                        class="border border-gray-300 p-3 text-center relative
+                        <c:set var="found" value="false"/>
+                        <c:forEach items="${consultRT}" var="item">
+                        <c:if test="${item.reservationDay eq 'THU' && item.startHour eq hour}">
+                        <c:set var="found" value="true"/>
+                        </c:if>
+                        </c:forEach>
+                        <c:choose>
+                        <c:when test="${found}">bg-blue-200 hover:bg-blue-300</c:when>
+                        <c:otherwise>bg-white hover:bg-gray-100</c:otherwise>
+                        </c:choose>
+                        <c:if test="${mode == 'edit'}"> cursor-pointer transition-colors duration-200</c:if>
+                        "
+                        <c:if test="${mode == 'edit'}">
+                            onclick="toggleTimeSlot(this, 'THU', ${hour})"
+                        </c:if>
+                        data-day="THU" data-hour="${hour}">
+                        <c:set var="found" value="false" />
+                        <c:forEach items="${consultRT}" var="item">
+                            <c:if test="${item.reservationDay eq 'THU' && item.startHour eq hour}">
+                                <span class="text-blue-700 font-medium">예약가능</span>
+                                <c:set var="found" value="true" />
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${!found}">
+                            <span class="text-gray-400">-</span>
+                        </c:if>
+                    </td>
+                    
+                    <td
+                        class="border border-gray-300 p-3 text-center relative
+                        <c:set var="found" value="false"/>
+                        <c:forEach items="${consultRT}" var="item">
+                        <c:if test="${item.reservationDay eq 'FRI' && item.startHour eq hour}">
+                        <c:set var="found" value="true"/>
+                        </c:if>
+                        </c:forEach>
+                        <c:choose>
+                        <c:when test="${found}">bg-blue-200 hover:bg-blue-300</c:when>
+                        <c:otherwise>bg-white hover:bg-gray-100</c:otherwise>
+                        </c:choose>
+                        <c:if test="${mode == 'edit'}"> cursor-pointer transition-colors duration-200</c:if>
+                        "
+                        <c:if test="${mode == 'edit'}">
+                            onclick="toggleTimeSlot(this, 'FRI', ${hour})"
+                        </c:if>
+                        data-day="FRI" data-hour="${hour}">
+                        <c:set var="found" value="false" />
+                        <c:forEach items="${consultRT}" var="item">
+                            <c:if test="${item.reservationDay eq 'FRI' && item.startHour eq hour}">
+                                <span class="text-blue-700 font-medium">예약가능</span>
+                                <c:set var="found" value="true" />
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${!found}">
+                            <span class="text-gray-400">-</span>
+                        </c:if>
+                    </td>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-6 flex justify-center space-x-6">
+    <div class="flex items-center">
+        <div class="w-4 h-4 bg-blue-200 border border-gray-300 rounded mr-2"></div>
+        <span class="text-sm text-gray-600">예약 가능 시간</span>
+    </div>
+    <div class="flex items-center">
+        <div class="w-4 h-4 bg-white border border-gray-300 rounded mr-2"></div>
+        <span class="text-sm text-gray-600">예약 불가능 시간</span>
+    </div>
+    <c:if test="${mode == 'edit'}">
+        <div class="flex items-center">
+            <div class="w-4 h-4 bg-green-200 border border-gray-300 rounded mr-2"></div>
+            <span class="text-sm text-gray-600">새로 추가된 시간</span>
+        </div>
+    </c:if>
+</div>

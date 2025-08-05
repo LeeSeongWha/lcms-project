@@ -1,0 +1,5 @@
+package kr.or.ddit.pfcp.staff.reservationTimestamp.consult.service;
+
+public class ConsultRTServiceImpl implements ConsultRTService {
+
+}

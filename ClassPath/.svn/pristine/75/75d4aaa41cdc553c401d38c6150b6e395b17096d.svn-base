@@ -1,0 +1,103 @@
+<%--
+ * == 개정이력(Modification Information) ==
+ * 수정일			수정자	수정내용
+ * ========================================
+ * 2025-07-14 	김태수	최초 생성
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+<title>강의관리</title>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat2.css">
+<link rel="stylesheet" href="/dist/assets/css/attendclass.css">
+<link rel="stylesheet" href="/dist/assets/css/semester.css">
+<div class="section">
+	<div class="sectionHeaderLine">
+		<div>
+			<h4 class="sectionHeaderTitle">강의관리</h4>
+		</div>
+	</div>
+    <div class="lecture-split-container">
+		<div class="semester-section semester-2025-1">
+			<div class="semester-section-title">2025년 1학기 </div>
+			<c:set var="displayedCount1stSem" value="0" />
+			<c:choose>
+				<c:when test="${not empty lecture}">
+					<c:forEach items="${lecture}" var="lec">
+						<c:if test="${lec.status eq '승인' and lec.semesterNo eq '2025_1'}">
+							<c:url value="/professor/attendclass/attendclassDetail.do" var="detailURL">
+								<c:param name="no" value="${lec.reqNo}" />
+							</c:url>
+							<a href="${detailURL}" class="lecture-item-link">
+								<div class="lecture-item-content">
+									<div class="lecture-info-group">
+										<div class="lecture-icon-wrapper">
+											<svg xmlns="http://www.w3.org/2000/svg" class="lecture-icon"
+												fill="none" viewBox="0 0 24 24" stroke="currentColor">
+												<path stroke-linecap="round" stroke-linejoin="round"
+													stroke-width="2" d="M9 5l7 7-7 7" />
+											</svg>
+										</div>
+										<div>
+											<span class="lecture-name">${lec.lecName}</span>
+											<p class="lecture-details">
+												・ 교수: ${lec.userName}<br>
+												・ 과목코드: ${lec.subjectCode} <br>
+												・ 과목명: ${lec.subjectName}<br>
+											</p>
+										</div>
+									</div>
+								</div>
+							</a>
+							<c:set var="displayedCount1stSem" value="${displayedCount1stSem + 1}" />
+						</c:if>
+					</c:forEach>
+				</c:when>
+			</c:choose>
+			<c:if test="${displayedCount1stSem == 0}">
+				<div class="no-lecture-message">
+					1학기 승인된 강의 목록이 존재하지 않습니다.
+				</div>
+			</c:if>
+		</div> <div class="semester-section semester-2025-2">
+			<div class="semester-section-title">2025년 2학기</div>
+			<c:set var="displayedCount2ndSem" value="0" />
+			<c:choose>
+				<c:when test="${not empty lecture}">
+					<c:forEach items="${lecture}" var="lec">
+						<c:if test="${lec.status eq '승인' and lec.semesterNo eq '2025_2'}">
+							<c:url value="/professor/attendclass/attendclassDetail.do" var="detailURL">
+								<c:param name="no" value="${lec.reqNo}" />
+							</c:url>
+							<a href="${detailURL}" class="lecture-item-link">
+								<div class="lecture-item-content">
+									<div class="lecture-info-group">
+										<div class="lecture-icon-wrapper">
+											<svg xmlns="http://www.w3.org/2000/svg" class="lecture-icon"
+												fill="none" viewBox="0 0 24 24" stroke="currentColor">
+												<path stroke-linecap="round" stroke-linejoin="round"
+													stroke-width="2" d="M9 5l7 7-7 7" />
+											</svg>
+										</div>
+										<div>
+											<span class="lecture-name">${lec.lecName}</span>
+											<p class="lecture-details">
+												・ 교수: ${lec.userName}<br>
+												・ 과목코드: ${lec.subjectCode} <br>
+												・ 과목명: ${lec.subjectName}<br>
+											</p>
+										</div>
+									</div>
+								</div>
+							</a>
+							<c:set var="displayedCount2ndSem" value="${displayedCount2ndSem + 1}" />
+						</c:if>
+					</c:forEach>
+				</c:when>
+			</c:choose>
+			<c:if test="${displayedCount2ndSem == 0}">
+				<div class="no-lecture-message">
+					2학기 승인된 강의 목록이 존재하지 않습니다.
+				</div>
+			</c:if>
+		</div> </div> </div>

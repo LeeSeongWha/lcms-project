@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.job.mapper.JobRestMapper">
+	<select id="selectAllPosts">
+		SELECT
+		    JOB_ID,
+		    TITLE,
+		    COMPANY_NAME,
+		    LOCATION,
+		    CAREER_LEVEL,
+		    DEADLINE,
+		    CATEGORY,
+		    CREATED_AT,
+		    DESCRIPTION,
+		    IS_ACTIVE,
+		    SOURCE_FROM,
+		    SALARY_START,
+		    SALARY_END,
+		    COMPANY_MAIL,
+		    COMPANY_TEL,
+		    WEBSITE
+		FROM
+		    JOB_POSTING
+		ORDER BY DEADLINE DESC
+	</select>
+	
+	<select id="selectPostDetails" resultType="java.lang.String">
+    SELECT JSON_OBJECT(
+        'JOB_ID' VALUE JP.JOB_ID,
+        'TITLE' VALUE JP.TITLE,
+        'COMPANY_NAME' VALUE JP.COMPANY_NAME,
+        'LOCATION' VALUE JP.LOCATION,
+        'CAREER_LEVEL' VALUE JP.CAREER_LEVEL,
+        'DEADLINE' VALUE TO_CHAR(JP.DEADLINE, 'YYYY-MM-DD'),
+        'CATEGORY' VALUE JP.CATEGORY,
+        'CREATED_AT' VALUE TO_CHAR(JP.CREATED_AT, 'YYYY-MM-DD'),
+        'DESCRIPTION' VALUE JP.DESCRIPTION,
+        'IS_ACTIVE' VALUE JP.IS_ACTIVE,
+        'SOURCE_FROM' VALUE JP.SOURCE_FROM,
+        'SALARY_START' VALUE JP.SALARY_START,
+        'SALARY_END' VALUE JP.SALARY_END,
+        'COMPANY_MAIL' VALUE JP.COMPANY_MAIL,
+		'COMPANY_TEL' VALUE JP.COMPANY_TEL,
+		'WEBSITE' VALUE JP.WEBSITE,
+        
+        'QUALIFICATIONS' VALUE (
+            SELECT JSON_ARRAYAGG(JQ.QUAL_CONTENT)
+            FROM JOB_QUALIFICATION JQ
+            WHERE JQ.JOB_ID = JP.JOB_ID
+        ),
+        
+        'BENEFITS' VALUE (
+            SELECT JSON_ARRAYAGG(JB.BENEFIT_CONTENT)
+            FROM JOB_BENEFIT JB
+            WHERE JB.JOB_ID = JP.JOB_ID
+        )
+    ) AS JOB_DETAILS
+    FROM JOB_POSTING JP
+    WHERE JP.JOB_ID = #{jobId}
+</select>
+	
+	
+
+</mapper>

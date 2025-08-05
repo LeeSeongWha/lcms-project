@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.facility.mapper.FacilityMapper">
+
+<!-- 	<select id="selectFacilityList"> -->
+<!-- 	SELECT -->
+<!-- 	    FACILITY_NO, -->
+<!-- 	    FACILITY_NAME, -->
+<!-- 	    FACILITY_TYPE, -->
+<!-- 	    LOCATION, -->
+<!-- 	    FACILITY_MP, -->
+<!-- 	    FACILITY_STATUS -->
+<!-- 	FROM -->
+<!-- 	    FACILITY -->
+<!-- 	</select> -->
+	
+	<select id="selectFacility">
+	SELECT
+		FACILITY_NO,
+	    FACILITY_NAME,
+	    FACILITY_TYPE,
+	    LOCATION,
+	    FACILITY_MP,
+	    FACILITY_STATUS
+	FROM
+	    FACILITY
+	WHERE FACILITY_NO = #{facilityNo}
+	</select>
+	
+	<insert id="insertFacility">
+		INSERT INTO facility (
+		    FACILITY_NO,
+		    FACILITY_NAME,
+		    FACILITY_TYPE,
+		    LOCATION,
+		    FACILITY_MP,
+		    FACILITY_STATUS
+		) VALUES ( 
+				   'FC' || LPAD(SEQ_FACILITY_NO.NEXTVAL, 8, '0'),
+				   #{facilityName},
+		           #{facilityType},
+		           #{location},
+		           #{facilityMp},
+		           #{facilityStatus} )
+	</insert>
+	
+	<update id="updateFacility">
+		UPDATE FACILITY
+			SET FACILITY_NAME = #{facilityName}
+			    , FACILITY_TYPE = #{facilityType}
+			    , LOCATION = #{location}
+			    , FACILITY_MP = #{facilityMp}
+			    , FACILITY_STATUS = #{facilityStatus}
+			WHERE FACILITY_NO = #{facilityNo}
+	</update>
+	
+	<select id="selectReservationTimestamp" parameterType="String">
+		SELECT
+		    RESERVATION_ID,
+		    RESERVATION_DAY,
+		    START_HOUR,
+		    RESERVATION_TYPE,
+		    USER_NO,
+		    FACILITY_NO
+		FROM
+		    RESERVATION_TIMESTAMP
+		WHERE FACILITY_NO = #{facilityNo}
+	</select>
+	
+<!-- 	시설 목록 전체 조회 -->
+	<select id="selectFacilityList">
+		SELECT A.*
+		    FROM ( 
+		        SELECT ROW_NUMBER() OVER (ORDER BY FACILITY_NO DESC) AS RNUM,
+		               FACILITY_NO,
+		               FACILITY_NAME,
+		               FACILITY_TYPE,
+		               LOCATION,
+		               FACILITY_MP,
+		               FACILITY_STATUS
+		        FROM FACILITY
+		        <where>
+		            <if test="facilityStatus != null and facilityStatus != ''">
+		                AND FACILITY_STATUS = #{facilityStatus}
+		            </if>
+		            <if test="searchType != null and keyword != null and keyword != ''">
+		                <choose>
+		                    <when test="searchType == 'facilityNo'">
+		                        AND FACILITY_NO LIKE '%' || #{keyword} || '%'
+		                    </when>
+		                    <when test="searchType == 'facilityName'">
+		                        AND FACILITY_NAME LIKE '%' || #{keyword} || '%'
+		                    </when>
+		                    <when test="searchType == 'facilityType'">
+		                        AND FACILITY_TYPE LIKE '%' || #{keyword} || '%'
+		                    </when>
+		                    <when test="searchType == 'location'">
+		                        AND LOCATION LIKE '%' || #{keyword} || '%'
+		                    </when>
+		                    <when test="searchType == 'facilityStatus'">
+		                        AND FACILITY_STATUS LIKE '%' || #{keyword} || '%'
+		                    </when>
+		                    <when test="searchType == 'all'">
+		                        AND (FACILITY_NAME LIKE '%' || #{keyword} || '%' 
+		                             OR FACILITY_TYPE LIKE '%' || #{keyword} || '%'
+		                             OR LOCATION LIKE '%' || #{keyword} || '%')
+		                    </when>
+		                </choose>
+		            </if>
+		        </where>
+		    ) A
+		    <![CDATA[
+		    WHERE RNUM >= #{firstRecordIndex} AND RNUM <= #{lastRecordIndex}
+		    ]]>
+	</select>
+	
+	<select id="selectFacilityTotalCountByKeyword">
+	    SELECT COUNT(*)
+	    FROM FACILITY
+	    <where>
+	        <!-- 상태 필터 조건 (정확한 매치) -->
+	        <if test="facilityStatus != null and facilityStatus != ''">
+	            AND FACILITY_STATUS = #{facilityStatus}
+	        </if>
+	        
+	        <!-- 검색 조건 (LIKE 검색) -->
+	        <if test="keyword != null and keyword != ''">
+	            AND (FACILITY_NO LIKE '%' || #{keyword} || '%'
+	                 OR FACILITY_NAME LIKE '%' || #{keyword} || '%'
+	                 OR FACILITY_TYPE LIKE '%' || #{keyword} || '%'
+	                 OR LOCATION LIKE '%' || #{keyword} || '%'
+	                 OR FACILITY_STATUS LIKE '%' || #{keyword} || '%')
+	        </if>
+	    </where>
+	</select>
+	
+	<select id="selectFacilityTotalCount">
+		SELECT COUNT(*) 
+		  FROM FACILITY
+	</select>
+
+</mapper>

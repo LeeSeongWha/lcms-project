@@ -1,0 +1,236 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+	
+<%--
+   파일명 : noticeList.jsp
+   프로그렴명 : 공지사항 전체 조회
+   설 명 : 공지 사항을 카테고리별로 전체 조회[전체/일반/학사/비교과/건의사항/기타]
+   작성자 : 양 수 민
+   작성일 : 2025. 07. 01
+--%>
+
+<style>
+
+.container {
+	max-width: 1000px;
+	margin: auto;
+	background-color: #fff;
+	padding: 30px;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+	color: #2c3e50;
+	border-bottom: 2px solid #e0e0e0;
+	padding-bottom: 10px;
+	margin-bottom: 20px;
+}
+
+.filter-section {
+	display: flex;
+	gap: 0;
+	flex-wrap: wrap;
+	border-bottom: 2px solid #e0e0e0;
+	margin-bottom: 20px;
+}
+
+.filter-section button {
+	padding: 10px 20px;
+	border: none;
+	background-color: transparent;
+	cursor: pointer;
+	transition: 0.2s;
+	border-radius: 8px 8px 0 0;
+	margin-bottom: -2px;
+	position: relative;
+	color: #555;
+	font-size: 1em;
+	outline: none;
+}
+
+.filter-section button.active {
+	background-color: #ffffff;
+	color: #3498db;
+	border-bottom: 2px solid #3498db;
+	font-weight: bold;
+	z-index: 1;
+}
+
+.sub-category-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-bottom: 20px;
+}
+
+.sub-category-buttons button {
+	padding: 8px 16px;
+	border: 1px solid #ccc;
+	background-color: #f9f9f9;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.sub-category-buttons button.active {
+	background-color: #3498db;
+	color: white;
+	border-color: #3498db;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 20px;
+}
+
+th, td {
+	border: 1px solid #ddd;
+	padding: 12px;
+	text-align: left;
+}
+
+th {
+	background-color: #f2f2f2;
+}
+
+td.actions button {
+	margin-right: 5px;
+	padding: 8px 12px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+</style>
+
+<div class="container">
+	<h2>공지 관리</h2>
+
+	<!-- 상단 탭 -->
+	<div class="filter-section">
+		<button class="active" onclick="filterNotices('전체', this)">전체</button>
+		<button onclick="filterNotices('일반', this)">일반</button>
+		<button onclick="filterNotices('학사', this)">학사</button>
+		<button onclick="filterNotices('비교과', this)">비교과</button>
+		<button onclick="filterNotices('건의사항', this)">건의사항</button>
+		<button onclick="filterNotices('기타', this)">기타</button>
+	</div>
+
+	<!-- 학사 소분류 버튼 -->
+	<div id="subCategoryContainer" style="display: none;">
+		<div class="sub-category-buttons">
+			<button class="active" onclick="filterSubCategory('학사전체', this)">학사전체</button>
+			<button onclick="filterSubCategory('수강일정', this)">수강일정</button>
+			<button onclick="filterSubCategory('시험 및 평가 일정', this)">시험 및
+				평가 일정</button>
+			<button onclick="filterSubCategory('학적 변경', this)">학적 변경</button>
+			<button onclick="filterSubCategory('졸업', this)">졸업</button>
+			<button onclick="filterSubCategory('등록금 및 장학금', this)">등록금 및
+				장학금</button>
+			<button onclick="filterSubCategory('방학 및 휴일', this)">방학 및 휴일</button>
+		</div>
+	</div>
+
+	<!-- 공지 목록 테이블 -->
+	<table>
+		<thead>
+			<tr>
+				<th>번호</th>
+				<th>유형</th>
+				<th>소분류</th>
+				<th>제목</th>
+				<th>작성일</th>
+				<th>작업</th>
+			</tr>
+		</thead>
+		<tbody id="noticeTableBody">
+			<!-- JavaScript로 렌더링 -->
+		</tbody>
+	</table>
+</div>
+
+<script>
+  let notices = [];
+
+  function loadNotices() {
+    notices = [
+      {
+        id: 'NTC001',
+        type: '학사',
+        subtype: '수강일정',
+        title: '2025년 2학기 수강신청 안내',
+        content: '수강신청 기간은 8월 1일부터 8월 7일까지입니다.',
+        date: '2025-06-30',
+        attachments: []
+      }
+    ];
+    renderNoticeList(notices);
+  }
+
+  let currentType = '전체';
+  let currentSubType = '학사전체';
+
+  function renderNoticeList(list) {
+    const tbody = document.getElementById('noticeTableBody');
+    tbody.innerHTML = '';
+
+    if (list.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">조회된 공지가 없습니다.</td></tr>';
+      return;
+    }
+
+    list.forEach(notice => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${notice.id.replace('NTC', '')}</td>
+        <td>${notice.type}</td>
+        <td>${notice.subtype || '-'}</td>
+        <td>${notice.title}</td>
+        <td>${notice.date}</td>
+        <td class="actions"><button>상세</button></td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  function filterNotices(type, btn) {
+    currentType = type;
+    document.querySelectorAll('.filter-section button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const subContainer = document.getElementById('subCategoryContainer');
+    if (type === '학사') {
+      subContainer.style.display = 'block';
+    } else {
+      subContainer.style.display = 'none';
+      currentSubType = '';
+    }
+
+    applyFilters();
+  }
+
+  function filterSubCategory(subtype, btn) {
+    currentSubType = subtype;
+    document.querySelectorAll('.sub-category-buttons button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+  }
+
+  function applyFilters() {
+    let result = [...notices];
+
+    if (currentType !== '전체') {
+      result = result.filter(n => n.type === currentType);
+    }
+
+    if (currentType === '학사' && currentSubType && currentSubType !== '학사전체') {
+      result = result.filter(n => n.subtype === currentSubType);
+    }
+
+    renderNoticeList(result);
+  }
+
+  document.addEventListener('DOMContentLoaded', loadNotices);
+</script>
+

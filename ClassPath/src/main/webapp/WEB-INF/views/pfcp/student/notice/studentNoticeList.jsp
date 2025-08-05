@@ -1,0 +1,249 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<div id="registerButtonContainer" style="float:right; display:none;">
+  <!-- 카테고리 탭 클릭 시 등록 버튼 표시 -->
+  <button onclick="window.location.href='/student/notice/noticeInsert.do'" class="submitButton">+ 등록</button>
+</div>
+<title>공지사항 목록</title>
+
+<c:if test="${not empty success}">
+  <script>
+    alert("${success}");
+  </script>
+</c:if>
+
+<h4 class="pageTitle">공지사항</h4>
+
+<div class="flex flex-wrap gap-2 border-b mb-6 CategoryContainer">
+    <button class="px-4 py-2 rounded-t-md border-b-2 font-medium text-gray-600 hover:text-blue-600 focus:outline-none active-tab"
+            onclick="filterNotices('전체', this)">전체</button>
+    <button class="px-4 py-2 rounded-t-md border-b-2 font-medium text-gray-600 hover:text-blue-600 focus:outline-none"
+            onclick="filterNotices('일반', this)">일반</button>
+    <button class="px-4 py-2 rounded-t-md border-b-2 font-medium text-gray-600 hover:text-blue-600 focus:outline-none"
+            onclick="filterNotices('학사', this)">학사</button>
+    <button class="px-4 py-2 rounded-t-md border-b-2 font-medium text-gray-600 hover:text-blue-600 focus:outline-none"
+            onclick="filterNotices('비교과', this)">비교과</button>
+    <button class="px-4 py-2 rounded-t-md border-b-2 font-medium text-gray-600 hover:text-blue-600 focus:outline-none"
+            onclick="filterNotices('건의사항', this)">건의사항</button>
+    <button class="px-4 py-2 rounded-t-md border-b-2 font-medium text-gray-600 hover:text-blue-600 focus:outline-none"
+            onclick="filterNotices('기타', this)">기타</button>
+  </div>
+  
+  <div id="subCategoryContainer" class="mb-6 hidden">
+    <div class="flex flex-wrap gap-2">
+      <button class="px-3 py-1 border rounded text-sm bg-blue-100 text-blue-700 active-sub"
+              onclick="filterSubCategory('ALL', this)">학사전체</button>
+      <button class="px-3 py-1 border rounded text-sm bg-gray-100 hover:bg-blue-100"
+              onclick="filterSubCategory('ACA_SCH', this)">수강일정</button>
+      <button class="px-3 py-1 border rounded text-sm bg-gray-100 hover:bg-blue-100"
+              onclick="filterSubCategory('ACA_EXM', this)">시험 및 평가 일정</button>
+      <button class="px-3 py-1 border rounded text-sm bg-gray-100 hover:bg-blue-100"
+              onclick="filterSubCategory('ACA_STA', this)">학적 변경</button>
+      <button class="px-3 py-1 border rounded text-sm bg-gray-100 hover:bg-blue-100"
+              onclick="filterSubCategory('ACA_GRD', this)">졸업</button>
+      <button class="px-3 py-1 border rounded text-sm bg-gray-100 hover:bg-blue-100"
+              onclick="filterSubCategory('ACA_TUI', this)">등록금 및 장학금</button>
+      <button class="px-3 py-1 border rounded text-sm bg-gray-100 hover:bg-blue-100"
+              onclick="filterSubCategory('ACA_HOL', this)">방학 및 휴일</button>
+    </div>
+  </div>
+  
+  <!-- 공지 목록 테이블 -->
+  <div class="overflow-x-auto">
+  <div class="tableContainer">
+    <table class="w-full defaultTable">
+      <thead class="tableHead ">
+        <tr>
+          <th class="p-3 border tableTh">번호</th>
+          <th class="p-3 border tableTh">유형</th>
+          <th class="p-3 border tableTh">제목</th>
+          <th class="p-3 border tableTh">작성자</th>
+          <th class="p-3 border tableTh">작성일시</th>
+        </tr>
+      </thead>
+      <tbody id="noticeTableBody" class="text-sm">
+	
+      </tbody>
+    </table>
+    </div>
+  </div>
+  
+  <div class="pagination">
+</div>
+
+<script>
+let currentCategory = '전체';
+let currentSubCategory = '';
+let currentPage = 1;
+
+// 데이터 로드
+function loadNoticeList(page = 1, category = currentCategory, subCategory = currentSubCategory) {
+    currentPage = page;
+    currentCategory = category;
+    currentSubCategory = subCategory;
+
+    fetch('/student/notice/noticeListData.do?page=' + page + '&category=' + encodeURIComponent(category) + '&subCategory=' + encodeURIComponent(subCategory))
+        .then(resp => resp.json())
+        .then(data => {
+            console.log('받은 데이터:', data); // 디버깅용
+            renderNoticeList(data.board);
+            renderPagination(data.paging);
+        })
+        .catch(error => {
+            console.error('데이터 로드 실패:', error);
+        });
+}
+
+function moveToDetail(row) {
+    const noticeNo = row.getAttribute("data-notice-no");
+    window.location.href = "/student/notice/noticeDetail.do?boardNo=" + noticeNo;
+}
+
+function renderNoticeList(list) {
+    const tbody = document.getElementById('noticeTableBody');
+    tbody.innerHTML = '';
+
+    if (!list || list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-gray-500">조회된 공지가 없습니다.</td></tr>';
+        return;
+    }
+
+    list.forEach(notice => {
+        const row = document.createElement('tr');
+        row.className = "hover:bg-gray-50 tableRowHover";
+        row.style.cursor = 'pointer';
+        row.setAttribute('data-notice-no', notice.boardNo);
+        row.setAttribute('data-category', notice.category);
+        row.setAttribute('data-typecode', notice.typeCode);
+        row.setAttribute('data-writer', notice.writerNo);
+        row.onclick = function() { moveToDetail(this); };
+        
+        // 건의사항 비밀글 처리 로직
+        let titleContent = notice.boardTitle;
+        if (notice.category === '건의사항') {
+            // 여기서는 서버에서 이미 권한 체크된 데이터를 받는다고 가정
+            // 필요시 추가 클라이언트 사이드 체크 가능
+        }
+        
+        row.innerHTML = 
+            '<td class="p-3 border tableTd">' + notice.boardNo + '</td>' +
+            '<td class="p-3 border tableTd">' + notice.category + '</td>' +
+            '<td class="p-3 border tableTd">' + titleContent + '</td>' +
+            '<td class="p-3 border tableTd">' + (notice.user ? notice.user.userName : notice.writerNo) + '</td>' +
+            '<td class="p-3 border tableTd">' + notice.updateDate + '</td>';
+        tbody.appendChild(row);
+    });
+}
+
+function renderPagination(paging) {
+    const container = document.querySelector('.pagination');
+    container.innerHTML = '';
+
+    if (paging.firstPageNoOnPageList > 1) {
+        container.innerHTML += '<a href="#" class="pageButton" onclick="loadNoticeList(' + (paging.firstPageNoOnPageList - paging.pageSize) + ')">이전</a>';
+    }
+
+    for (let i = paging.firstPageNoOnPageList; i <= paging.lastPageNoOnPageList; i++) {
+        if (i === paging.currentPageNo) {
+            container.innerHTML += '<strong class="pageButton active">' + i + '</strong>';
+        } else {
+            container.innerHTML += '<a href="#" class="pageButton" onclick="loadNoticeList(' + i + ')">' + i + '</a>';
+        }
+    }
+
+    if (paging.lastPageNoOnPageList < paging.totalPageCount) {
+        container.innerHTML += '<a href="#" class="pageButton" onclick="loadNoticeList(' + (paging.firstPageNoOnPageList + paging.pageSize) + ')">다음</a>';
+    }
+}
+
+function filterNotices(category, btn) {
+    console.log('filterNotices 호출:', category, btn); // 디버깅용
+    
+    // 모든 카테고리 버튼의 active 상태 초기화
+    const buttons = document.querySelectorAll('.CategoryContainer button');
+    buttons.forEach(button => {
+        button.classList.remove('active-tab');
+        button.classList.remove('text-blue-600', 'border-blue-600');
+        button.classList.add('text-gray-600');
+    });
+
+    // 클릭된 버튼을 활성화
+    btn.classList.add('active-tab');
+    btn.classList.remove('text-gray-600');
+    btn.classList.add('text-blue-600', 'border-blue-600');
+    
+    console.log('버튼 클래스 업데이트 완료:', btn.className); // 디버깅용
+    
+    // 등록 버튼 표시 여부 제어
+    const registerBtnDiv = document.getElementById('registerButtonContainer');
+    if (registerBtnDiv) {
+        if (category === '건의사항') {
+            registerBtnDiv.style.display = 'block';
+        } else {
+            registerBtnDiv.style.display = 'none';
+        }
+    }
+
+    // 학사 소분류 보이기/숨기기
+    const subCategoryContainer = document.getElementById('subCategoryContainer');
+    if (category === '학사') {
+        subCategoryContainer.classList.remove('hidden');
+        // 학사 선택시 기본적으로 첫 번째 소분류 선택
+        currentSubCategory = '';
+        const firstSubBtn = subCategoryContainer.querySelector('button');
+        if (firstSubBtn) {
+            filterSubCategory('', firstSubBtn);
+        }
+    } else {
+        subCategoryContainer.classList.add('hidden');
+        currentSubCategory = '';
+    }
+    
+    // 현재 상태 업데이트
+    currentCategory = category;
+    
+    // 데이터 다시 로드
+    loadNoticeList(1, category, currentSubCategory);
+}
+
+function filterSubCategory(subtype, btn) {
+    currentSubCategory = subtype;
+
+    // 모든 소분류 버튼 초기화
+    document.querySelectorAll('#subCategoryContainer button').forEach(b => {
+        b.classList.remove('bg-blue-100', 'text-blue-700', 'active-sub');
+        b.classList.add('bg-gray-100');
+    });
+
+    // 현재 소분류 버튼 활성화
+    btn.classList.remove('bg-gray-100');
+    btn.classList.add('bg-blue-100', 'text-blue-700', 'active-sub');
+
+    // 데이터 다시 로드
+    loadNoticeList(1, currentCategory, subtype);
+}
+
+function showRestrictedModal(event) {
+    event.stopPropagation();
+    alert("해당 게시글은 작성자 또는 교직원만 열람할 수 있습니다.");
+}
+
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', () => {
+	 // 첫 번째 버튼을 명시적으로 활성화
+    const firstBtn = document.querySelector('.CategoryContainer button');
+    if (firstBtn) {
+        // 기존 클래스 제거 후 활성화 클래스 추가
+        firstBtn.classList.remove('text-gray-600');
+        firstBtn.classList.add('active-tab', 'text-blue-600', 'border-blue-600');
+    }
+    
+    // 초기 데이터 로드
+    loadNoticeList(1, '전체', '');
+});
+</script>

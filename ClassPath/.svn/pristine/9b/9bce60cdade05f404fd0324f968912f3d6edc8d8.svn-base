@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.common.mapper.UserMapper">
+	<select id="selectUser">
+		SELECT USER_NO,
+				USER_PASS,
+				USER_NAME,
+				GENDER,
+				USER_REGNO1,
+				USER_REGNO2,
+				USER_TEL,
+				USER_ZIP,
+				USER_ADD1,
+				USER_ADD2,
+				USER_EMAIL,
+				BANK_CD,
+				USER_ROLE,
+				USER_BANKNO
+		   FROM TB_USER
+		  WHERE USER_NO=#{userNo}
+	</select>
+</mapper>

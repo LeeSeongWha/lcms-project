@@ -1,0 +1,36 @@
+package kr.or.ddit.common.zoomapi.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import kr.or.ddit.common.zoomapi.component.ZoomAuthenticationHelper;
+import kr.or.ddit.common.zoomapi.component.ZoomMeetingApiHelper;
+import kr.or.ddit.common.zoomapi.dto.ZoomCreateDTO;
+import kr.or.ddit.common.zoomapi.dto.ZoomMeetingCreateResponse;
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/program")
+@Tag(name = "Program")
+public class ProgramController {
+
+  private final ZoomAuthenticationHelper zoomAuthenticationHelper;
+  
+  private final ZoomMeetingApiHelper zoomMeetingApiHelper;
+
+  @GetMapping("/zoom")
+  public ResponseEntity<String> zoom() throws Exception {
+    return ResponseEntity.ok(zoomAuthenticationHelper.getAccessToken());
+  }
+
+  @PostMapping("/zoom")
+  public ResponseEntity<ZoomMeetingCreateResponse> zoom(@RequestBody ZoomCreateDTO requestDTO) throws Exception {
+    return ResponseEntity.ok(zoomMeetingApiHelper.createMeeting(requestDTO.getType(),
+        requestDTO.getTitle(), requestDTO.getTh(), requestDTO.getStartDate()));
+  }
+}

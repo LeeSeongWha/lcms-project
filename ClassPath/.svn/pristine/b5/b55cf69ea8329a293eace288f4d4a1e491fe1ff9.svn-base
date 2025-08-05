@@ -1,0 +1,39 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * @author 김태수
+ * @since 2025. 7. 18.
+ *
+ * << 개정이력(Modification Information) >>
+ * 	수정일		|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 2025. 7. 18.	|	김태수	|	
+ */
+@Data
+@EqualsAndHashCode(of = "evalNo")
+public class LectureEvalVO {
+	
+	private String evalNo;
+	private String enrollNo;
+	private String evalDate;
+	private Integer overallScore;
+	private String subjectName;
+	private String comment;
+	private String evalComment; 
+	
+	private String userNo;
+	
+	private String criteriaNo;   
+    private String criteriaDesc;
+    private int evalScore; 
+	
+	
+	private transient LectureEvalScoreVO evalScoreVO;
+	private transient EvalCriteriaVO evalCriteriaVO;
+	
+	private double averageScore;
+	
+}

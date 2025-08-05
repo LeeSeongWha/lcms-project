@@ -1,0 +1,74 @@
+package kr.or.ddit.pfcp.student.facility.reservation.service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import kr.or.ddit.pfcp.common.vo.FacilityReservationVO;
+import kr.or.ddit.pfcp.common.vo.ReservationTimestampVO;
+import kr.or.ddit.pfcp.staff.reservationTimestamp.facility.service.FacilityRTService;
+import kr.or.ddit.pfcp.student.facility.reservation.mapper.FacilityReservationMapper;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class FacilityReservationServiceImpl implements FacilityReservationService {
+  
+  @Autowired
+  private FacilityReservationMapper facilityReservationMapper;
+  
+  @Autowired
+  private FacilityRTService facilityRTService;
+  
+  @Override
+  public boolean reserveFacility(FacilityReservationVO reservation) {
+
+      // 1️⃣ preferredDate → LocalDateTime으로 파싱
+      LocalDateTime dateTime = LocalDateTime.parse(reservation.getPreferredDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+
+      // 올바른 DayOfWeek enum 값 그대로 사용
+      String day = dateTime.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toUpperCase(); // ✅ "Mon" → "MON"
+      int hour = dateTime.getHour();
+      String facilityNo = reservation.getFacilityNo();
+
+      // 2️⃣ 예약 가능 시간인지 확인
+      List<ReservationTimestampVO> availableTimes = facilityRTService.readFacilityRT(facilityNo);
+      boolean isAvailable = availableTimes.stream()
+          .anyMatch(t -> t.getReservationDay().equalsIgnoreCase(day)
+                      && t.getStartHour() == hour);
+
+      if (!isAvailable) {
+          return false; // ❌ 예약 불가 시간대
+      }
+
+      // 3️⃣ 예약 중복 확인
+      FacilityReservationVO existing = facilityReservationMapper.selectReservationByDate(
+          reservation.getFacilityNo(),
+          reservation.getPreferredDate(),
+          reservation.getUserNo()
+      );
+
+      if (existing != null) {
+          return false; // ❌ 이미 예약함
+      }
+
+      // 4️⃣ 예약 번호 생성 & 저장
+      String shortUuid = UUID.randomUUID().toString().replace("-", "").substring(0, 20);
+      reservation.setReservationNo(shortUuid);
+      return facilityReservationMapper.insertFacilityReservation(reservation) > 0;
+  }
+
+  @Override
+  public List<String> getReservedTimesByFacility(String facilityNo) {
+    List<FacilityReservationVO> reservations = facilityReservationMapper.selectReservationsByFacilityNo(facilityNo);
+    return reservations.stream()
+        .map(FacilityReservationVO::getPreferredDate)  // "yyyy-MM-dd HH:mm" 문자열
+        .collect(Collectors.toList());
+  }
+
+}

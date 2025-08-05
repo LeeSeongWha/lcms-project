@@ -1,0 +1,14 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of = "attendId")
+public class AttendanceVO {
+	private String attendId;
+	private String enrollNo;
+	private String attendDate;
+	private String attendStatus;
+	private String memo;
+}

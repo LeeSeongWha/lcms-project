@@ -1,0 +1,13 @@
+package kr.or.ddit.pfcp.staff.scholarship.service;
+
+import kr.or.ddit.pfcp.common.vo.ScholarshipTypeVO;
+
+public interface StaffScholarshipService {
+
+//	public void updateScholarship(ScholarshipTypeVO scholarshipType);
+	
+//	public void createFileRef(FileRefVO fileRef);
+
+	public ScholarshipTypeVO readScholarship(String no);
+
+}

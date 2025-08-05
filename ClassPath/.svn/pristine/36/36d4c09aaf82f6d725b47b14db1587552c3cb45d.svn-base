@@ -1,0 +1,27 @@
+package kr.or.ddit.pfcp.student.eclass.exam.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import kr.or.ddit.pfcp.common.vo.ExamVO;
+import kr.or.ddit.pfcp.student.eclass.exam.service.ExamService;
+
+@RestController
+@RequestMapping("/rest/exam")
+public class ExamRestController {
+	@Autowired
+	private ExamService examService;
+
+	@GetMapping("{userNo}")
+	public ResponseEntity<List<ExamVO>> getExamList(@PathVariable String userNo) {
+		List<ExamVO> examList = examService.readExamList(userNo);
+		
+		return ResponseEntity.ok(examList);
+	}
+}

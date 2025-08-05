@@ -1,0 +1,39 @@
+package kr.or.ddit.pfcp.staff.schedule.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import kr.or.ddit.pfcp.common.vo.ScheduleRefVO;
+import kr.or.ddit.pfcp.common.vo.ScheduleVO;
+
+/**
+ * author : 이상진
+ * created on : 2025-07-01
+ */
+@Mapper
+public interface ScheduleMapper {
+
+	
+	/**
+	 * 일정 조회
+	 * @return
+	 */
+	public List<ScheduleVO> selectScheduleWithRef();
+	
+	public List<ScheduleRefVO> selectScheduleTypeList();
+	
+	public int insertSchedule(ScheduleVO scheduleVO);
+	
+	public void insertScheduleRef(ScheduleRefVO refVO);
+	
+	
+	/*
+	 * public int insertSchedule(ScheduleVO schedule);
+	 * 
+	 * public int insertScheduleRef(@Param("scheduleNo") String scheduleNo,
+	 * 
+	 * @Param("ref") ScheduleRefVO refVO);
+	 */
+}

@@ -1,0 +1,10 @@
+package kr.or.ddit.pfcp.videochat.service;
+
+import kr.or.ddit.pfcp.common.vo.OnlineSessionVO;
+
+public interface SessionService {
+  public void createSession(Integer sessionNo, String ocTitle);
+  
+  public OnlineSessionVO getSession(Integer sessionNo);
+  
+}

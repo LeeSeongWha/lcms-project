@@ -1,0 +1,142 @@
+package kr.or.ddit.pfcp.staff.program.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import kr.or.ddit.pfcp.common.vo.ProgramEnrollVO;
+import kr.or.ddit.pfcp.common.vo.ProgramVO;
+import kr.or.ddit.pfcp.common.vo.TypeVO;
+import kr.or.ddit.pfcp.staff.program.mapper.StaffProgramMapper;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class StaffProgramServiceImpl implements StaffProgramService {
+	
+	private final StaffProgramMapper mapper;
+	
+	
+	@Override
+	public List<ProgramVO> readProgramList() {
+		return mapper.selectProgramList();
+	}
+
+
+	@Override
+	public ProgramVO readProgram(String programNo) {
+		return mapper.selectProgramById(programNo);
+	}
+
+
+	@Override
+	public List<TypeVO> readProgramType() {
+		return mapper.selectProgramType();
+	}
+
+
+	@Override
+	public int saveProgram(ProgramVO program) {
+		if(program.getProgramNo()==null || program.getProgramNo().isBlank()) {
+			return mapper.insertProgram(program);
+		}else {
+			return mapper.updateProgram(program);
+		}
+	}
+
+
+	@Override
+	public int deleteProgram(String programNo) {
+		return mapper.deleteProgram(programNo);
+	}
+
+
+	@Override
+	public List<ProgramVO> readOpenProgramList() {
+		return mapper.selectOpenProgramList();
+	}
+
+
+	@Override
+	public ProgramVO readProgramWithEnroll(String programNo) {
+		return mapper.selectProgramWithEnroll(programNo);
+	}
+
+
+	@Override
+	public int updateEnrollAttended(ProgramEnrollVO enrollVO) {
+		return mapper.updateAttended(enrollVO);
+	}
+
+
+	@Override
+	public int updateEnrollCompletion(ProgramEnrollVO enrollVO) {
+		return mapper.updateCompletion(enrollVO);
+	}
+
+
+	@Override
+	public int updateEnrollCertIssued(String enrollNo) {
+		return mapper.updateIsCertIssued(enrollNo);
+	}
+
+
+	@Override
+	public ProgramEnrollVO readEnrollWithProgramAndCert(String enrollNo) {
+		return mapper.selectEnrollWithCertReq(enrollNo);
+	}
+
+	@Transactional
+	@Override
+	public void issueCertificate(String certReqno, String staffNo) {
+		/*
+		 * try { // 1. 신청 정보 조회 ProgramEnrollVO enroll =
+		 * programMapper.selectEnrollWithCertReq(certReqno);
+		 * 
+		 * if (enroll == null || enroll.getStudent() == null || enroll.getProgram() ==
+		 * null) { throw new IllegalArgumentException("이수증 신청 정보가 유효하지 않습니다."); }
+		 * 
+		 * // 2. PDF 생성 String studentName =
+		 * enroll.getStudent().getUser().getUserName(); String programTitle =
+		 * enroll.getProgram().getProgramTitle(); String issueDate =
+		 * LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); byte[]
+		 * pdfBytes = PdfCertGenerator.generatePdf(studentName, programTitle,
+		 * issueDate);
+		 * 
+		 * // 3. ATCH_FILE insert String atchId = "ATCH" + System.currentTimeMillis();
+		 * String fileRefNo = "FR" + System.currentTimeMillis();
+		 * 
+		 * AtchFileVO atchFile = new AtchFileVO(); atchFile.setAtchId(atchId);
+		 * atchFile.setAtchMime("application/pdf"); atchFile.setAtchOriginName(certReqno
+		 * + "_certificate.pdf"); atchFile.setAtchSaveName(atchId + "_" + certReqno +
+		 * ".pdf"); atchFile.setAtchSize((long) pdfBytes.length);
+		 * atchFile.setAtchDate(LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE)
+		 * ); atchFile.setAtchContent(pdfBytes);
+		 * atchFileMapper.insertAtchFile(atchFile);
+		 * 
+		 * // 4. FILE_REF insert FileRefVO fileRef = new FileRefVO();
+		 * fileRef.setFileRefNo(fileRefNo); fileRef.setFileRefType("PROGRAM_CERT");
+		 * fileRef.setFileRefTargetId(certReqno); fileRef.setAtchId(atchId);
+		 * fileRefMapper.insertFileRef(fileRef);
+		 * 
+		 * // 5. CERT_ISSUE insert ProgramCertIssueVO issue = new ProgramCertIssueVO();
+		 * issue.setCertReqno(certReqno);
+		 * issue.setIssueDate(LocalDate.now().toString());
+		 * issue.setFileRefNo(fileRefNo); issue.setStaffNo(staffNo);
+		 * programMapper.insertProgramCertIssue(issue);
+		 * 
+		 * // 6. ENROLL update
+		 * programMapper.updateEnrollCertIssued(enroll.getEnrollNo());
+		 * 
+		 * // 7. 신청 상태도 완료로 변경 programMapper.updateCertReqStatus(certReqno, "발급완료");
+		 * 
+		 * log.info("[이수증 발급 완료] 신청번호: {}, 학생: {}", certReqno, studentName);
+		 * 
+		 * } catch (Exception e) { log.error("[이수증 발급 실패] 신청번호: {}, 사유: {}", certReqno,
+		 * e.getMessage(), e); throw new RuntimeException("이수증 발급 처리 중 오류가 발생했습니다."); }
+		 */
+		
+	}
+
+}

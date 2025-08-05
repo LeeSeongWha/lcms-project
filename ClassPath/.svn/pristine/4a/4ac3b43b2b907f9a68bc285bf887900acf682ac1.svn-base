@@ -1,0 +1,104 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<!DOCTYPE html>
+<html>
+<head>
+<title>일정 관리</title>
+
+<!-- ✅ FullCalendar CDN -->
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css"> 
+<link
+	href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css"
+	rel="stylesheet" />
+<script
+	src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/locales-all.min.js"></script>
+
+<style>
+#calendar {
+	max-width: 900px;
+	margin: 50px auto;
+}
+</style>
+</head>
+<body>
+
+	<h2 style="text-align: center;">교직원 일정 관리</h2>
+	<div id="calendar"></div>
+
+	<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'ko',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,listWeek'
+        },
+        events: '/staff/schedule/list', 
+        eventClick: function(info) {
+        	const title = info.event.title;
+            const start = info.event.startStr;
+            const end = info.event.endStr;
+            const refType = info.event.extendedProps.refType || '기타';
+        	
+          alert("[" + info.event.title + "]\n시작일: " + info.event.startStr + "\n종료일: " + info.event.endStr);
+        }
+      });
+      calendar.render();
+    });
+  </script>
+
+	<!-- 일정 등록 폼 -->
+	<h3 style="text-align: center;">📥 일정 등록</h3>
+
+	<form:form modelAttribute="scheduleVO" action="/staff/schedule/insert"
+		method="post" style="width:900px; margin: 0 auto;">
+	<fieldset style="padding: 20px; border: 1px solid #ccc;">
+		<table style="width: 100%; border-collapse: collapse;">
+			
+			<tr>
+				<td><label for="scheduleTitle">일정 제목</label></td>
+				<td><form:input path="scheduleTitle" id="scheduleTitle" /></td>
+			</tr>
+
+			<tr>
+				<td><label for="startDate">시작일</label></td>
+				<td><form:input path="startDate" id="startDate" type="date" /></td>
+			</tr>
+
+			<tr>
+				<td><label for="endDate">종료일</label></td>
+				<td><form:input path="endDate" id="endDate" type="date" /></td>
+			</tr>
+
+			<tr>
+				<td><label for="scheduleType">일정 유형</label></td>
+				<td><form:input path="scheduleType" id="scheduleType" placeholder="예: 행정, 회의 등" /></td>
+			</tr>
+
+			<tr>
+				<td><label for="ref.refType">참조 유형</label></td>
+				<td>
+					<form:select path="ref.refType" items="${refTypeList}" itemValue="refType" itemLabel="refType"/>
+				</td>
+			</tr>
+
+			
+			<tr>
+				<td><label for="scheduleDesp">일정 설명</label></td>
+				<td><form:textarea path="scheduleDesp" id="scheduleDesp" rows="3" cols="40" /></td>
+			</tr>
+
+		</table>
+		<div style="text-align: right; margin-top: 15px;">
+			<button class="btn btn-primary"  type="submit">등록</button>
+		</div>
+	</fieldset>
+</form:form>
+</body>
+</html>

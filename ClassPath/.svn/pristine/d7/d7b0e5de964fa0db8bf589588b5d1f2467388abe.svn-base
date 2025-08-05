@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.professor.thesis.mapper.ProfessorThesisMapper">
+
+	<select id="selectThesisList" resultType="kr.or.ddit.pfcp.common.vo.ThesisVO">
+		SELECT ROW_NUMBER() OVER(ORDER BY T.THESIS_NO) AS RNUM
+		     , T.THESIS_TITLE
+		     , T.SUBMIT_DATE
+		     , U.USER_NAME 
+		     , CASE
+		         WHEN T.FILE_REF_NO IS NULL THEN 'N'
+		         ELSE 'Y'
+		       END AS FILE_STATUS
+		      ,T.STATUS
+		      ,T.REJ_REASON
+		  FROM THESIS T
+		  JOIN TB_USER U ON T.USER_NO = U.USER_NO
+		  LEFT JOIN FILE_REF F ON T.FILE_REF_NO = F.FILE_REF_NO
+		  ORDER BY T.THESIS_NO DESC
+		  
+	</select>
+	
+	<select id="selectTotalThesisCnt">
+		SELECT COUNT(*)
+			FROM THESIS
+	</select>
+	
+	<insert id="insertThesis">
+		INSERT INTO THESIS(
+			THESIS_NO
+			,THESIS_TITLE
+			,SUBMIT_DATE
+			,USER_NO
+			,FILE_REF_NO
+			,STATUS
+		) VALUES (
+			'THS' || LPAD(THESIS_NO_SEQ.NEXTVAL, 3, '0')
+			,#{thesisTitle}
+			,TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+			,#{userNo}
+			,#{fileRefNo}
+			,'대기'
+		)
+		
+	</insert>
+
+</mapper>

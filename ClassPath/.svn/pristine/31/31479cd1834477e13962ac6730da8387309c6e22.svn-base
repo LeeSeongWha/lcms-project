@@ -1,0 +1,20 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of = "enrollNo")
+public class LectureEnrVO {
+	private String enrollNo;
+	private String lecNo;
+	private String userNo;
+	private String enrollTime;
+	private String enrollStatus;
+	private String enrollType;
+	private Integer priority;
+	private Integer attendance;
+	private String evalYn;
+	
+	private SubjectVO subject;
+}

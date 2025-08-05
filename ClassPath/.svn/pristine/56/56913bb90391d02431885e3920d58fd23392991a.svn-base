@@ -1,0 +1,14 @@
+package kr.or.ddit.pfcp.staff.lecturemanage.attendance.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import kr.or.ddit.pfcp.common.vo.AttendanceVO;
+
+@Mapper
+public interface AttendanceMapper {
+
+	public List<AttendanceVO> selectAttendanceList();
+
+}

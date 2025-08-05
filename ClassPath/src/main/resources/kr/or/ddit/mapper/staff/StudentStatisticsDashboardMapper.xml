@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.or.ddit.pfcp.staff.dashBoard.mapper.StudentStatisticsDashboardMapper">
+	
+	<!-- 1. 단과대학/학년별 재학생 수 -->
+	<select id="selectStudentCountByCollegeAndGrade"
+		resultType="kr.or.ddit.pfcp.common.vo.StudentDeptGradeStatVO">
+		SELECT
+		C.COLLEGE_NAME AS departmentGroup,
+		S.STUDENT_GRADE AS grade,
+		COUNT(*) AS studentCount
+		FROM
+		STUDENT S
+		JOIN
+		DEPARTMENT D ON S.DEPARTMENT_NO = D.DEPARTMENT_NO
+		JOIN
+		COLLEGE C ON C.COLLEGE_NO = D.COLLEGE_NO
+		WHERE
+		S.STU_STATUS = '재학'
+		GROUP BY
+		C.COLLEGE_NAME, S.STUDENT_GRADE
+		ORDER BY
+		C.COLLEGE_NAME, S.STUDENT_GRADE
+	</select>
+
+	<!-- 2. 연도별 재학생 수 변화 -->
+	<select id="selectStudentCountByYear"
+		resultType="kr.or.ddit.pfcp.common.vo.StudentMonthlyTrendVO">
+		SELECT
+		TO_CHAR(TO_DATE(STUDENT_EDATE, 'YYYY-MM-DD'), 'YY') AS year,
+		COUNT(*) AS studentCount
+		FROM
+		STUDENT
+		WHERE
+		STU_STATUS = '재학'
+		AND STUDENT_EDATE IS NOT NULL
+		GROUP BY
+		TO_CHAR(TO_DATE(STUDENT_EDATE, 'YYYY-MM-DD'), 'YY')
+		ORDER BY
+		year
+	</select>
+
+	<!-- 3. 학적 변동 현황 -->
+	<select id="selectAcademicChangeStats"
+		resultType="kr.or.ddit.pfcp.common.vo.StudentChangeStatusVO">
+		SELECT ACR.TYPE_CODE AS typeCode, COUNT(*) AS changeCount
+		FROM ACADEMIC_CHANGE_REQUEST ACR
+		JOIN TYPE T ON T.TYPE_CODE = ACR.TYPE_CODE
+		WHERE T.TYPE_GROUP = 'AC'
+		GROUP BY ACR.TYPE_CODE
+	</select>
+
+	<!-- 4. 성별/ 학년별 분포 -->
+	<select id="selectGenderGradeStats"
+		resultType="kr.or.ddit.pfcp.common.vo.StudentGenderGradeStatVO">
+		SELECT
+		TB.GENDER AS gender,
+		S.STUDENT_GRADE AS grade,
+		COUNT(*) AS studentCount
+		FROM STUDENT S
+		JOIN TB_USER TB ON TB.USER_NO = S.USER_NO
+		WHERE TB.GENDER IS NOT NULL
+		GROUP BY TB.GENDER, S.STUDENT_GRADE
+	</select>
+</mapper>

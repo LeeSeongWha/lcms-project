@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.common.mapper.UserMapper">
+	<resultMap id="userResultMap" type="UserVO">
+		<id property="userNo" column="USER_NO" />
+		<result property="userEmail" column="USER_EMAIL"/>
+        <result property="userPass" column="USER_PASS"/>
+        <result property="userName" column="USER_NAME"/>
+	</resultMap>
+	
+	<select id="selectUser" resultMap="userResultMap">
+		SELECT USER_NO,
+				USER_PASS,
+				USER_NAME,
+				GENDER,
+				USER_REGNO1,
+				USER_REGNO2,
+				USER_TEL,
+				USER_ZIP,
+				USER_ADD1,
+				USER_ADD2,
+				USER_EMAIL,
+				BANK_CD,
+				USER_ROLE,
+				USER_BANKNO
+		   FROM TB_USER
+		  WHERE USER_NO=#{userNo}
+	</select>
+	
+	<select id="findUserId">
+		SELECT USER_NO
+		  FROM TB_USER
+		 WHERE USER_NAME=#{username}
+		   AND USER_REGNO1=#{birthDate}
+	</select>
+	
+	<update id="changeUserPassword">
+		UPDATE TB_USER
+		   SET USER_PASS=#{userPass}
+		 WHERE USER_NO=#{userNo}
+	</update>
+	
+	<select id="countByEmail" resultType="int">
+		SELECT COUNT(*)
+          FROM TB_USER
+         WHERE USER_EMAIL = #{userEmail}
+	</select>
+	
+	<update id="updateUserPassword">
+		UPDATE TB_USER
+		   SET USER_PASS=#{userPass}
+		 WHERE USER_EMAIL=#{userEmail}
+	</update>
+	
+	<select id="findUserEmail">
+		SELECT USER_NO, USER_EMAIL, USER_NAME
+		  FROM TB_USER
+		 WHERE USER_EMAIL=#{userEmail}
+	</select>
+	
+	<select id="selectAllStudentList">
+		SELECT USER_NO
+	      FROM TB_USER
+	     WHERE SUBSTR(USER_NO, 1, 2)='ST'
+	</select>
+	
+	<select id="selectAllProfessorList">
+		SELECT USER_NO
+	      FROM TB_USER
+	     WHERE SUBSTR(USER_NO, 1, 2)='PR'
+	</select>
+	
+	<select id="selectAllStaffList">
+		SELECT USER_NO
+	      FROM TB_USER
+	     WHERE SUBSTR(USER_NO, 1, 2)='AD'
+	</select>
+	
+	<select id="selectStudent">
+		SELECT A.USER_NO
+			   , A.STUDENT_EDATE
+			   , A.STUDENT_GDATE
+			   , A.STUDENT_EMP
+			   , A.DEPARTMENT_NO
+			   , A.STUDENT_GRADE
+			   , A.SUB_DEPARTMENT_NO
+			   , A.REMAIN_LEAVE
+			   , A.STU_STATUS
+			   , B.USER_NAME
+			   , C.DEPARTMENT_NAME
+		  FROM STUDENT A
+	INNER JOIN TB_USER B ON A.USER_NO=B.USER_NO
+	INNER JOIN DEPARTMENT C ON A.DEPARTMENT_NO=C.DEPARTMENT_NO
+		 WHERE A.USER_NO=#{userNo}
+	</select>
+</mapper>

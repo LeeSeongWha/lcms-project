@@ -1,0 +1,23 @@
+package kr.or.ddit.pfcp.professor.lecture.service;
+
+import java.util.List;
+
+import kr.or.ddit.pfcp.common.vo.LectureVO;
+
+/**
+* @author 김태수
+* @since 2025.07.01
+* @see
+* 
+* 수정일		  |		수정자	|	수정 내용
+* ------------|-------------|--------------------------
+* 2025.07.01  | 	김태수   	|   최초 작성
+ */
+public interface ProfessorLectureService {
+	public void createLecture(LectureVO lecture);
+	public List<LectureVO> readLectureList();
+	public LectureVO readLecture(String userNo);
+	public void modifyLecture(LectureVO lecture);
+	public void removeLecture(String userNo);
+	
+}

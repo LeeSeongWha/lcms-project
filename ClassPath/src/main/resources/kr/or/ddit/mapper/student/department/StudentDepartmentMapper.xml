@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.or.ddit.pfcp.student.department.mapper.StudentDepartmentMapper">
+	<select id="departmentName">
+		SELECT DEPARTMENT_NAME
+		  FROM STUDENT S
+		 INNER JOIN DEPARTMENT D ON (S.DEPARTMENT_NO=D.DEPARTMENT_NO)
+		 WHERE S.USER_NO=#{userNo}
+	</select>
+	<select id="selectDepartmentNo">
+		SELECT D.DEPARTMENT_NO
+		  FROM STUDENT S
+		 INNER JOIN DEPARTMENT D ON (S.DEPARTMENT_NO=D.DEPARTMENT_NO)
+		 WHERE S.USER_NO=#{userNo}
+	</select>
+</mapper>

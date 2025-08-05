@@ -1,0 +1,66 @@
+<%--
+ * == 개정이력(Modification Information) ==
+ * 수정일	수정자	수정내용
+ * ========================================
+ * 250702	서경덕	최초 생성
+--%>
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+<title>학과 상담 신청</title>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+<script src="/js/app/pfcp/student/studentCounsel.js"></script>
+<script src="/js/app/pfcp/common/shortcut.js"></script>
+
+<style>
+	.navbar{
+		padding : 0;
+	}
+</style>
+
+<form method="post" action="/student/counsel/departmentCounsel/departmentCounselInsertProcess.do">
+	<div class="form-row" style="display: flex; gap: 20px;">
+		<div class="form-group" style="flex: 1;">
+			<label class="inputLabel" for="studentNo">학번</label>
+			<input type="text" id="studentNo" name="studentNo" class="form-control" value="${studentNo}" readonly>
+		</div>
+		<div class="form-group" style="flex: 1;">
+			<label class="inputLabel" for="profNo">상담 교수</label>
+			<select class="selectBox" id="profNo" name="profNo">
+				<option value="">선택하세요</option>
+			</select>
+		</div>
+	</div>
+	
+	<label hidden class="inputLabel" for="typeCode">유형 코드</label>
+	<input type="hidden" id="typeCode" name="typeCode" class="form-control" value="CN_DEPT" readonly>
+		
+	<div class="form-row" style="display: flex; gap: 20px;">
+		<div class="form-group" style="flex: 1;">
+			<label class="inputLabel" for="reqType">상담 유형</label>
+			<select name="reqType" id="reqType" class="selectBox">
+				<option value="">선택하시오</option>
+				<option value="대면">대면상담</option>
+				<option value="온라인">온라인상담</option>
+			</select>
+			
+		</div>
+		<div class="form-group" style="flex: 1;">
+			<label class="inputLabel" for="preferredDate">희망 상담 일자</label>
+			<select id="preferredDate" name="preferredDate" class="selectBox">
+				<option></option>
+			</select>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<label class="inputLabel" for="counselComment">상담 내용</label>
+		<textarea class="textareaField" name="counselComment" rows="" cols=""></textarea>
+	</div>
+	
+	<button class="submitButton" type="submit">저장</button>
+	<button class="deleteButton" type="button" onclick="history.back()">취소</button>
+	
+</form>
+<button class="btn btn-secondary" type="button" onclick="fillDemoData()">데모 데이터 입력</button>

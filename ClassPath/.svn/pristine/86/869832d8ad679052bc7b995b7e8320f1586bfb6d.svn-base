@@ -1,0 +1,74 @@
+package kr.or.ddit.pfcp.staff.reservationTimestamp.facility.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import kr.or.ddit.pfcp.common.vo.FacilityVO;
+import kr.or.ddit.pfcp.common.vo.ReservationTimestampVO;
+import kr.or.ddit.pfcp.staff.facility.service.FacilityService;
+import kr.or.ddit.pfcp.staff.reservationTimestamp.facility.service.FacilityRTService;
+import kr.or.ddit.validate.utils.ErrorsUtils;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * @author YSM
+ * @since 250703
+ */
+
+@Slf4j
+@Controller
+@RequestMapping("/staff/reservationTimestamp")
+public class FacilityRTController {
+	
+	
+	@Autowired
+	private FacilityService facilityService;
+	
+	@Autowired
+	private FacilityRTService facilityRTService;
+	
+	static final String MODELNAME = "facilityReservationTimestamp";
+
+	@Autowired
+	private ErrorsUtils errorsUtils;
+	
+	@GetMapping("facility/facility.do")
+	public String facilityReservationTimestamp(
+		String what,
+		Model model
+	) {
+		FacilityVO facility = facilityService.readFacility(what);
+		ReservationTimestampVO facilityRT = facilityRTService.readFacilityRT(what);
+		
+		return "pfcp/staff/reservationTimestamp/facility/facilityRT";
+	}
+	
+	@GetMapping("facility/facilityInsert.do")
+	public String facilityReservationTimestampInsertProcess(
+		String what,
+		@ModelAttribute("facilityRT") ReservationTimestampVO facilityRT,
+		BindingResult errors, 
+		RedirectAttributes redirectAttributes
+	) {
+		String lvn;
+		
+		if (!errors.hasErrors()) {
+			facilityRTService.insertFacility(facilityRT);
+			lvn = "redirect:/staff/reservationTimestamp/facility/facility.do";
+		} else {
+			redirectAttributes.addFlashAttribute("facilityRT", facilityRT);
+			MultiValueMap<String, String> customErrors = errorsUtils.errorsToMap(errors);
+			redirectAttributes.addFlashAttribute("errors", customErrors);
+			lvn = "redirect:/staff/facility/facilityDetail.do?what=" + what;
+		}
+		
+		return lvn;
+	}
+}

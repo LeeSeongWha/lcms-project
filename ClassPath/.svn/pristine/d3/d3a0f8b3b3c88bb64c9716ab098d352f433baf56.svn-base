@@ -1,0 +1,604 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="en">
+<%@taglib uri="jakarta.tags.core" prefix="c"%>
+<head>
+<title>Login | 부엉대학교</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<%@ include file="/WEB-INF/fragments/mantisPreStyle.jsp"%>
+
+<style>
+/* 전체 페이지 스타일 */
+body, html {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	overflow: hidden;
+}
+
+/* 비디오 백그라운드 */
+.video-bg {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	z-index: -2;
+}
+
+.video-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(135deg, rgba(0, 33, 71, 0.8) 0%,
+		rgba(0, 66, 137, 0.7) 50%, rgba(25, 118, 210, 0.6) 100%);
+	z-index: -1;
+}
+
+/* 메인 컨테이너 */
+.auth-main {
+	position: relative;
+	width: 100%;
+	height: 100vh;
+	display: grid;
+	grid-template-columns: 1fr 480px;
+	align-items: center;
+}
+
+/* 왼쪽 브랜딩 영역 */
+.branding-section {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+	padding: 0 80px;
+	color: white;
+	z-index: 1;
+}
+
+.university-logo {
+	width: 220px;
+	margin-bottom: 40px;
+	filter: brightness(1.1);
+}
+
+.welcome-text {
+	margin-bottom: 30px;
+}
+
+.welcome-text h1 {
+	font-size: 3.2rem;
+	font-weight: 300;
+	margin: 0 0 20px 0;
+	line-height: 1.2;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-text p {
+	font-size: 1.3rem;
+	font-weight: 300;
+	margin: 0;
+	opacity: 0.95;
+	line-height: 1.5;
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.university-info {
+	font-size: 1rem;
+	opacity: 0.85;
+	line-height: 1.6;
+	max-width: 500px;
+}
+
+/* 오른쪽 로그인 영역 */
+.login-section {
+	height: 100vh;
+	background: rgba(255, 255, 255, 0.95);
+	backdrop-filter: blur(10px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-left: 1px solid rgba(255, 255, 255, 0.2);
+	box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+}
+
+.auth-wrapper {
+	width: 100%;
+	max-width: 400px;
+	padding: 50px 40px;
+}
+
+.auth-header {
+	margin-bottom: 40px;
+	text-align: center;
+}
+
+.auth-header h2 {
+	color: #1e3a8a;
+	font-size: 2rem;
+	font-weight: 600;
+	margin: 0 0 10px 0;
+}
+
+.auth-header p {
+	color: #64748b;
+	font-size: 1rem;
+	margin: 0;
+}
+
+/* 기존 Bootstrap 클래스 스타일 오버라이드 */
+.card {
+	border: none !important;
+	background: transparent !important;
+	box-shadow: none !important;
+}
+
+.card-body {
+	padding: 0 !important;
+}
+
+/* 임시 로그인 섹션 스타일링 */
+.auth-wrapper>p {
+	color: #6b7280;
+	font-size: 0.9rem;
+	margin: 30px 0 15px 0;
+	padding-top: 20px;
+	border-top: 1px solid #e5e7eb;
+}
+
+.auth-wrapper>input[type="radio"] {
+	margin: 5px 8px 5px 0;
+}
+
+.auth-wrapper>label {
+	color: #374151;
+	margin-right: 15px;
+	font-size: 0.95rem;
+	cursor: pointer;
+}
+
+/* 반응형 디자인 */
+@media ( max-width : 1024px) {
+	.auth-main {
+		grid-template-columns: 1fr 420px;
+	}
+	.branding-section {
+		padding: 0 50px;
+	}
+	.welcome-text h1 {
+		font-size: 2.5rem;
+	}
+}
+
+@media ( max-width : 768px) {
+	.auth-main {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto 1fr;
+	}
+	.branding-section {
+		height: auto;
+		padding: 30px 20px 20px;
+		text-align: center;
+	}
+	.university-logo {
+		max-width: 100%;
+		width: 240px;
+		height: auto;
+		margin-bottom: 40px;
+		filter: brightness(1.1);
+		transition: transform 0.3s ease;
+	}
+	@media ( max-width : 1024px) {
+		.university-logo {
+			width: 200px;
+		}
+	}
+	@media ( max-width : 768px) {
+		.university-logo {
+			width: 180px;
+		}
+	}
+	@media ( max-width : 480px) {
+		.university-logo {
+			width: 160px;
+		}
+	}
+	.welcome-text h1 {
+		font-size: 2rem;
+		margin-bottom: 10px;
+	}
+	.welcome-text p {
+		font-size: 1.1rem;
+	}
+	.university-info {
+		display: none;
+	}
+	.login-section {
+		height: auto;
+		background: rgba(255, 255, 255, 0.98);
+		border-left: none;
+		border-top: 1px solid rgba(255, 255, 255, 0.3);
+		box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.1);
+	}
+	.auth-wrapper {
+		padding: 30px 20px;
+		max-width: 100%;
+	}
+}
+
+@media ( max-width : 480px) {
+	.welcome-text h1 {
+		font-size: 1.8rem;
+	}
+	.auth-wrapper {
+		padding: 20px 15px;
+	}
+	.form-control {
+		padding: 12px 14px;
+	}
+	.btn-primary {
+		padding: 12px;
+		font-size: 1rem;
+	}
+}
+
+/* 애니메이션 효과 */
+.branding-section {
+	animation: fadeInLeft 1s ease-out;
+}
+
+.login-section {
+	animation: fadeInRight 1s ease-out 0.3s both;
+}
+
+@
+keyframes fadeInLeft {from { opacity:0;
+	transform: translateX(-50px);
+}
+
+to {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+}
+@
+keyframes fadeInRight {from { opacity:0;
+	transform: translateX(50px);
+}
+
+to {
+	opacity: 1;
+	transform: translateX(0);
+}
+}
+
+
+</style>
+</head>
+
+<body>
+
+	<!-- 동영상 배경 -->
+	<video autoplay muted loop playsinline class="video-bg">
+		<source src="/dist/assets/video/booeong.mp4" type="video/mp4">
+	</video>
+	<div class="video-overlay"></div>
+
+	<c:if test="${not empty message}">
+		<script>
+			alert("${message}");
+		</script>
+		<c:remove var="message" scope="session" />
+	</c:if>
+
+	<div class="auth-main">
+		<!-- 왼쪽 브랜딩 영역 -->
+		<div class="branding-section">
+			<img src="/dist/assets/img/kaiadmin/booeong.png"
+				alt="Pathfinder University" class="university-logo">
+
+			<div class="welcome-text">
+				<h1>
+					Welcome to<br>Bu-eong University
+				</h1>
+				<p>Discover Your Path to Excellence</p>
+			</div>
+
+			<div class="university-info">Bu-eong University is committed to
+				providing world-class education and fostering innovation. Join our
+				community of learners, researchers, and leaders who are shaping the
+				future.</div>
+		</div>
+
+		<!-- 오른쪽 로그인 영역 -->
+			<div class="auth-wrapper">
+				<div class="auth-header">
+					<h2>부엉대학교</h2>
+				</div>
+
+				<!-- 로그인 폼 영역 (sitemesh로 대체됨) -->
+				<sitemesh:write property="body" />
+			</div>
+	</div>
+	
+	<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">로그인 실패</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage">에러 메시지가 여기에 표시됩니다.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast 컨테이너 -->
+<div class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+	<!-- 모달 및 스크립트 -->
+	<%@ include file="/WEB-INF/fragments/modalId.jsp"%>
+	<%@ include file="/WEB-INF/fragments/modalPass.jsp"%>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+	<script src="/js/app/elcass/modal.js"></script>
+	<%@ include file="/WEB-INF/fragments/mantisPostScript.jsp"%>
+	<script>
+	// 에러 처리 함수들
+	function showErrorModal(message) {
+	    console.log('에러 모달 표시:', message);
+	    
+	    const errorMessageEl = document.getElementById('errorMessage');
+	    if (errorMessageEl) {
+	        errorMessageEl.textContent = message;
+	    }
+	    
+	    const modalEl = document.getElementById('errorModal');
+	    if (modalEl) {
+	        const modal = new bootstrap.Modal(modalEl);
+	        modal.show();
+	    }
+	}
+
+	function showToast(message, type = 'error') {
+	    console.log(`Toast 표시: ${message} (${type})`);
+	    
+	    // 기존 toast 제거
+	    const existingToasts = document.querySelectorAll('.toast');
+	    existingToasts.forEach(toast => {
+	        const bsToast = bootstrap.Toast.getInstance(toast);
+	        if (bsToast) {
+	            bsToast.hide();
+	        }
+	    });
+
+	    const toastContainer = document.querySelector('.toast-container');
+	    const toastId = 'toast-' + Date.now();
+	    
+	    const toastEl = document.createElement('div');
+	    toastEl.id = toastId;
+	    toastEl.className = `toast ${type}`;
+	    toastEl.setAttribute('role', 'alert');
+	    toastEl.setAttribute('aria-live', 'assertive');
+	    toastEl.setAttribute('aria-atomic', 'true');
+	    
+	    toastEl.innerHTML = `
+	        <div class="toast-body d-flex align-items-center">
+	            <span class="me-auto">${message}</span>
+	            <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
+	        </div>
+	    `;
+	    
+	    toastContainer.appendChild(toastEl);
+	    
+	    const toast = new bootstrap.Toast(toastEl, {
+	        autohide: true,
+	        delay: 4000
+	    });
+	    
+	    toast.show();
+	    
+	    // toast가 숨겨진 후 DOM에서 제거
+	    toastEl.addEventListener('hidden.bs.toast', () => {
+	        toastEl.remove();
+	    });
+	}
+
+	function handleValidationErrors(fieldErrors) {
+	    console.log('Validation 에러:', fieldErrors);
+	    
+	    // 기존 에러 메시지 제거
+	    clearValidationErrors();
+	    
+	    let firstErrorField = null;
+	    
+	    // 각 필드별 에러 메시지 표시
+	    for (const [fieldName, messages] of Object.entries(fieldErrors)) {
+	        const field = document.getElementById(fieldName);
+	        const errorDiv = document.getElementById(`${fieldName}-error`);
+	        
+	        if (field && errorDiv) {
+	            // 필드에 에러 스타일 추가
+	            field.classList.add('error');
+	            
+	            // 에러 메시지 표시 (배열 또는 문자열 처리)
+	            const errorMessage = Array.isArray(messages) ? messages[0] : messages;
+	            errorDiv.textContent = errorMessage;
+	            errorDiv.style.display = 'block';
+	            
+	            // 첫 번째 에러 필드 저장
+	            if (!firstErrorField) {
+	                firstErrorField = field;
+	            }
+	        }
+	    }
+	    
+	    // 첫 번째 에러 필드에 포커스
+	    if (firstErrorField) {
+	        firstErrorField.focus();
+	    }
+	    
+	    // validation 에러가 있으면 toast도 표시
+	    showToast('입력 정보를 확인해주세요.');
+	}
+
+	// Validation 에러 메시지 제거
+	function clearValidationErrors() {
+	    // 에러 스타일 제거
+	    document.querySelectorAll('.form-control.error').forEach(field => {
+	        field.classList.remove('error');
+	    });
+	    
+	    // 에러 메시지 숨기기
+	    document.querySelectorAll('.field-error').forEach(errorDiv => {
+	        errorDiv.style.display = 'none';
+	        errorDiv.textContent = '';
+	    });
+	}
+
+	// 로딩 상태 관리
+	function setLoadingState(isLoading) {
+	    const loginBtn = document.getElementById('loginBtn');
+	    const btnText = loginBtn.querySelector('.btn-text');
+	    const spinner = loginBtn.querySelector('.spinner');
+	    
+	    if (isLoading) {
+	        loginBtn.classList.add('btn-loading');
+	        loginBtn.disabled = true;
+	        btnText.style.visibility = 'hidden';
+	        spinner.style.display = 'block';
+	    } else {
+	        loginBtn.classList.remove('btn-loading');
+	        loginBtn.disabled = false;
+	        btnText.style.visibility = 'visible';
+	        spinner.style.display = 'none';
+	    }
+	}
+
+	async function handleLogin(loginData) {
+	    try {
+	        setLoadingState(true);
+	        clearValidationErrors();
+	        
+	        // CSRF 토큰 추가 (Spring Security 사용 시)
+	        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+	        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+	        
+	        const headers = {
+	            'Content-Type': 'application/json'
+	        };
+	        
+	        if (csrfToken && csrfHeader) {
+	            headers[csrfHeader] = csrfToken;
+	        }
+	        
+	        console.log('로그인 요청 데이터:', loginData);
+	        
+	        const response = await axios.post("/common/auth", loginData, {
+	            headers: headers,
+	            withCredentials: true
+	        });
+	        
+	        console.log('서버 응답:', response.data);
+	        const data = response.data;
+	        
+	        // 성공 처리
+	        if (data.success === true || response.status === 200) {
+	            showToast('로그인 되었습니다.', 'success');
+	            setTimeout(() => {
+	                location.href = "/";
+	            }, 1000);
+	            return;
+	        }
+	        
+	        // 실패 처리
+	        handleLoginError(data);
+	        
+	    } catch (error) {
+	        console.error('로그인 에러 상세:', error);
+	        console.error('에러 응답:', error.response);
+	        
+	        if (error.response) {
+	            // 서버에서 응답을 받았지만 에러 상태코드인 경우
+	            const errorData = error.response.data;
+	            console.log('에러 데이터:', errorData);
+	            
+	            // 다양한 에러 응답 형태 처리
+	            if (errorData.fieldErrors) {
+	                handleValidationErrors(errorData.fieldErrors);
+	            } else if (errorData.message) {
+	                showErrorModal(errorData.message);
+	                showToast(errorData.message);
+	            } else if (errorData.error) {
+	                showErrorModal(errorData.error);
+	                showToast(errorData.error);
+	            } else if (typeof errorData === 'string') {
+	                showErrorModal(errorData);
+	                showToast(errorData);
+	            } else {
+	                // HTTP 상태코드별 기본 메시지
+	                const statusMessages = {
+	                    400: '잘못된 요청입니다. 입력 정보를 확인해주세요.',
+	                    401: '아이디 또는 비밀번호가 올바르지 않습니다.',
+	                    403: '접근 권한이 없습니다.',
+	                    404: '요청하신 페이지를 찾을 수 없습니다.',
+	                    500: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
+	                };
+	                
+	                const message = statusMessages[error.response.status] || 
+	                               `로그인에 실패했습니다. (${error.response.status})`;
+	                showErrorModal(message);
+	                showToast(message);
+	            }
+	        } else if (error.request) {
+	            // 요청이 전송되었지만 응답을 받지 못한 경우
+	            const message = '서버와의 통신에 실패했습니다. 네트워크 연결을 확인해주세요.';
+	            showErrorModal(message);
+	            showToast(message);
+	        } else {
+	            // 요청을 만드는 중에 에러가 발생한 경우
+	            const message = '요청 처리 중 오류가 발생했습니다.';
+	            showErrorModal(message);
+	            showToast(message);
+	        }
+	    } finally {
+	        setLoadingState(false);
+	    }
+	}
+
+	//로그인 에러 처리 함수
+	function handleLoginError(data) {
+	    console.log('로그인 에러 처리:', data);
+	    
+	    // 필드별 validation 에러
+	    if (data.fieldErrors && typeof data.fieldErrors === 'object') {
+	        handleValidationErrors(data.fieldErrors);
+	        return;
+	    }
+	    
+	    // 일반 에러 메시지들 (다양한 필드명 지원)
+	    const errorMessage = data.message || 
+	                        data.error || 
+	                        data.errorMessage || 
+	                        data.msg ||
+	                        '로그인에 실패했습니다.';
+	    
+	    showErrorModal(errorMessage);
+	    showToast(errorMessage);
+	}
+
+	</script>
+</body>
+</html>

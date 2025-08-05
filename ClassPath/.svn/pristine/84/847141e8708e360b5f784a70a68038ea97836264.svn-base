@@ -1,0 +1,555 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   교직원용 장학금 신청 목록 시스템 - 업무성 디자인 (studentList와 통일)
+   ========================================================================== */
+
+/* 전체 컨테이너 */
+.graduateApply {
+    max-width: 1600px;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #212529;
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   섹션 헤더 (studentList와 동일한 스타일)
+   ========================================================================== */
+
+.graduateApply .sectionHeaderLine {
+    border-bottom: 1px solid #2b6cb0;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.graduateApply .sectionHeaderTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 4px 0;
+}
+
+.graduateApply .sectionHeaderDescription {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   검색 폼 (studentList 스타일과 통일)
+   ========================================================================== */
+
+.graduateApply .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap;
+}
+
+.graduateApply .form-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.graduateApply .form-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.graduateApply .form-group:nth-child(1) {
+    flex: 0 0 140px; /* 처리 상태 - 고정폭 */
+}
+
+.graduateApply .form-group:nth-child(2) {
+    flex: 0 0 120px; /* 검색 항목 - 고정폭 */
+}
+
+.graduateApply .form-group:nth-child(3) {
+    flex: 1; /* 검색어 - 유동폭 */
+    min-width: 200px;
+}
+
+.graduateApply .form-group:nth-child(4) {
+    flex: 0 0 auto; /* 검색 버튼 - 내용에 맞춤 */
+}
+
+.graduateApply .selectBox {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    background: #ffffff;
+    color: #2d3748;
+    min-width: 120px;
+}
+
+.graduateApply .selectBox:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+}
+
+.graduateApply .inputField {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    background: #ffffff;
+    color: #2d3748;
+}
+
+.graduateApply .inputField:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+}
+
+.graduateApply .inputField::placeholder {
+    color: #a0aec0;
+}
+
+.graduateApply .searchButton {
+    background: #2b6cb0;
+    color: #ffffff;
+    border: none;
+    padding: 9px 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.graduateApply .searchButton:hover {
+    background: #2a5298;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(43, 108, 176, 0.3);
+}
+
+.graduateApply .searchButton i {
+    font-size: 0.75rem;
+}
+
+/* ==========================================================================
+   테이블 컨테이너 (studentList와 동일한 스타일)
+   ========================================================================== */
+
+.graduateApply .tableContainer {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    border-radius: 0;
+}
+
+/* 장학금 신청 목록 테이블 */
+.graduateApply .defaultTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    background: #ffffff;
+    margin: 0;
+}
+
+.graduateApply .tableHead {
+    background: #f7fafc;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.graduateApply .tableTh {
+    padding: 14px 12px;
+    text-align: center;
+    font-weight: 600;
+    color: #2d3748;
+    border-bottom: 2px solid #cbd5e0;
+    border-right: 1px solid #e2e8f0;
+    white-space: nowrap;
+    vertical-align: middle;
+    background: #f7fafc;
+}
+
+.graduateApply .tableTh:last-child {
+    border-right: none;
+}
+
+.graduateApply .defaultTable tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.graduateApply .tableRowHover {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.graduateApply .tableRowHover:nth-child(even) {
+    background-color: #fefefe;
+}
+
+.graduateApply .tableRowHover:hover {
+    background-color: #edf2f7;
+}
+
+.graduateApply .tableTd {
+    padding: 12px;
+    text-align: center;
+    color: #2d3748;
+    border-right: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.graduateApply .tableTd:last-child {
+    border-right: none;
+}
+
+/* 학번 열 - 고정폭 폰트 */
+.graduateApply .tableTd:nth-child(2) {
+    color: #4a5568;
+    font-weight: 500;
+}
+
+/* 신청자명 열 - 강조 */
+.graduateApply .tableTd:nth-child(3) {
+    font-weight: 600;
+    color: #1a202c;
+}
+
+/* 첨부파일 다운로드 링크 */
+.graduateApply .tableTd a {
+    color: #2b6cb0;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.graduateApply .tableTd a:hover {
+    color: #2a5298;
+    text-decoration: underline;
+}
+
+.graduateApply .tableTd a i {
+    font-size: 0.8rem;
+}
+
+/* 데이터 없음 메시지 */
+.graduateApply .noticeInfo {
+    text-align: center !important;
+    padding: 40px 20px !important;
+    color: #718096 !important;
+    font-style: italic !important;
+    background: #f7fafc !important;
+}
+
+/* ==========================================================================
+   배지 스타일 (상태별 표시)
+   ========================================================================== */
+
+.graduateApply .badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.graduateApply .badgeRed {
+    background-color: #fed7d7;
+    color: #742a2a;
+}
+
+.graduateApply .badgeGreen {
+    background-color: #c6f6d5;
+    color: #22543d;
+}
+
+.graduateApply .badgeGray {
+    background-color: #e2e8f0;
+    color: #4a5568;
+}
+
+/* ==========================================================================
+   페이지네이션 (studentList와 동일한 스타일)
+   ========================================================================== */
+
+.graduateApply .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    margin-top: 20px;
+    padding: 20px;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-top: none;
+}
+
+.graduateApply .pageButton {
+    padding: 8px 12px;
+    background: #ffffff;
+    border: 1px solid #cbd5e0;
+    color: #4a5568;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    border-radius: 0;
+}
+
+.graduateApply .pageButton:hover {
+    background: #edf2f7;
+    color: #2d3748;
+}
+
+.graduateApply .pageButton.active {
+    background: #2b6cb0;
+    color: #ffffff;
+    border-color: #2b6cb0;
+    font-weight: 600;
+}
+
+/* 이전/다음 버튼 */
+.graduateApply .pagination a[href*="이전"],
+.graduateApply .pagination a[href*="다음"] {
+    font-weight: 600;
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.graduateApply .pagination a[href*="이전"]:hover,
+.graduateApply .pagination a[href*="다음"]:hover {
+    background: #cbd5e0;
+    color: #2d3748;
+}
+
+/* ==========================================================================
+   반응형 디자인 (studentList와 일관성 있게)
+   ========================================================================== */
+
+@media (max-width: 1400px) {
+    .graduateApply {
+        max-width: 100%;
+        padding: 16px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .graduateApply .defaultTable {
+        font-size: 0.8rem;
+    }
+    
+    .graduateApply .tableTh,
+    .graduateApply .tableTd {
+        padding: 10px 8px;
+    }
+    
+    .graduateApply .sectionHeaderTitle {
+        font-size: 1.25rem;
+    }
+    
+    .graduateApply .form-group:nth-child(3) {
+        min-width: 160px;
+    }
+    
+    .graduateApply .searchButton {
+        padding: 9px 16px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .graduateApply .sectionHeaderLine {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .graduateApply .card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .graduateApply .form-row {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .graduateApply .form-group:nth-child(1),
+    .graduateApply .form-group:nth-child(2) {
+        flex: 1 1 140px;
+    }
+    
+    .graduateApply .form-group:nth-child(3) {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+    
+    .graduateApply .form-group:nth-child(4) {
+        flex: 0 0 100%;
+    }
+    
+    .graduateApply .searchButton {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .graduateApply .selectBox,
+    .graduateApply .inputField {
+        min-width: 0;
+        width: 100%;
+    }
+    
+    .graduateApply .tableTh,
+    .graduateApply .tableTd {
+        padding: 8px 6px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .graduateApply {
+        padding: 12px;
+    }
+    
+    .graduateApply .sectionHeaderLine {
+        padding: 16px;
+    }
+    
+    .graduateApply .sectionHeaderTitle {
+        font-size: 1.125rem;
+    }
+    
+    .graduateApply .sectionHeaderDescription {
+        font-size: 0.8rem;
+    }
+    
+    .graduateApply .card {
+        padding: 16px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .graduateApply .form-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .graduateApply .form-group {
+        flex: 1 1 auto;
+    }
+    
+    .graduateApply .defaultTable {
+        font-size: 0.7rem;
+    }
+    
+    .graduateApply .tableTh,
+    .graduateApply .tableTd {
+        padding: 6px 4px;
+    }
+    
+    /* 모바일에서 첨부파일 컬럼 숨기기 */
+    .graduateApply .tableTd:nth-child(7),
+    .graduateApply .tableTh:nth-child(7) {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .graduateApply {
+        padding: 8px;
+    }
+    
+    .graduateApply .sectionHeaderLine {
+        padding: 12px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .graduateApply .card {
+        padding: 12px;
+    }
+    
+    .graduateApply .form-row {
+        gap: 8px;
+    }
+    
+    .graduateApply .selectBox,
+    .graduateApply .inputField,
+    .graduateApply .searchButton {
+        font-size: 0.8rem;
+    }
+    
+    .graduateApply .searchButton {
+        padding: 8px 16px;
+    }
+    
+    .graduateApply .defaultTable {
+        font-size: 0.65rem;
+    }
+    
+    .graduateApply .tableTh,
+    .graduateApply .tableTd {
+        padding: 5px 3px;
+    }
+    
+    /* 초소형 화면에서 처리 일자도 숨기기 */
+    .graduateApply .tableTd:nth-child(6),
+    .graduateApply .tableTh:nth-child(6) {
+        display: none;
+    }
+    
+    .graduateApply .pagination {
+        padding: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .graduateApply .pageButton {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+}
+
+/* ==========================================================================
+   상태별 특별 스타일링 (studentList와 일관성)
+   ========================================================================== */
+
+/* 승인 행 강조 */
+.graduateApply .status-approved {
+    border-left: 3px solid #38a169;
+}
+
+/* 대기 행 */
+.graduateApply .status-waiting {
+    border-left: 3px solid #ed8936;
+}
+
+/* 반려 행 */
+.graduateApply .status-rejected {
+    border-left: 3px solid #e53e3e;
+}

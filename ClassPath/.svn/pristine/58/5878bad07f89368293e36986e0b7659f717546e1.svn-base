@@ -1,0 +1,135 @@
+<%--
+ * == 개정이력(Modification Information) ==
+ * 수정일	수정자	수정내용
+ * ========================================
+ * 250701	서경덕	최초 생성
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+
+<title>교수 등록</title>
+<script src="<c:url value='/js/app/pfcp/staff/professorInsertForm.js'/>">
+	// 스크립트 코드
+</script>
+<script src="${pageContext.request.contextPath}/js/axios.min.js"></script>
+<div class="card">
+	<div class="card-header">
+		<h5>교수 등록</h5>
+	</div>
+	<div class="card-body">
+		<div class="row">
+			<form method="post" action="/staff/professorManagement/professorInsertProcess.do">
+				<%-- 
+				<c:if test="${action eq 'update' }">
+					<input type="hidden" id="prodId" name="prodId"
+						value="${prod.prodId}" class="form-control" placeholder="상품코드">
+					<span class="text-danger">${errors.prodId}</span>
+				</c:if> 
+				--%>
+				<div class="form-group">
+					<label class="form-label" for="userNo">교번</label><input type="text"
+						id="userNo" name="user.userNo" class="form-control" placeholder="교번">
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label" for="userPass">비밀번호</label><input
+						type="text" id="userPass" name="user.userPass" class="form-control"
+						placeholder="비밀번호">
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label" for="userName">이름</label><input
+						type="text" id="userName" name="user.userName" class="form-control"
+						placeholder="이름">
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label" for="proPosition">교수 직책</label> <input
+						type="text" id="proPosition" name="proPosition"
+						class="form-control" placeholder="교수 직책">
+				</div>
+
+				<div class="form-group">
+					<label class="form-label" for="departmentNo">학과(추후 동적으로 select 태그 설정할 예정)</label>
+					<input type="text" id="departmentNo" name="departmentNo" class="form-control" placeholder="학과">
+					<%-- 
+					추후에 규민이가 학과 목록 조회를 완성하면 그 때 봉인을 풀겠습니다.
+					<select name="departmentNo" id="departmentNo" class="form-select" data-init-val="${professor.department.departmentNo }">
+						<option value="">학과 코드</option>
+					</select>  
+					--%>
+					<span class="text-danger">${errors.lprodGu }</span>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label" for="proHiredate">입사 일자</label> <input
+						type="text" id="proHiredate" name="proHiredate"
+						class="form-control" placeholder="입사 일자">
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label" for="gender">성별</label><input type="text"
+						id="gender" name="user.gender" class="form-control" placeholder="성별">
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label" for="userRegno1">주민등록번호 앞자리</label><input
+						type="text" id="userRegno1" name="user.userRegno1" class="form-control"
+						placeholder="주민등록번호 앞자리">
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label" for="userRegno2">주민등록번호 뒷자리</label><input
+						type="text" id="userRegno2" name="user.userRegno2" class="form-control"
+						placeholder="주민등록번호 뒷자리">
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label" for="userTel">전화번호</label><input
+						type="text" id="userTel" name="user.userTel" class="form-control"
+						placeholder="전화번호">
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label" for="userZip">우편번호</label><input
+						type="text" id="userZip" name="user.userZip" class="form-control"
+						placeholder="우편번호">
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label" for="userAdd1">기본주소</label><input
+						type="text" id="userAdd1" name="user.userAdd1" class="form-control"
+						placeholder="기본주소">
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label" for="userAdd2">상세주소</label><input
+						type="text" id="userAdd2" name="user.userAdd2" class="form-control"
+						placeholder="상세주소">
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label" for="userEmail">이메일</label><input
+						type="text" id="userEmail" name="user.userEmail" class="form-control"
+						placeholder="이메일">
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label" for="bankCd">은행코드</label><input
+						type="text" id="bankCd" name="user.bankCd" class="form-control"
+						placeholder="은행코드">
+				</div>
+				
+				<div class="form-group">
+					<label class="form-label" for="userBankno">계좌번호</label><input
+						type="text" id="userBankno" name="user.userBankno" class="form-control"
+						placeholder="계좌번호">
+				</div>
+				
+				<button class="btn btn-primary" type="submit">저장</button>
+				<button class="btn btn-danger" type="reset">취소</button>
+			</form>
+		</div>
+	</div>
+</div>

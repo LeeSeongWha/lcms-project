@@ -1,0 +1,51 @@
+package kr.or.ddit.pfcp.student.certificate.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.vo.ProgramCertReqVO;
+import kr.or.ddit.pfcp.common.vo.ProgramVO;
+import kr.or.ddit.pfcp.student.certificate.mapper.StudentCertificateMapper;
+
+/**
+ * @author seokyungdeok
+ * @since 2025. 7. 23.
+ *
+ * << 개정이력(Modification Information) >>
+ * 수정일		|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 2025. 7. 23.	|	서경덕	|	최초 생성
+ */
+@Service(value = "studentCertificateService")
+public class StudentCertificateServiceImpl implements StudentCertificateService {
+	@Autowired
+	private StudentCertificateMapper studentCertificateMapper;
+
+	@Override
+	public String readStudentName(String userNo) {
+		// TODO Auto-generated method stub
+		return studentCertificateMapper.selectStudentName(userNo);
+	}
+
+	@Override
+	public ProgramVO readProgramTitle(Map<String, Object> paramMap) {
+		// TODO Auto-generated method stub
+		return studentCertificateMapper.selectProgramTitle(paramMap);
+	}
+
+	@Override
+	public List<ProgramVO> readProgramList(String userNo) {
+		// TODO Auto-generated method stub
+		return studentCertificateMapper.selectProgramList(userNo);
+	}
+
+	@Override
+	public void createProgramCertReq(ProgramCertReqVO programCertReq) {
+		// TODO Auto-generated method stub
+		studentCertificateMapper.insertProgramCertReq(programCertReq);
+	}
+
+}

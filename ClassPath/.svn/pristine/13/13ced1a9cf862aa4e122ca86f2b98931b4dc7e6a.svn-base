@@ -1,0 +1,25 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserVO {
+	private String userNo;
+	private String userPass;
+	private String userName;
+	private String gender;
+	private String userRegno1;
+	private String userRegno2;
+	private String userTel;
+	private String userZip;
+	private String userAdd1;
+	private String userAdd2;
+	private String userEmail;
+	private String bankCd;
+	private String userRole;
+	private String userBankno;
+}

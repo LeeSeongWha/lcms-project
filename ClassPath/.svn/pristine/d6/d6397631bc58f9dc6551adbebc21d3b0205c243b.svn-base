@@ -1,0 +1,16 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of = "examNo")
+public class ExamVO {
+	private String examNo;
+	private String lecNo;
+	private String examName;
+	private String examDate;
+	private String examType;
+	private String examLimit;
+	private String facilityNo;
+}

@@ -1,0 +1,16 @@
+package kr.or.ddit.pfcp.staff.requestCollection.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.pfcp.common.vo.AcademicChangeRequestVO;
+
+public interface StaffRequestMapper {
+
+	public List<AcademicChangeRequestVO> selectRequestList(Map<String, Object> paramMap);
+
+	public int selectRequestTotalCountByKeyword(Map<String, Object> paramMap);
+
+	public int selectRequestList();
+
+}

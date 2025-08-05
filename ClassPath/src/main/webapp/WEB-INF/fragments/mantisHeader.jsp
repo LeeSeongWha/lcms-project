@@ -1,0 +1,285 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib uri="http://www.springframework.org/security/tags"
+	prefix="security"%>
+
+<security:authorize access="isAuthenticated()">
+	<security:authentication property="principal.realUser.userNo"
+		var="userNo" />
+</security:authorize>
+
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+<link rel="stylesheet" href="/dist/assets/css/main-header.css">
+<script
+	src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<!-- 네비게이션 통일 스타일 추가 -->
+<style>
+	<sec:authorize access="hasRole('STAFF')">
+		.navbar{
+			background-color:#1a2035!important;
+		}
+		
+		.mine{
+			background-color:#1a2035!important;
+		}
+		
+	</sec:authorize>
+	
+	<sec:authorize access="hasRole('STD')">
+	</sec:authorize>
+	
+	<sec:authorize access="hasRole('PROF')">
+		.navbar{
+			background-color:#147262!important;
+		}
+		.mine{
+			background-color:#147262!important;
+		}
+	</sec:authorize>
+</style>
+
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const userNo = `${userNo}`;
+		const socket = new SockJS("/ws");
+		const stompClient = Stomp.over(socket);
+		const departmentNameTag = document.querySelector("#departmentName");
+		
+		const CPATH = document.body.dataset.contextPath;
+		
+		const departmentName = async() => {
+			const response = await axios.get("/ajax/user/departmentName");
+			console.log(response.data);
+			departmentNameTag.innerHTML=response.data.departmentName;
+		}
+		
+		departmentName();
+		
+		stompClient.connect({}, function(frame) {
+			console.log("Connected: " + frame);
+			
+			stompClient.subscribe('/meeting/notify/' + userNo, function(message) {
+				const noti = JSON.parse(message.body);
+				
+				console.log("noti :", noti);
+				
+				const container = document.querySelector("#alertNotiContainer");
+				
+				const html = `
+					<a href="\${noti.linkUrl}">
+						<div class="notif-icon \${noti.iconClass}">
+							<i class="fa \${noti.faIcon}"></i>
+						</div>
+						<div class="notif-content">
+							<span class="block">\${noti.message}</span>
+							<span class="time">\${noti.timeAgo}</span>
+						</div>
+					</a>
+					`;
+				container.insertAdjacentHTML("afterbegin", html);
+				
+				const countElem = document.querySelector("#notification-count");
+				const newCount = (parseInt(countElem.innerText || '0') + 1);
+				countElem.innerText = newCount;
+			});
+		});
+		
+		document.querySelector("#alertNotiContainer").addEventListener("click", async (e) => {
+			const notiItem = e.target.closest("#noti-item");
+			
+			if (!notiItem) {
+				return;
+			}
+			
+			const notiNo = notiItem.dataset.notiNo;
+			
+			if (!notiNo) {
+				return;
+			}
+			
+			try {
+				await axios.post(`${CPATH}/notif/notifications/read`, { notiNo });
+				
+				// 알림 카운트 감소
+				const countElem = document.querySelector("#notification-count");
+				
+				const currentCount = parseInt(countElem.innerText || '0');
+				
+				const newCount = currentCount > 0 ? currentCount - 1 : 0;
+				
+				countElem.innerText = newCount;
+				
+				notiItem.remove();
+		    } catch (err) {
+				console.error("읽음 처리 실패:", err);
+		    }
+		});
+	})
+</script>
+
+<header>
+	<div class="main-header">
+		<div class="main-header-logo">
+			<!-- Logo Header -->
+			<div class="logo-header" data-background-color="dark">
+				<a href="/" class="logo"> <img
+					src="/dist/assets/img/kaiadmin/logo_light.svn" alt="navbar brand"
+					class="navbar-brand" height="20" />
+				</a>
+				<div class="nav-toggle">
+					<button class="btn btn-toggle toggle-sidebar">
+						<i class="gg-menu-right"></i>
+					</button>
+					<button class="btn btn-toggle sidenav-toggler">
+						<i class="gg-menu-left"></i>
+					</button>
+				</div>
+				<button class="topbar-toggler more">
+					<i class="gg-more-vertical-alt"></i>
+				</button>
+			</div>
+			<!-- End Logo Header -->
+		</div>
+
+		<!-- Navbar Header -->
+		<nav
+			class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
+			<div class="container-fluid">
+				<nav
+					class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
+				</nav>
+
+				<ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+					<!-- 취업 지원 링크 -->
+					<li class="nav-item"><a href="http://localhost:6060/jobs/"
+						class="nav-link"> <i class="fa fa-briefcase"></i> <span
+							class="nav-span" style="color:white !important;">취업 지원 센터</span>
+					</a></li>
+
+					<!-- 로그인하지 않은 경우 -->
+					<security:authorize access="!isAuthenticated()">
+						<li class="nav-item"><a href="/login" class="nav-link"> <i
+								class="fa fa-sign-in-alt"></i> <span class="nav-span" style="color:white !important;">로그인</span>
+						</a></li>
+					</security:authorize>
+
+					<!-- 로그인한 경우 -->
+					<security:authorize access="isAuthenticated()">
+						<!-- 알림 (맨 오른쪽 배치) -->
+						<li class="nav-item dropdown"><a
+							class="nav-link dropdown-toggle notification-badge" href="#"
+							id="notifDropdown" role="button" data-bs-toggle="dropdown"
+							aria-haspopup="true" aria-expanded="false"> <i
+								class="fa fa-bell"></i> <span class="notification-count"
+								id="notification-count"> <c:out
+										value="${fn:length(unreadNotis)}" />
+							</span> <span class="nav-span" style="color:white !important;">알림</span>
+						</a>
+							<ul class="dropdown-menu notif-box animated fadeIn"
+								aria-labelledby="notifDropdown">
+								<li></li>
+								<li>
+									<div class="notif-scroll scrollbar-outer">
+										<div class="notif-center" id="alertNotiContainer">
+											<c:forEach var="noti" items="${unreadNotis}">
+												<a href="${noti.linkUrl}" id="noti-item" class="noti-item"
+													data-noti-no="${noti.notiNo}">
+													<div class="notif-icon ${noti.iconClass}">
+														<i class="fa ${noti.faIcon}"></i>
+													</div>
+													<div class="notif-content">
+														<span class="block">${noti.message}</span> <span
+															class="time">${noti.timeAgo}</span>
+													</div>
+												</a>
+											</c:forEach>
+										</div>
+									</div>
+								</li>
+								<li><a class="see-all" href="javascript:void(0);"
+									style="display: block; text-align: left; padding-left: 0; margin-left: 5px;">
+										모든 알림 보기 <i class="fa fa-angle-right"></i>
+								</a></li>
+							</ul></li>
+
+						<!-- 사용자 프로필 드롭다운 -->
+						<security:authentication property="principal" var="principal" />
+						<li class="nav-item dropdown"><a
+							class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+							href="#" aria-expanded="false"> <i class="fa fa-user"></i>
+<!-- 							<span class="nav-span" style="color:white !important;">내 정보</span> -->
+							<span class="nav-span" style="color:white !important;">${principal.realUser.userName}님</span>
+						</a>
+							<ul class="dropdown-menu dropdown-user animated fadeIn">
+								<div class="dropdown-user-scroll scrollbar-outer">
+									<li>
+										<div class="user-box">
+											<div class="avatar-lg">
+												<img
+													src="${pageContext.request.contextPath}/dist/assets/img/profile3.png"
+													alt="image profile" class="avatar-img rounded" />
+											</div>
+											<div class="u-text">
+												<h4>${principal.realUser.userName}</h4>
+												<p class="text-muted" id="departmentName"></p>
+												<p class="text-muted">${principal.realUser.userNo}</p>
+											</div>
+										</div>
+									</li>
+									<li>
+										<div style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px; padding: 10px 0;">
+										  <a href="/mypage" class="mine"
+										     style="display: inline-block;
+										            width: 120px;
+										            text-align: center;
+										            padding: 10px 16px;
+										            background-color: #2b6cb0;
+										            color: white;
+										            border-radius: 8px;
+										            font-weight: 600;
+										            text-decoration: none;
+										            transition: background-color 0.3s ease;"
+										     onmouseover="this.style.backgroundColor='#1e4e8c';"
+										     onmouseout="this.style.backgroundColor='#2b6cb0';">
+										    마이페이지
+										  </a>
+										
+										  <a href="/login" id="logoutBtn"
+										     style="display: inline-block;
+										            width: 120px;
+										            text-align: center;
+										            padding: 10px 16px;
+										            background-color: #e53e3e;
+										            color: white;
+										            border-radius: 8px;
+										            font-weight: 600;
+										            text-decoration: none;
+										            transition: background-color 0.3s ease;"
+										     onmouseover="this.style.backgroundColor='#c53030';"
+										     onmouseout="this.style.backgroundColor='#e53e3e';">
+										    로그아웃
+										  </a>
+										</div>
+										<script>
+											logoutBtn.addEventListener("click", (e) => {
+												e.preventDefault();
+												axios.post("/common/auth/revoke", {}, {
+													withCredentials: true
+												}).then(resp => location.href = "/");
+											});
+										</script>
+									</li>
+								</div>
+							</ul></li>
+					</security:authorize>
+				</ul>
+			</div>
+		</nav>
+		<!-- End Navbar -->
+	</div>
+</header>

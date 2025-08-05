@@ -1,0 +1,39 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of="scheduleNo")
+public class ScheduleVO {
+	private String scheduleNo;
+	@NotBlank
+	private String scheduleTitle;
+	private String scheduleType;
+	@NotBlank
+	private String startDate;
+	@NotBlank
+	private String endDate;
+	private String startTime;
+	private String endTime;
+	private String scheduleDesp;
+	private String lecNo;
+	private String scheduleTargetId;
+	private String backgroundColor;
+	
+	private ScheduleRefVO ref = new ScheduleRefVO();
+	
+
+    private String getColorByRefType(String scheduleType) {
+        return switch (scheduleType) {
+            case "EXAM" -> "#4285F4";         // 파랑
+            case "STATUS_CHANGE" -> "#34A853"; // 초록
+            case "MEETING" -> "#FBBC05";       // 노랑
+            case "EVENT" -> "#EA4335";         // 빨강
+            default -> "#6c757d";              // 회색 (기본)
+        };
+    }
+	
+	
+}

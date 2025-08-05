@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.student.counsel.mapper.StudentCounselMapper">
+	<resultMap id="counselReqMap" type="kr.or.ddit.pfcp.common.vo.CounselReqVO">
+	    <id property="counselReqno" column="COUNSEL_REQNO"/>
+	    <result property="preferredDate" column="PREFERRED_DATE"/>
+	    <result property="typeCode" column="TYPE_CODE"/>
+	    <result property="userNo" column="USER_NO"/>
+	    <result property="status" column="STATUS"/>
+	    <result property="counselReqdate" column="COUNSEL_REQDATE"/>
+	    <result property="counselComment" column="COUNSEL_COMMENT"/>
+	    <result property="reqType" column="REQ_TYPE"/>
+	    
+	    <association property="type" javaType="kr.or.ddit.pfcp.common.vo.TypeVO">
+	        <id property="typeCode" column="TYPE_CODE"/>
+	        <result property="typeName" column="TYPE_NAME"/>
+	    </association>
+	    <association property="user" javaType="UserVO">
+	    	<id property="userNo" column="USER_NO"/>
+	    	<result property="userName" column="USER_NAME"/>
+	    </association>
+	</resultMap>
+	
+	<resultMap type="LectureEnrVO" id="lectureEnrMap" autoMapping="true">
+		<id property="enrollNo" column="ENROLL_NO"/>
+		
+	    <association property="lecture" javaType="LectureVO" autoMapping="true">
+	    	<id property="lecNo" column="LEC_NO"/>
+	    </association>
+	    <association property="user" javaType="UserVO">
+	    	<id property="userNo" column="USER_NO"/>
+	    </association>
+	</resultMap>
+	
+	<insert id="insertStudentCounsel">
+		INSERT INTO COUNSEL_REQ (
+			COUNSEL_REQNO, 
+			PREFERRED_DATE, 
+			TYPE_CODE, 
+			USER_NO, 
+			STATUS, 
+			COUNSEL_REQDATE, 
+			COUNSEL_COMMENT,
+			REQ_TYPE,
+			PROF_NO
+		)
+		VALUES (
+			'CR' || LPAD(COUNSEL_REQ_SEQ.NEXTVAL, 8, '0'),
+			#{preferredDate},
+			#{typeCode},
+			#{userNo},
+			'대기',
+			TO_CHAR(SYSDATE, 'YYYY-MM-DD'),
+			#{counselComment},
+			#{reqType},
+			#{profNo}
+		)
+	</insert>
+
+	<select id="selectStudentDepartmentCounselList" resultMap="counselReqMap" parameterType="String">
+		SELECT A.COUNSEL_REQNO, 
+	           SUBSTR(A.PREFERRED_DATE, 1, 10) AS PREFERRED_DATE,
+	           A.TYPE_CODE, 
+	           B.TYPE_NAME,
+	           A.USER_NO, 
+	           A.STATUS, 
+	           A.COUNSEL_REQDATE, 
+	           A.COUNSEL_COMMENT,
+	           A.REQ_TYPE,
+	           A.PROF_NO,
+	           C.USER_NAME
+	      FROM COUNSEL_REQ A
+	INNER JOIN TYPE B ON A.TYPE_CODE=B.TYPE_CODE
+	INNER JOIN TB_USER C ON A.PROF_NO=C.USER_NO
+	     WHERE A.USER_NO=#{userNo}
+	       AND B.TYPE_CODE='CN_DEPT'
+	       AND A.STATUS='대기' OR A.STATUS='승인'
+	  ORDER BY A.COUNSEL_REQDATE DESC
+	</select>
+	
+	<select id="selectStudentEmploymentCounselList" resultMap="counselReqMap" parameterType="String">
+		SELECT A.COUNSEL_REQNO, 
+	           SUBSTR(A.PREFERRED_DATE, 1, 10) AS PREFERRED_DATE,
+	           A.TYPE_CODE, 
+	           B.TYPE_NAME,
+	           A.USER_NO, 
+	           A.STATUS, 
+	           A.COUNSEL_REQDATE, 
+	           A.COUNSEL_COMMENT,
+	           A.REQ_TYPE,
+	           A.PROF_NO,
+	           C.USER_NAME
+	      FROM COUNSEL_REQ A
+	INNER JOIN TYPE B ON A.TYPE_CODE=B.TYPE_CODE
+	INNER JOIN TB_USER C ON A.PROF_NO=C.USER_NO
+	     WHERE A.USER_NO=#{userNo}
+	       AND B.TYPE_CODE='CN_EMP'
+	       AND A.STATUS='대기' OR A.STATUS='승인'
+	  ORDER BY A.COUNSEL_REQDATE DESC
+	</select>
+	
+	<update id="deleteStudentDepartmentCounselList">
+		UPDATE COUNSEL_REQ
+		   SET STATUS='삭제'
+		 WHERE COUNSEL_REQNO=#{counselReqno}
+	</update>
+	
+	<select id="selectProfessorList" resultMap="lectureEnrMap">
+		SELECT DISTINCT 
+			   C.USER_NAME
+			   , C.USER_NO
+	      FROM LECTURE_ENR A
+	INNER JOIN LECTURE B ON A.LEC_NO=B.LEC_NO
+	INNER JOIN TB_USER C ON B.USER_NO=C.USER_NO
+	     WHERE A.USER_NO=#{userNo}
+	</select>
+	
+	<select id="selectAvailableTimesByProfessor" resultType="map">
+		SELECT A.RESERVATION_ID
+	           , A.RESERVATION_DAY
+	           , A.START_HOUR
+	           , A.RESERVATION_TYPE
+	           , A.USER_NO
+	           , B.USER_NAME
+		  FROM RESERVATION_TIMESTAMP A
+	INNER JOIN TB_USER B ON A.USER_NO=B.USER_NO
+		 WHERE A.RESERVATION_TYPE='CONSULT'
+		   AND B.USER_NO=#{userNo}
+	</select>
+</mapper>

@@ -1,0 +1,25 @@
+package kr.or.ddit.pfcp.professor.attendclass.mapper;
+
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import kr.or.ddit.pfcp.common.vo.LectureEnrVO;
+
+/**
+ * @author 김태수
+ * @since 2025. 7. 14.
+ *
+ * << 개정이력(Modification Information) >>
+ * 수정일		|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 2025. 7. 14.	|	김태수	|	최초 생성
+ */
+@Mapper
+public interface ProfessorAttendClassMapper {
+    public int selectCntEnrKeyword(Map<String, Object> paramMap);
+    public List<LectureEnrVO> selectEnrPagingKeyword(Map<String, Object> paramMap);
+}

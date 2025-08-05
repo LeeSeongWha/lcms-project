@@ -1,0 +1,22 @@
+package kr.or.ddit.pfcp.student.bill.scholarship.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.vo.ScholarshipVO;
+import kr.or.ddit.pfcp.student.bill.scholarship.mapper.StudentScholarshipMapper;
+
+@Service(value = "studentScholarshipService")
+public class StudentScholarshipServiceImpl implements StudentScholarshipService {
+	@Autowired
+	private StudentScholarshipMapper studentScholarshipMapper;
+	
+	@Override
+	public List<ScholarshipVO> readScholarshipBenefitList(String studentNo) {
+		
+		return studentScholarshipMapper.selectScholarshipBenefitList(studentNo);
+	}
+
+}

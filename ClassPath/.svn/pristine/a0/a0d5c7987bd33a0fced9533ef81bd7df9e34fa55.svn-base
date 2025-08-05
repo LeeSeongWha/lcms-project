@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.or.ddit.pfcp.student.statistics.mapper.StudentStatisticsMapper">
+
+	<resultMap id="attendanceStatResultMap"
+		type="kr.or.ddit.pfcp.common.vo.StudentStatisticsVO">
+		<result property="lectureNo" column="lectureNo"
+			javaType="String" />
+		<result property="lectureName" column="lectureName"
+			javaType="String" />
+		<result property="studentId" column="studentId"
+			javaType="String" />
+		<result property="attendanceCount" column="attendanceCount"
+			javaType="Integer" />
+		<result property="lateCount" column="LATE_COUNT"
+			javaType="Integer" />
+		<result property="absentCount" column="ABSENT_COUNT"
+			javaType="Integer" />
+		<result property="attendanceRate" column="attendanceRate"
+			javaType="Double" />
+	</resultMap>
+
+	<select id="selectAttendanceStatList" resultType="hashmap">
+	SELECT
+		LE.LEC_NO AS "lectureNo",
+		LQ.LEC_NAME AS "lectureName",
+		LE.USER_NO AS "studentId",
+
+		COALESCE(SUM(CASE WHEN A.ATTEND_STATUS = '출석' THEN 1 ELSE 0 END), 0) AS "attendanceCount",
+		COALESCE(SUM(CASE WHEN A.ATTEND_STATUS = '결석' THEN 1 ELSE 0 END), 0) AS "absentCount",
+		COALESCE(SUM(CASE WHEN A.ATTEND_STATUS = '지각' THEN 1 ELSE 0 END), 0) AS "lateCount",
+
+		CASE
+			WHEN COUNT(A.ATTEND_STATUS) = 0 THEN 0
+			ELSE ROUND(
+				(
+					COALESCE(SUM(CASE WHEN A.ATTEND_STATUS = '출석' THEN 1 ELSE 0 END), 0) +
+					COALESCE(SUM(CASE WHEN A.ATTEND_STATUS = '지각' THEN 1 ELSE 0 END), 0) * 0.5
+				) / COUNT(A.ATTEND_STATUS) * 100, 1
+			)
+		END AS "attendanceRate"
+
+	FROM LECTURE_ENR LE
+	LEFT JOIN ATTENDANCE A ON LE.ENROLL_NO = A.ENROLL_NO
+	LEFT JOIN LECTURE L ON L.LEC_NO = LE.LEC_NO
+	INNER JOIN LECTURE_REQ LQ ON L.REQ_NO = LQ.REQ_NO
+
+	WHERE LE.USER_NO = #{studentId}
+
+	GROUP BY LE.LEC_NO, LQ.LEC_NAME, LE.USER_NO
+	ORDER BY LE.LEC_NO
+</select>
+</mapper>

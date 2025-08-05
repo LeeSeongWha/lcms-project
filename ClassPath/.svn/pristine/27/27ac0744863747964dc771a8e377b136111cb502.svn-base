@@ -1,0 +1,45 @@
+package kr.or.ddit.pfcp.staff.scholarshipApply.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.pfcp.common.vo.DepartmentVO;
+import kr.or.ddit.pfcp.common.vo.ScholarshipApplyVO;
+import kr.or.ddit.pfcp.common.vo.ScholarshipTypeVO;
+import kr.or.ddit.pfcp.common.vo.ScholarshipVO;
+
+/**
+ * @author YSM
+ * @since 250716
+ * 
+ * << 개정이력(Modification Information) >>
+ * 수정일	|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 250716	|	양수민	|	최초 생성
+ */
+public interface StaffScholarshipApplyService {
+
+//	public List<ScholarshipApplyVO> readScholarshipApplyList(String schTypeNo, int offset, int pageSize);
+
+	public int readApplyTotalCount(String schTypeNo);
+
+	public void modifyScholarshipApply(ScholarshipApplyVO scholarshipApply);
+
+	public String readScholarshipTypeName(String schTypeNo);
+
+	public ScholarshipApplyVO readScholarshipApply(String no);
+	
+	public int createAcceptedScholarship(Map<String, Object> paramMap);
+	
+	public DepartmentVO readDepartmentTuition(Map<String, Object> paramMap);
+	
+	public ScholarshipTypeVO readScholarshipType(String schTypeNo);
+
+	// 신청 목록 조회
+	public int readScholarshipApplyTotalCountByKeyword(Map<String, Object> paramMap);
+
+	public int readScholarshipApplyTotalCount(Map<String, Object> paramMap);
+
+	public List<ScholarshipApplyVO> readScholarshipApplyList(Map<String, Object> paramMap);
+
+}

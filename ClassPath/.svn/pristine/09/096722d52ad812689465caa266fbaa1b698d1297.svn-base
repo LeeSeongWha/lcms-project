@@ -1,0 +1,401 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+
+<title>캘린더</title>
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/locales-all.min.js"></script>
+<script src="/js/app/pfcp/common/shortcut.js"></script>
+
+<!-- <link rel="stylesheet" href="/dist/assets/css/bodyFormat.css"> -->
+<link rel="stylesheet" href="/dist/assets/css/schedule/student.css">
+
+
+
+<div class="calendar-container">
+	<!-- 페이지 제목 -->
+	<h1 class="page-title">- CALENDAR -</h1>
+
+	<!-- 필터 섹션 -->
+	<div class="filter-section">
+		<div class="filter-row">
+			<div class="filter-group">
+				<label for="filterType">일정 유형</label> <select id="filterType"
+					class="form-control">
+					<option value="">전체</option>
+					<c:forEach var="type" items="${scheduleTypes}">
+						<option value="${type.scheduleTypeNo}">${type.scheduleTypeName}</option>
+					</c:forEach>
+				</select>
+			</div>
+			<div class="filter-group">
+				<label for="filterStart">시작일</label> <input type="date"
+					id="filterStart" class="form-control" />
+			</div>
+			<div class="filter-group">
+				<label for="filterEnd">종료일</label> <input type="date" id="filterEnd"
+					class="form-control" />
+			</div>
+			<div class="filter-buttons">
+				<button type="button" id="filterBtn" class="btn btn-outline-primary">🔍
+					검색</button>
+				<button type="button" id="resetFilterBtn"
+					class="btn btn-outline-secondary">🔄 초기화</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- 일정 등록 버튼 -->
+	<div class="add-schedule-btn">
+		<button type="button" id="addScheduleBtn" class="btn btn-primary">+
+			새 일정 등록</button>
+	</div>
+
+	<!-- 메인 레이아웃 -->
+	<div class="main-layout">
+		<!-- 캘린더 영역 -->
+		<div class="calendar-area">
+			<div id="calendar"></div>
+		</div>
+	</div>
+</div>
+
+<!-- 모달 오버레이 -->
+<div id="modalOverlay" class="modal-overlay"></div>
+
+<!-- 일정 등록 모달 -->
+<div id="scheduleModal">
+	<div class="modal-header">
+		<h3 id="modalTitle">일정 등록</h3>
+	</div>
+	<div class="modal-body">
+		<form:form id="scheduleForm" method="post" action="/schedule.do/save"
+			modelAttribute="scheduleVO">
+			<input type="hidden" id="scheduleNo" name="scheduleNo" />
+			<input type="hidden" id="formMode" name="formMode" value="insert" />
+
+			<c:if test="${userRole eq 'ROLE_STAFF' }">
+				<label> <input type="checkbox" name="isNotice" value="true" />
+					공지사항으로 등록
+				</label>
+			</c:if>
+
+			<div class="form-group">
+				<label for="scheduleTitle">일정 제목 *</label>
+				<form:input path="scheduleTitle" id="scheduleTitle"
+					cssClass="form-control" required="required"
+					placeholder="일정 제목을 입력하세요" />
+				<form:errors path="scheduleTitle" cssClass="error" />
+			</div>
+
+			<div class="form-group">
+				<label for="scheduleType">일정 유형 *</label>
+				<form:select path="type.scheduleTypeNo" id="scheduleType"
+					cssClass="form-control" required="required">
+					<form:option value="" label="-- 일정 유형을 선택하세요 --" />
+					<form:options items="${scheduleTypes}" itemValue="scheduleTypeNo"
+						itemLabel="scheduleTypeName" />
+				</form:select>
+				<form:errors path="type.scheduleTypeNo" cssClass="error" />
+			</div>
+
+			<div class="datetime-group">
+				<div class="form-group">
+					<label for="startDate">시작일 *</label>
+					<form:input path="startDate" id="startDate" type="date"
+						cssClass="form-control" required="required" />
+					<form:errors path="startDate" cssClass="error" />
+				</div>
+
+				<div class="form-group">
+					<label for="endDate">종료일 *</label>
+					<form:input path="endDate" id="endDate" type="date"
+						cssClass="form-control" required="required" />
+					<form:errors path="endDate" cssClass="error" />
+				</div>
+			</div>
+
+			<div class="datetime-group">
+				<div class="form-group">
+					<label for="startTime">시작 시간</label>
+					<form:input path="startTime" id="startTime" type="time"
+						cssClass="form-control" />
+					<form:errors path="startTime" cssClass="error" />
+				</div>
+
+				<div class="form-group">
+					<label for="endTime">종료 시간</label>
+					<form:input path="endTime" id="endTime" type="time"
+						cssClass="form-control" />
+					<form:errors path="endTime" cssClass="error" />
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="scheduleDesp">설명</label>
+				<form:textarea path="scheduleDesp" id="scheduleDesp"
+					cssClass="form-control" placeholder="일정에 대한 상세 설명을 입력하세요" />
+				<form:errors path="scheduleDesp" cssClass="error" />
+			</div>
+		</form:form>
+	</div>
+	<div class="modal-footer">
+	<button type="button" onclick="fillDemoSchedule()" class="btn btn-secondary">
+    데모 일정 입력
+  </button>
+  <button type="button" onclick="closeModal()" class="btn" style="background-color: #6d6dde; color: white;">
+    취소
+  </button>
+  <button type="submit" form="scheduleForm" id="submitBtn" class="btn" style="background-color: #2563eb; color: white;">
+    등록
+  </button>
+</div>
+</div>
+
+<!-- 일정 상세 팝업 -->
+<div id="schedulePopup" style="width:auto;">
+	<div class="popup-header">
+		<h3>일정 상세정보</h3>
+	</div>
+	<div class="popup-body">
+		<div id="popupContent"></div>
+	</div>
+	<div class="popup-footer">
+		<button id="editBtn" class="btn btn-primary">수정</button>
+		<button id="deleteBtn" class="btn btn-danger">삭제</button>
+		<button onclick="closePopup()" class="btn btn-secondary">닫기</button>
+	</div>
+</div>
+
+<script>
+	const loginUserNo = '${userNo}';
+	let calendar;
+	let currentScheduleId = null;
+	
+	document.addEventListener('DOMContentLoaded', function () {
+		const calendarEl = document.getElementById('calendar');
+	
+		calendar = new FullCalendar.Calendar(calendarEl, {
+		    initialView: 'dayGridMonth',
+		    locale: 'ko',
+		    height: 'auto',
+		    headerToolbar: {
+		        left: 'prev,next today',
+		        center: 'title',
+		        right: 'dayGridMonth'
+		    },
+		    // 날짜 클릭 이벤트 - 선택한 날짜를 시작일과 종료일로 설정
+		    dateClick: function(info) {
+		        console.log('클릭한 날짜:', info.dateStr);
+		        
+		        // 폼을 초기화
+		        resetForm();
+		        
+		        // 클릭한 날짜를 시작일과 종료일로 설정
+		        document.getElementById("startDate").value = info.dateStr;
+		        document.getElementById("endDate").value = info.dateStr;
+		        
+		        // 모달 열기
+		        openModal();
+		    },
+		    events: {
+		    	url: '/schedule.do/list',
+		        method: 'GET',
+		        eventDataTransform: function (event) {
+		            console.log("event color", event.backgroundColor);
+		            return {
+		                id: event.id,
+		                title: event.title,
+		                start: event.start,
+		                end: event.end,
+		                backgroundColor: event.backgroundColor,
+		                borderColor: event.borderColor,
+		                extendedProps: {
+		                    startTime: event.startTime,
+		                    endTime: event.endTime,
+		                    scheduleDesp: event.scheduleDesp,
+		                    type: event.type
+		                }
+		            };
+		        }
+		    },
+		    eventClick: function (info) {
+		        currentScheduleId = info.event.id;
+
+		        fetch("/schedule.do/" + currentScheduleId)
+		            .then(res => res.json())
+		            .then(dt => {
+		                console.log("data>>>>", dt);
+						
+		                const content = 
+		                    "<strong>제목: " + (dt.scheduleTitle || '') + "</strong><br>" +
+		                    "<strong>시작일: " + (dt.startDate || '') + "</strong><br>" +
+		                    "<strong>종료일: " + (dt.endDate || '') + "</strong><br>" +
+		                    "<strong>시간: " + (dt.startTime || '시간 없음') + " ~ " + (dt.endTime || '시간 없음') + "</strong><br>" +
+		                    "<strong>유형: " + (dt.type ? dt.type.scheduleTypeName : '없음') + "</strong><br>" +
+		                    "<strong>설명: " + (dt.scheduleDesp || '설명 없음') + "</strong><br>";
+		                document.getElementById("popupContent").innerHTML = content;
+		             // 수정 버튼 표시 여부
+		                if (dt.user.userNo === loginUserNo) {
+		                  document.getElementById("editBtn").style.display = "inline-block";
+		                  document.getElementById("deleteBtn").style.display = "inline-block";
+		                } else {
+		                  document.getElementById("editBtn").style.display = "none";
+		                  document.getElementById("deleteBtn").style.display = "none";
+		                }
+		                document.getElementById("schedulePopup").style.display = "block";
+		                document.getElementById("modalOverlay").style.display = "block";
+		            });
+		    }
+		});
+	
+		calendar.render();
+
+		// 새 일정 등록 버튼
+		document.getElementById("addScheduleBtn").addEventListener("click", function () {
+			resetForm();
+			openModal();
+		});
+
+		// 모달 오버레이 클릭 시 모달 닫기
+		document.getElementById("modalOverlay").addEventListener("click", function () {
+			closeModal();
+			closePopup();
+		});
+	
+		// 수정 버튼
+		document.getElementById("editBtn").addEventListener("click", function () {
+		    fetch("/schedule.do/" + currentScheduleId)
+		        .then(res => res.json())
+		        .then(data => {
+		            document.getElementById("scheduleNo").value = data.scheduleNo || '';
+		            document.getElementById("scheduleTitle").value = data.scheduleTitle || '';
+		            document.getElementById("startDate").value = data.startDate || '';
+		            document.getElementById("endDate").value = data.endDate || '';
+		            document.getElementById("startTime").value = data.startTime || '';
+		            document.getElementById("endTime").value = data.endTime || '';
+		            document.getElementById("scheduleType").value = (data.type ? data.type.scheduleTypeNo : '') || '';
+		            document.getElementById("scheduleDesp").value = data.scheduleDesp || '';
+		            document.getElementById("formMode").value = "update";
+		            document.getElementById("submitBtn").textContent = "수정";
+		            document.getElementById("modalTitle").textContent = "일정 수정";
+		            
+		            closePopup();
+		            openModal();
+		        });
+		});
+
+		// 삭제 버튼
+		document.getElementById("deleteBtn").addEventListener("click", function () {
+		    if (confirm("정말 삭제하시겠습니까?")) {
+		        fetch("/schedule.do/" + currentScheduleId, {
+		            method: 'DELETE'
+		        })
+		        .then(res => res.json())
+		        .then(result => {
+		            if (result.result === 'success') {
+		                alert("삭제되었습니다.");
+		                calendar.refetchEvents();
+		            } else {
+		                alert("삭제에 실패했습니다.");
+		            }
+		        });
+		        closePopup();
+		    }
+		});
+		
+		// 필터 검색 버튼
+		document.getElementById("filterBtn").addEventListener("click", function () {
+			const scheduleTypeNo = document.getElementById("filterType").value;
+			const startDate = document.getElementById("filterStart").value;
+			const endDate = document.getElementById("filterEnd").value;
+
+			calendar.getEventSources().forEach(source => source.remove());
+
+			calendar.addEventSource({
+				url: "/schedule.do/list",
+				method: "GET",
+				extraParams: {
+					scheduleTypeNo: scheduleTypeNo,
+					startDate: startDate,
+					endDate: endDate
+				},
+				failure: function () {
+					alert("일정 데이터를 불러오는 데 실패했습니다.");
+				}
+			});
+		});
+		
+		// 필터 초기화 버튼
+		document.getElementById("resetFilterBtn").addEventListener("click", function () {
+			document.getElementById("filterType").value = "";
+			document.getElementById("filterStart").value = "";
+			document.getElementById("filterEnd").value = "";
+
+			calendar.getEventSources().forEach(source => source.remove());
+
+			calendar.addEventSource({
+				url: "/schedule.do/list",
+				method: "GET",
+				failure: function () {
+					alert("일정 데이터를 불러오는 데 실패했습니다.");
+				}
+			});
+		});
+
+		// 시작일 변경 시 종료일 자동 설정
+		document.getElementById("startDate").addEventListener("change", function() {
+			const startDate = this.value;
+			const endDateInput = document.getElementById("endDate");
+			
+			// 종료일이 시작일보다 빠르면 시작일과 같게 설정
+			if (endDateInput.value && endDateInput.value < startDate) {
+				endDateInput.value = startDate;
+			}
+			
+			// 종료일이 비어있으면 시작일과 같게 설정
+			if (!endDateInput.value) {
+				endDateInput.value = startDate;
+			}
+		});
+	});
+	
+	function openModal() {
+	    document.getElementById("scheduleModal").style.display = "block";
+	    document.getElementById("modalOverlay").style.display = "block";
+	}
+	
+	function closeModal() {
+	    document.getElementById("scheduleModal").style.display = "none";
+	    document.getElementById("modalOverlay").style.display = "none";
+	}
+	
+	function closePopup() {
+	    document.getElementById("schedulePopup").style.display = "none";
+	    document.getElementById("modalOverlay").style.display = "none";
+	}
+	
+	// 폼 초기화 함수
+	function resetForm() {
+		document.getElementById("scheduleNo").value = "";
+		document.getElementById("scheduleTitle").value = "";
+		document.getElementById("startDate").value = "";
+		document.getElementById("endDate").value = "";
+		document.getElementById("startTime").value = "";
+		document.getElementById("endTime").value = "";
+		document.getElementById("scheduleType").value = "";
+		document.getElementById("scheduleDesp").value = "";
+		document.getElementById("formMode").value = "insert";
+		document.getElementById("submitBtn").textContent = "등록";
+		document.getElementById("modalTitle").textContent = "일정 등록";
+	}
+
+</script>
+
+
+<c:if test="${not empty errorMessage}">
+	<script>
+       alert("${errorMessage}");
+   </script>
+</c:if>

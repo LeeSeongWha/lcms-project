@@ -1,0 +1,354 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>수강신청</title>
+<!-- LCMS 스타일 가이드 적용 -->
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css" />
+<style type="text/css">
+.container {
+	max-width: 1000px;
+	margin: 0 auto;
+	padding: 2rem;
+}
+
+.summary-grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin-bottom: 2rem;
+}
+
+.summary-grid>div {
+	flex: 1;
+	background: #fff;
+	padding: 1rem;
+	border: 1px solid #ddd;
+	border-radius: 0.5rem;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+	text-align: center;
+}
+
+.summary-grid span {
+	display: block;
+	margin-top: 0.5rem;
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #2b77ef;
+}
+
+.tab-menu {
+	display: flex;
+	gap: 0.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.tab-menu button {
+	padding: 0.5rem 1rem;
+	background: #e9ecef;
+	border: none;
+	border-radius: 1.5rem;
+	cursor: pointer;
+	font-weight: 500;
+}
+
+.tab-menu button.active {
+	background: #2b77ef;
+	color: white;
+}
+
+.add-button {
+	text-align: right;
+	margin-bottom: 1rem;
+}
+
+.btn-add {
+	background: #2b77ef;
+	color: white;
+	padding: 0.5rem 1rem;
+	border: none;
+	border-radius: 0.5rem;
+	cursor: pointer;
+	font-size: 1rem;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	background-color: white;
+	border: 1px solid #dee2e6;
+}
+
+table th, table td {
+	padding: 0.75rem;
+	text-align: center;
+	border-bottom: 1px solid #dee2e6;
+}
+
+table th {
+	background-color: #f1f3f5;
+	font-weight: 600;
+}
+
+table td a {
+	margin: 0 0.25rem;
+	text-decoration: none;
+	font-size: 1.1rem;
+}
+
+tr.canceled {
+	background-color: #f1f3f5;
+	color: #888;
+}
+
+.timetable-table {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+.timetable-table th, .timetable-table td {
+	border: 1px solid #ccc;
+	height: 80px;
+	text-align: center;
+	vertical-align: middle;
+	padding: 5px;
+	overflow-wrap: break-word;
+}
+</style>
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function () {
+	document.querySelectorAll('[data-tab]').forEach(tab => {
+	  tab.addEventListener('click', function () {
+	    const selected = this.dataset.tab;
+	
+	    // 탭 활성화 처리
+	    document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
+	    this.classList.add('active');
+	
+	    // 콘텐츠 보이기 처리
+	    document.querySelectorAll('[data-tab-content]').forEach(div => {
+	      div.style.display = div.dataset.tabContent === selected ? 'block' : 'none';
+	    });
+	    
+	  });
+	  
+	});
+});
+
+	
+
+</script>
+</head>
+<body>
+
+	<div class="container">
+		<h1>수강신청 페이지</h1>
+
+		<div class="tab-menu">
+			<button data-tab="enroll" class="tab active">수강신청</button>
+			<button data-tab="enrollEdit" class="tab">정정/취소</button>
+			<button data-tab="timetable" class="tab">시간표</button>
+			<button data-tab="cart" class="tab">예비신청</button>
+
+		</div>
+
+
+
+		<div class="tab-content" data-tab-content="enroll">
+			<%-- ${lectureList } --%>
+			<table>
+				<h3>신청 가능한 교과목</h3>
+				<span>총 3개의 강의가 검색되었습니다.</span>
+
+				<table>
+					<thead>
+						<tr>
+							<th>과목명</th>
+							<th>강의명</th>
+							<th>교수명</th>
+							<th>학점</th>
+							<th>시간</th>
+							<th>정원</th>
+							<th>신청</th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach var="lecture" items="${lectureList}">
+							<tr>
+								<td>${lecture.subject.subjectName}</td>
+								<td>${lecture.lectureReq.lecName }</td>
+								<td>${lecture.user.userName}</td>
+								<td>${lecture.subject.credit}</td>
+								<td>${lecture.lectureReq.preDay}-${lecture.lectureReq.preTime}</td>
+								<td>${lecture.currentEnrollment}/${lecture.lectureReq.maxCapacity}</td>
+								<td>
+									<%-- 신청 여부 확인 --%> <c:set var="isEnrolled" value="false" /> <c:forEach
+										var="enr" items="${myEnrollments}">
+										<c:if
+											test="${enr.lecNo eq lecture.lecNo && enr.enrollStatus eq '수강중'}">
+											<c:set var="isEnrolled" value="true" />
+										</c:if>
+									</c:forEach> <%-- 버튼 분기 처리 --%> <c:choose>
+										<c:when test="${isEnrolled}">
+											<button class="btn-disabled saveButton" disabled>신청됨</button>
+										</c:when>
+										<c:when
+											test="${lecture.currentEnrollment >= lecture.lectureReq.maxCapacity}">
+											<button class="btn-disabled deleteButton" disabled>마감</button>
+										</c:when>
+										<c:otherwise>
+											<button class="btn-add"
+												onclick="applyLecture('${lecture.lecNo}')">신청</button>
+										</c:otherwise>
+									</c:choose>
+								</td>
+							</tr>
+						</c:forEach>
+
+					</tbody>
+				</table>
+
+			</table>
+		</div>
+
+
+		<div class="tab-content" data-tab-content="enrollEdit"
+			style="display: none;">
+			<%-- ${myEnrollList} --%>
+			<table>
+				<thead>
+					<tr>
+						<th>과목명</th>
+						<th>교수명</th>
+						<th>요일</th>
+						<th>시간</th>
+						<th>신청일시</th>
+						<th>취소</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="enroll" items="${myEnrollList}">
+						<tr class="${enroll.enrollStatus eq '취소' ? 'canceled' : ''}">
+							<td>${enroll.subjectName}</td>
+							<td>${enroll.professorName}</td>
+							<td>${enroll.preDay}</td>
+							<td>${enroll.preTime}</td>
+							<td>${enroll.enrollTime}</td>
+							<td><c:choose>
+									<c:when test="${enroll.enrollStatus eq '수강중'}">
+										<button onclick="cancelLecture('${enroll.lecNo}')"
+											class="btn-add">수강취소</button>
+									</c:when>
+									<c:otherwise>
+										<span style="color: gray;" class="canceled">${enroll.enrollStatus}됨</span>
+									</c:otherwise>
+								</c:choose>
+							</td>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+		</div>
+
+
+		<div class="tab-content" data-tab-content="timetable"
+			style="display: none;">
+			<%-- ${myLectureEnrollments } --%>
+			<h3>시간표</h3>
+			<table border="1" style="width: 100%; text-align: center;"
+				class="timetable-table">
+				<thead>
+					<tr>
+						<th>시간</th>
+						<th>월</th>
+						<th>화</th>
+						<th>수</th>
+						<th>목</th>
+						<th>금</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="period" begin="1" end="9">
+						<tr>
+							<td>${period}교시</td>
+							<c:forEach var="day" items="${['월','화','수','목','금']}">
+								<td><c:forEach var="lecture"
+										items="${myLectureEnrollments}">
+										<c:if test="${lecture.lectureReq != null}">
+											<c:forEach var="d" items="${lecture.lectureReq.dayList}">
+												<c:forEach var="p" items="${lecture.lectureReq.periodList}">
+													<c:if test="${d eq day and p eq period}">
+														<div style="font-weight: bold;">
+															${lecture.subject.subjectName}<br /> <small>(${lecture.user.userName})</small>
+														</div>
+													</c:if>
+												</c:forEach>
+											</c:forEach>
+										</c:if>
+									</c:forEach></td>
+							</c:forEach>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+		</div>
+
+
+
+		<div class="tab-content" data-tab-content="cart"
+			style="display: none;">
+			<table>
+				<p>예비 수강신청</p>
+			</table>
+		</div>
+	</div>
+	<script type="text/javascript">
+	/*수강신청  */
+	function applyLecture(lecNo) {
+	    if (!confirm(lecNo + " 강의를 신청하시겠습니까?")) return;
+
+	    fetch('/student/lecture/enroll/'+ encodeURIComponent(lecNo), {
+	      method: 'POST',
+	      credentials: 'include'
+	    })
+	    .then(res => {
+	        if (res.status === 409) return res.text().then(msg => { throw new Error(msg); });
+	        if (!res.ok) throw new Error('알 수 없는 오류');
+	        return res.text();
+	      })
+	      .then(() => {
+	        alert("신청 완료!");
+	        location.reload();
+	      })
+	      .catch(err => {
+	        alert(err.message); 
+	      });
+	    }
+	
+	/*수강취소 */
+	function cancelLecture(lecNo) {
+		  if (!confirm("이 강의를 수강취소 하시겠습니까?")) return;
+
+		  fetch('/student/lecture/enroll/' + encodeURIComponent(lecNo), {
+		    method: 'DELETE',
+		    credentials: 'include'
+		  })
+		  .then(res => {
+		    if (!res.ok) throw new Error("취소 실패");
+		    return res.text();
+		  })
+		  .then(() => {
+		    alert("수강취소 완료!");
+		    location.reload();
+		  })
+		  .catch(err => {
+		    alert("❗ " + err.message);
+		  });
+		}
+	/*  */
+</script>
+</body>
+</html>

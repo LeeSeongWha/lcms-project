@@ -1,0 +1,21 @@
+package kr.or.ddit.pfcp.student.lecture.evaluate.service;
+
+import java.util.List;
+
+import kr.or.ddit.pfcp.common.vo.EvalCriteriaVO;
+import kr.or.ddit.pfcp.common.vo.LectureEnrVO;
+
+/**
+ * @author seokyungdeok
+ * @since 2025. 7. 5.
+ *
+ * << 개정이력(Modification Information) >>
+ * 수정일		|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 2025. 7. 5.	|	서경덕	|	최초 생성
+ */
+public interface LectureEvaluationService {
+	public List<LectureEnrVO> readLectureEnr(String studentNo);
+	public List<EvalCriteriaVO> readLectureEvaluationList();
+	public int createLectureEvaluation(EvalCriteriaVO evalCriteria);
+}

@@ -1,0 +1,161 @@
+package kr.or.ddit.pfcp.student.bill.scholarship.controller;
+
+import java.security.Principal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import kr.or.ddit.pfcp.common.vo.ScholarshipApplyVO;
+import kr.or.ddit.pfcp.common.vo.ScholarshipTypeVO;
+import kr.or.ddit.pfcp.common.vo.ScholarshipVO;
+import kr.or.ddit.pfcp.student.bill.scholarship.service.StudentScholarshipService;
+import kr.or.ddit.validate.utils.ErrorsUtils;
+
+/**
+ * @author seokyungdeok
+ * @since 250630
+ * 
+ * << 개정이력(Modification Information) >>
+ * 수정일	|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 250630	|	서경덕	|	최초 생성
+ */
+@Controller
+@RequestMapping("/student/scholarship")
+public class StudentScholarshipController {
+	@Autowired
+	private StudentScholarshipService studentScholarshipService;
+	
+	private static final String MODEL_NAME = "scholarshipApply";
+	
+	@Autowired
+	private ErrorsUtils errorsUtils;
+	
+	@ModelAttribute(MODEL_NAME)
+	public ScholarshipApplyVO scholarshipApply() {
+		return new ScholarshipApplyVO();
+	}
+	
+	@GetMapping("scholarshipTypeList.do")
+	@ResponseBody
+	public List<ScholarshipTypeVO> scholarshipTypeList() {
+		List<ScholarshipTypeVO> scholarshipTypeList = studentScholarshipService.readSholarshipTypeList();
+		
+		return scholarshipTypeList;
+	}
+	
+	/**
+	 * 장학금 신청 조회 (List)
+	 * 
+	 * @return
+	 */
+	@GetMapping("scholarshipList.do")
+	public String studentScholarshipList() {
+		return "pfcp/student/scholarship/scholarship";
+	}
+	
+	/**
+	 * 장학금 신청 상세 조회 (Detail)
+	 * 
+	 * @return
+	 */
+	@GetMapping("scholarshipDetail.do")
+	public String studentScholarshipDetail() {
+		return "pfcp/student/scholarship/scholarshipDetail";
+	}
+	
+	/**
+	 * 장학금 신청 등록(formUI)
+	 * 
+	 * @return
+	 */
+	@GetMapping("scholarshipInsertFormUI.do")
+	public String studentScholarshipInsertFormUI() {
+		return "pfcp/student/scholarship/scholarshipInsert";
+	}
+	
+	/**
+	 * 장학금 신청 등록(formProcess)
+	 * 
+	 * @return
+	 */
+	@PostMapping("scholarshipInsertFormProcess.do")
+	public String studentScholarshipInsertFormProcess(
+		@ModelAttribute(MODEL_NAME) ScholarshipApplyVO scholarshipApply,
+		Principal principal, 
+		BindingResult errors,
+		RedirectAttributes redirectAttributes
+	) {
+		String lvn;
+		
+		if (!errors.hasErrors()) {
+			String studentNo = principal.getName();
+			
+			scholarshipApply.setUserNo(studentNo);
+			
+			studentScholarshipService.createScholarshipApply(scholarshipApply);
+			
+			lvn = "redirect:/student/scholarship/scholarshipBenefit.do";
+			
+		} else {
+			redirectAttributes.addFlashAttribute(MODEL_NAME, scholarshipApply);
+			
+			MultiValueMap<String, String> customErrors = errorsUtils.errorsToMap(errors);
+			
+			redirectAttributes.addFlashAttribute("errors", customErrors);
+			
+			lvn = "redirect:/student/scholarship/scholarshipInsertFormUI.do";
+		}
+		
+		return lvn;
+	}
+	
+	/**
+	 * 장학금 신청 수정
+	 * 
+	 * @return
+	 */
+	@GetMapping("scholarshipUpdate.do")
+	public String studentScholarshipUpdate() {
+		return "pfcp/student/scholarship/scholarshipUpdate";
+	}
+	
+	/**
+	 * 장학금 신청 삭제
+	 * 
+	 * @return
+	 */
+	@GetMapping("scholarshipDelete.do")
+	public String studentScholarshipDelete() {
+		return "redirect:/student/scholarship/scholarshipList.do";
+	}
+	
+	/**
+	 * 장학금 수혜 내역 조회
+	 * 
+	 * @return
+	 */
+	@GetMapping("scholarshipBenefit.do")
+	public String studentScholarshipBenefit(
+		Principal principal,
+		Model model
+	) {
+		String studentNo = principal.getName();
+		
+		List<ScholarshipVO> scholarship = studentScholarshipService.readScholarshipBenefitList(studentNo);
+		
+		model.addAttribute("scholarship", scholarship);
+		
+		return "pfcp/student/scholarship/scholarshipBenefit";
+	}
+}

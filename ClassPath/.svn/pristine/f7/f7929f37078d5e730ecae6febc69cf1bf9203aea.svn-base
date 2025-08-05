@@ -1,0 +1,161 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+<%--  
+	파일명 : departmentList.jsp  
+	프로그램명 : 학과 상세 조회
+	설명 : 
+	작성자 : 김규민
+	작성일 : 2025. 07. 04
+--%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${department.departmentName}상세정보</title>
+</head>
+<body>
+	<h1>${department.departmentName}</h1>
+	<p>등록금 : ${department.departmentTuition}</p>
+
+	<div class="item">
+		<strong>학과 소개:</strong>
+		<p>
+			<c:choose>
+				<c:when test="${department.departmentName eq '컴퓨터공학과'}">
+                            ${department.departmentDesc}
+                           
+                </c:when>
+				<c:when test="${department.departmentName eq '전자공학과'}">
+                            ${department.departmentDesc}
+                            
+                </c:when>
+				<c:when test="${department.departmentName eq '소프트웨어학과'}">
+                            ${department.departmentDesc}
+                            
+                </c:when>
+                
+                <c:when test="${department.departmentName eq '시각디자인학과'}">
+                            ${department.departmentDesc}
+                            
+                </c:when>
+                
+                <c:when test="${department.departmentName eq '국어국문학과'}">
+                            ${department.departmentDesc}
+                            
+                </c:when>
+                
+                <c:when test="${department.departmentName eq '정보통신공학과'}">
+                            ${department.departmentDesc}
+                            
+                </c:when>
+
+			</c:choose>
+		</p>
+	</div>
+
+	<hr>
+
+	<div>
+		<h2>${department.departmentName} 커리큘럼</h2>
+		<c:choose>
+			<c:when test="${not empty curriculumList}">
+				<table class="curriculum table">
+					<thead>
+						<tr>
+							<th>커리큘럼 코드</th>
+							<th>커리큘럼 이름</th>							
+							<th>필수여부</th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach var="curriculum" items="${curriculumList}">
+							<tr>
+								<td>${curriculum.subjectCode}</td>
+								<td>${curriculum.subjectName}</td>
+								<td>${curriculum.reqCode}</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+			</c:when>
+			<c:otherwise>
+				<p>등록된 커리큘럼이 없습니다.</p>
+			</c:otherwise>
+		</c:choose>
+	</div>
+
+	<hr>
+	
+	<div>
+		<h2>${department.departmentName} 졸업 요건</h2>
+		<c:choose>
+			<c:when test="${not empty curriculumList}">
+				<table class="curriculum table">
+					<thead>
+						<tr>
+							<th>졸업요건번호</th>
+							<th>졸업요구학점</th>
+							<th>전공학점</th>							
+							<th>교양학점</th>
+							<th>자유이수학점</th>
+							<th>적용일자</th>
+							<th>봉사시간</th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach var="DGRREQ" items="${DGRREQList}">
+							<tr>
+								<td>${DGRREQ.DGRNo}</td>
+								<td>${DGRREQ.DGRGrade}</td>
+								<td>${DGRREQ.DGRMC}</td>
+								<td>${DGRREQ.DGRLAC}</td>
+								<td>${DGRREQ.DGRFCC}</td>
+								<td>${DGRREQ.DGRDate}</td>
+								<td>${DGRREQ.DGRVolunteerHour}</td>
+							</tr>
+							<%-- <td>${DGRREQ.dgrNo}</td>
+								<td>${DGRREQ.dgrGrade}</td>
+								<td>${DGRREQ.dgrMc}</td>
+								<td>${DGRREQ.dgrLac}</td>
+								<td>${DGRREQ.dgrFcc}</td>
+								<td>${DGRREQ.dgrDate}</td>
+								<td>${DGRREQ.dgrVolunteerHour}</td> --%>
+						</c:forEach>
+					</tbody>
+				</table>
+			</c:when>
+			<c:otherwise>
+				<p>등록된 커리큘럼이 없습니다.</p>
+			</c:otherwise>
+		</c:choose>
+	</div>
+	
+	
+	
+	<%-- <div>
+		<button type="button" onclick="location.href='/staff/college/curriculumDetail.do?department=${department.departmentName}'">커리큘럼관리</button>
+		<button type="submit">졸업요건관리</button>
+		<button type="submit">졸업신청관리</button>
+		<button type="button" onclick="location.href='/staff/college/collegeList.do'">목록으로</button>
+	</div> --%>
+	
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

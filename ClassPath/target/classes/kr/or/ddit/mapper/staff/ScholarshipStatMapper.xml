@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.or.ddit.pfcp.staff.dashBoard.mapper.ScholarshipStatMapper">
+
+	<!-- 1. 장학금 유형별 지급 횟수 -->
+	<select id="selectScholarshipGrantCounts"
+		resultType="kr.or.ddit.pfcp.common.vo.ScholarshipStatsVO">
+		SELECT
+		ST.SCH_NAME AS typeName,
+		COUNT(*) AS grantCount
+		FROM SCHOLARSHIP S
+		JOIN SCHOLARSHIP_TYPE ST ON S.SCH_TYPE_NO = ST.SCH_TYPE_NO
+		GROUP BY ST.SCH_NAME
+		ORDER BY grantCount DESC
+	</select>
+
+	<!-- 2. 장학금 유형별 평균 감면액 -->
+	<select id="selectScholarshipAverageDiscounts"
+		resultType="kr.or.ddit.pfcp.common.vo.ScholarshipStatsVO">
+		SELECT
+		ST.SCH_NAME AS typeName,
+		ROUND(AVG(S.DIS_AMOUNT)) AS avgDiscount
+		FROM SCHOLARSHIP S
+		JOIN SCHOLARSHIP_TYPE ST ON S.SCH_TYPE_NO = ST.SCH_TYPE_NO
+		GROUP BY ST.SCH_NAME
+		ORDER BY avgDiscount DESC
+	</select>
+
+	<!-- 3. 학과별 총 수혜액 -->
+	<select id="selectScholarshipDepartmentTotals"
+		resultType="kr.or.ddit.pfcp.common.vo.ScholarshipDepartmentVO">
+		SELECT
+		D.DEPARTMENT_NAME AS departmentName,
+		SUM(S.DIS_AMOUNT) AS totalDiscount
+		FROM SCHOLARSHIP S
+		JOIN STUDENT ST ON S.USER_NO = ST.USER_NO
+		JOIN DEPARTMENT D ON ST.DEPARTMENT_NO = D.DEPARTMENT_NO
+		GROUP BY D.DEPARTMENT_NAME
+		ORDER BY totalDiscount DESC
+	</select>
+</mapper>

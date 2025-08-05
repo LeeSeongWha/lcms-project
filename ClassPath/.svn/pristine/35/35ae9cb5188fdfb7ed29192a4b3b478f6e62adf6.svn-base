@@ -1,0 +1,15 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of="facilityNo")
+public class FacilityVO {
+	private String facilityNo;
+	private String facilityName;
+	private String faciltyType;
+	private String location;
+	private Integer faciltyMp;
+	private String facilityStatus;
+}

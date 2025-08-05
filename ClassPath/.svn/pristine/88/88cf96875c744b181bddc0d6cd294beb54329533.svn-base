@@ -1,0 +1,17 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of = "atchId")
+public class AtchFileVO {
+	private String atchId;
+	private String atchMime;
+	private String atchOriginName;
+	private String atchSaveName;
+	private long atchSize;
+	private String atchDate;
+	
+	private byte[] atchContent;
+}

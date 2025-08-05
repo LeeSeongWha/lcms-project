@@ -1,0 +1,81 @@
+package kr.or.ddit.pfcp.staff.lectureEvaluation.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.pfcp.common.vo.EvalCriteriaVO;
+import kr.or.ddit.pfcp.staff.lectureEvaluation.service.StaffLectureEvaluationService;
+import kr.or.ddit.validate.utils.ErrorsUtils;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * @author YSM
+ * @since 250628
+ */
+
+@Slf4j
+@Controller
+@RequestMapping("/staff/lectureEvaluation")
+public class StaffLectureEvaluationController {
+	@Autowired
+	private StaffLectureEvaluationService service;
+	
+	static final String MODELNAME = "lectureEvaluation";
+	
+	@ModelAttribute(MODELNAME)
+	public EvalCriteriaVO lectureEvaluation() {
+		return new EvalCriteriaVO();
+	}
+	
+	@Autowired
+	private ErrorsUtils errorsUtils;
+	
+	//=========================================================================================
+	
+	
+	/**
+	 * 강의 평가 목록 전체 조회
+	 * @return
+	 */
+	@GetMapping("lectureEvalutaionForm.do")
+	public String lectureEvalutaionFromUI(Model model) {
+		List<EvalCriteriaVO> lectureEvaluation = service.readAttendanceList();
+		model.addAttribute("lectureEvaluation", lectureEvaluation);
+		
+		return "pfcp/staff/lectureEvaluation/lectureEvalutaionForm";
+	}
+	
+	/**
+	 * 강의 평가 목록 등록
+	 * @return
+	 */
+	@GetMapping("lectureEvalutaionFormUpdateProcess.do")
+	public String lectureEvalutaionFormUpdateProcessUI(
+			
+	) {
+		return "pfcp/staff/lectureEvaluation/lectureEvalutaionFormInsert";
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

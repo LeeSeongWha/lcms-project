@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * << 개정이력(Modification Information) >>
+ * 수정일		수정자		수정 내용
+ * ======================================
+ * 250702   김규민        최초 생성
+ * 250703   김규민        단대 상세 조회 수정
+ -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.college.mapper.CollegeMapper">
+	<select id="selectAllCollegeList">
+	<!-- 전체 단대 조회 -->
+		SELECT COLLEGE_NO,
+       		   COLLEGE_NAME
+		FROM COLLEGE
+	</select>
+	
+	<select id="selectCollege">
+	<!-- 단대 상세조회(학과) -->
+		SELECT DEPARTMENT_NO,
+			   DEPARTMENT_NAME
+		FROM DEPARTMENT
+		WHERE COLLEGE_NO = #{collegeNo};
+	</select>
+	
+	<!-- <insert id="insertCollege">
+	단대 등록
+		INSERT INTO COLLEGE (
+			COLLEGE_NO,
+			COLLEGE_NAME
+		) VALUES (
+			#{collegeNo},
+			#{collegeName}
+		)
+	</insert>
+	
+	<update id="updateCollege">
+		UPDATE COLLEGE
+			COLLEGE_NO,
+			COLLEGE_NAME
+		WHERE COLLEGE_NO = #{collegeNo}
+	</update>
+	
+	<delete id="deleteCollege">
+		DELETE FROM COLLEGE
+		WHERE COLLEGE_NO = #{collegeNo}
+	</delete> -->
+	
+</mapper>

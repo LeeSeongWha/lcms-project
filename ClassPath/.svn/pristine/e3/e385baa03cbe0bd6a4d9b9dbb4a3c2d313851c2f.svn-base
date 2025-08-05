@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.or.ddit.pfcp.student.eclass.assignement.mapper.AssignmentMapper">
+	
+	<select id="selectAssignmentList">
+	 SELECT
+		ASSIGN_NO
+		,LEC_NO
+		,ASSIGN_TITLE
+		,ASSIGN_DEADLINE
+		,ASSIGN_DESP
+		,FILE_REF_NO
+	  FROM ASSIGNMENT
+	 WHERE LEC_NO=#{lecNo}
+	</select>
+	
+	<select id="selectAssignmentListByUserNo">
+		SELECT
+		a.ASSIGN_NO
+		,a.LEC_NO
+		,a.ASSIGN_TITLE
+		,a.ASSIGN_DEADLINE
+		,a.ASSIGN_DESP
+	  FROM ASSIGNMENT a
+	  JOIN LECTURE_ENR le ON (le.LEC_NO=a.LEC_NO)
+	  JOIN TB_USER u ON (u.USER_NO=le.USER_NO)
+	 WHERE u.USER_NO=#{userNo}
+	</select>
+	
+	<insert id="insertAssignment">
+		INSERT INTO ASSIGNMENT (
+							ASSIGN_NO, 
+							LEC_NO, 
+							ASSIGN_TITLE, 
+							ASSIGN_DEADLINE, 
+							ASSIGN_DESP, 
+							FILE_REF_NO)
+						VALUES (
+						    'ASG' || LPAD(assign_seq.NEXTVAL, 3, '0'),
+						    #{lecNo},
+						    #{assignTitle},
+						    #{assignDeadline},
+						    #{assignDesp},
+						    #{fileRefNo}
+						)
+	</insert>
+	
+	<update id="updateAssignment">
+		UPDATE ASSIGNMENT
+		   SET ASSIGN_TITLE=#{assignTitle}, 
+							ASSIGN_DEADLINE=#{assignDeadline}, 
+							ASSIGN_DESP=#{assignDesp}
+		 WHERE ASSIGN_NO=#{assignNo}
+	</update>
+	
+</mapper>

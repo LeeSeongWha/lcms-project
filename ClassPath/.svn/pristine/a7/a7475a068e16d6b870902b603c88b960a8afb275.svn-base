@@ -1,0 +1,34 @@
+package kr.or.ddit.pfcp.student.eclass.exam.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.vo.ExamVO;
+import kr.or.ddit.pfcp.student.eclass.exam.mapper.ExamMapper;
+
+@Service(value = "examService")
+public class ExamServiceImpl implements ExamService {
+	@Autowired
+	private ExamMapper examMapper;
+	
+	@Override
+	public List<ExamVO> readExamList(String userNo, String lecNo) {
+		Map<String, String> param = new HashMap<>();
+		
+	    param.put("userNo", userNo);
+	    param.put("lecNo", lecNo);
+		
+		return examMapper.selectExamList(param);
+	}
+
+	@Override
+	public ExamVO readExamDetail(String examNo) {
+		// TODO Auto-generated method stub
+		return examMapper.selectExamDetail(examNo);
+	}
+
+}

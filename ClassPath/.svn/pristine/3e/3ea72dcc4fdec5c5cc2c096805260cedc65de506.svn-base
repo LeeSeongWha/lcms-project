@@ -1,0 +1,47 @@
+package kr.or.ddit.pfcp.staff.college.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.vo.CurriculumVO;
+import kr.or.ddit.pfcp.staff.college.mapper.CurriculumMapper;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * @author KGM
+ * @since 250702
+ * @see
+ */
+@Service
+@RequiredArgsConstructor
+public class CurriculumServiceImpl implements CurriculumService {
+	private final CurriculumMapper mapper;
+	
+	@Override
+	public void createCurriculum(CurriculumVO curriculum) {
+		mapper.insertCurriculum(curriculum);
+	}
+
+	@Override
+	public List<CurriculumVO> readCurriculumList() {
+		return mapper.selectAllCurriculumList();
+	}
+
+	@Override
+	public List<CurriculumVO> readCurriculum(String departmentNo) {
+		return mapper.selectCurriculum(departmentNo);
+	}
+
+	@Override
+	public void modifyCurriculum(CurriculumVO curriculum) {
+		mapper.updateCurriculum(curriculum);
+	}
+
+	@Override
+	public void removeCurriculum(String curNo) {
+		mapper.deleteCurriculum(curNo);
+
+	}
+
+}

@@ -1,0 +1,34 @@
+package kr.or.ddit.pfcp.common.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.mapper.KakaoPayMapper;
+import kr.or.ddit.pfcp.common.vo.KakaoPayVO;
+
+/**
+ * @author seokyungdeok
+ * @since 2025. 7. 29.
+ *
+ * << 개정이력(Modification Information) >>
+ * 수정일		|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 2025. 7. 29.	|	서경덕	|	최초 생성
+ */
+@Service(value = "kakaoPayService")
+public class KakaoPayServiceImpl implements KakaoPayService {
+	@Autowired
+	private KakaoPayMapper kakaoPayMapper;
+	
+	@Override
+	public void saveTid(String orderId, String tid, String userNo) {
+		// TODO Auto-generated method stub
+		kakaoPayMapper.insertTid(orderId, tid, userNo);
+	}
+
+	@Override
+	public KakaoPayVO readTid(String orderId) {
+		// TODO Auto-generated method stub
+		return kakaoPayMapper.selectTid(orderId);
+	}
+}

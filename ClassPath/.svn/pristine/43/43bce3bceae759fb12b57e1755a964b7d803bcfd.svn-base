@@ -1,0 +1,45 @@
+@charset "UTF-8";
+
+.searchArea form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%; 
+    margin-bottom: 16px;
+}
+
+.searchArea select {
+    width: 100px; 
+    height: 36px;
+    padding: 0 8px;
+    border: 1px solid #c7d8d6; /* 기존 #ccc를 메인 컬러 계열로 변경 */
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.searchArea input[type="text"] {
+    width: 160px;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid #c7d8d6; /* 기존 #ccc를 메인 컬러 계열로 변경 */
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.searchArea button {
+    height: 36px;
+    padding: 0 15px;
+    background-color: #147262; /* 기존 #4285f4를 메인 컬러로 변경 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.searchArea button:hover {
+    background-color: #0f5c50; /* 기존 #357ae8를 메인 컬러의 어두운 톤으로 변경 */
+}

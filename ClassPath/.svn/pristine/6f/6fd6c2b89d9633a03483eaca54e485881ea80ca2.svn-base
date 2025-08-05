@@ -1,0 +1,11 @@
+package kr.or.ddit.pfcp.common.vo;
+
+public class AssignmentVO {
+
+	private String submitNo;
+	private String submitDate;
+	private Integer submitScore;
+	private String assignNo;
+	private String studentNo;
+	private String fileRefNo;
+}

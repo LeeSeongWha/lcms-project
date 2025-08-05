@@ -1,0 +1,31 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of="scheduleNo")
+public class ScheduleVO {
+	private String scheduleNo;
+	@NotBlank(message = "일정 제목은 필수입니다.")
+	private String scheduleTitle;
+	@NotNull(message = "시작일을 선택해주세요.")
+	private String startDate;
+	@NotNull(message = "종료일을 선택해주세요.")
+	private String endDate;
+	private String startTime;
+	private String endTime;
+	private String scheduleDesp;
+	private String lecNo;
+	private String scheduleTargetId;
+	private String scheduleTypeNo;
+	
+	private ScheduleTypeVO type;
+	
+    
+    
+	
+	
+}

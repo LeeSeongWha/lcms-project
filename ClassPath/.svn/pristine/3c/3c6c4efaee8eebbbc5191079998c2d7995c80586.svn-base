@@ -1,0 +1,59 @@
+package kr.or.ddit.pfcp.student.eclass;
+
+import java.util.Map;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import kr.or.ddit.security.jwt.JWTProvider;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * 수정일      |       수정자     |       수정 내용
+ * ---------------------------------------------
+ * 250630           이성화             최초 생성
+ * 
+ */
+@Controller
+@RequiredArgsConstructor
+public class EclassRestController {
+  private final JWTProvider jwtProvider;
+  
+  // AJAX 방식으로 토큰 설정 후 이동하는 경우
+  @PostMapping("/api/set-auth-cookie")
+  @ResponseBody
+  public Map<String, Object> transferAuth(HttpServletRequest request, 
+                                        HttpServletResponse response) {
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      
+      if (authentication != null && authentication.isAuthenticated() 
+          && !authentication.getName().equals("anonymousUser")) {
+          
+          // 스프링 시큐리티의 인증 정보를 JWT로 변환
+          String encodedToken = jwtProvider.authenticationToToken(authentication);
+          
+          Cookie authCookie = new Cookie("auth_token", encodedToken);
+          authCookie.setHttpOnly(true);
+          authCookie.setSecure(false);
+          authCookie.setPath("/");
+          response.addCookie(authCookie);
+          
+          return Map.of(
+              "success", true, 
+              "message", "인증 정보가 전달되었습니다.",
+              "username", authentication.getName()
+          );
+      }
+      
+      return Map.of(
+          "success", false, 
+          "message", "인증되지 않은 사용자입니다."
+      );
+  }
+}

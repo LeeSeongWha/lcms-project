@@ -1,0 +1,201 @@
+package kr.or.ddit.pfcp.staff.notice.controller;
+
+import java.security.Principal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import kr.or.ddit.pfcp.common.service.UserService;
+import kr.or.ddit.pfcp.common.vo.BoardVO;
+import kr.or.ddit.pfcp.staff.notice.service.NoticeService;
+import kr.or.ddit.validate.utils.ErrorsUtils;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * @author YSM
+ * @since 250628
+ */
+
+@Slf4j
+@Controller
+@RequestMapping("/staff/notice")
+public class NoticeController {
+	
+	@Autowired
+	private NoticeService service;
+	
+	@Autowired
+	private UserService userService;
+	
+	static final String MODELNAME = "board";
+	
+	@Autowired
+	private ErrorsUtils errorsUtils;
+	
+	@ModelAttribute(MODELNAME)
+	public BoardVO board() {
+		return new BoardVO();
+	}
+	
+	/**
+	 * 공지 사항 전체 조회
+	 * @return
+	 */
+	@GetMapping("noticeList.do")
+	public String noticeListUI(Model model) {
+		List<BoardVO> board = service.readBoardList();
+		model.addAttribute("board", board);
+		
+//		log.info("board!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + board);
+		return "pfcp/staff/notice/noticeList";
+	}
+	
+	/**
+	 * 공지 사항 상세 조회
+	 * @return
+	 */
+	@GetMapping("noticeDetail.do")
+	public String noticeDetailUI(
+		@RequestParam String what,
+		Model model,
+		Principal principal
+	) {
+		BoardVO board = service.readBoard(what);
+		model.addAttribute("board", board);
+		
+		String userNo = principal.getName();
+		model.addAttribute("userNo", userNo);
+	    
+		return "pfcp/staff/notice/noticeDetail";
+	}
+	
+	/**
+	 * 공지 사항 등록
+	 * @return
+	 */
+	@GetMapping("noticeInsert.do")
+	public String noticeInsertUI(
+		Principal principal,
+		Model model
+	
+	) {
+		
+		String userNo = principal.getName();
+		model.addAttribute("userNo", userNo);
+		
+		return "pfcp/staff/notice/noticeInsert";
+	}
+	
+	/**
+	 * 공지 사항 등록 fromProcess
+	 * @return
+	 */
+	@GetMapping("noticeInsertProcess.do")
+	public String noticeInsertProcessUI(
+		@ModelAttribute(MODELNAME) BoardVO board,
+		BindingResult errors,
+		RedirectAttributes redirectAttributes		
+	) {
+		String lvn;
+		
+		if(!errors.hasErrors()) {
+			service.createBoard(board);
+			
+			lvn = "redirect:/staff/notice/noticeList.do";
+		} else {
+			redirectAttributes.addFlashAttribute(MODELNAME, board);
+			
+			MultiValueMap<String, String> customErrors = errorsUtils.errorsToMap(errors);
+			redirectAttributes.addFlashAttribute("errors", customErrors);
+			
+			lvn = "redirect:/staff/notice/noticeInsert.do";
+		}
+		
+		return lvn;
+	}
+	
+	
+	
+	
+	
+	/**
+	 * 공지 사항 수정
+	 * @return
+	 */
+	@GetMapping("noticeUpdate.do")
+	public String noticeUpdateUI(
+		String what,
+		Model model
+	) {
+		BoardVO board = service.readBoard(what);
+		model.addAttribute("board", board);
+		model.addAttribute("mode", "edit");
+		
+		return "pfcp/staff/notice/noticeDetail";
+	}
+	
+	/**
+	 * 공지 사항 수정 fromProcess
+	 * @return
+	 */
+	@PostMapping("noticeUpdateProcess.do")
+	public String noticeUpdateProcessUI(
+		String what,
+		@ModelAttribute(MODELNAME) BoardVO board,
+		BindingResult errors,
+		RedirectAttributes redirectAttributes
+	) {
+		String lvn;
+		
+		if(!errors.hasErrors()) {
+			service.modifyBoard(board);
+			lvn = "redirect:/staff/notice/noticeDetail.do?what=" + board.getBoardNo();
+		}else {
+			redirectAttributes.addFlashAttribute(MODELNAME, board);
+			MultiValueMap<String, String> customErrors = errorsUtils.errorsToMap(errors);
+			redirectAttributes.addFlashAttribute("errors", customErrors);
+			lvn= "redirect:/staff/notice/noticeUpdate.do?what="+what;
+		}
+		
+		return lvn;
+	}
+	
+	/**
+	 * 공지 사항 삭제
+	 * @return
+	 */
+	@GetMapping("noticeDelete.do")
+	public String noticeDeleteUI() {
+		return "redirect:/staff/notice/noticeList.do";
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,17 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of = "lecNo")
+public class LectureVO {
+	
+	private String lecNo;
+	private String reqNo;
+	private Integer currentEnrollment;
+	private String lecStatus;
+	private String lrNo;
+	private String userNo;
+	
+}

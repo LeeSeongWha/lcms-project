@@ -1,0 +1,79 @@
+<%--  
+   파일명 : departmentList.jsp  
+   프로그램명 : 단과 대학 상세 조회(학과)
+   설명 : 
+   작성자 : 김규민
+   작성일 : 2025. 07. 03
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<title>단과 대학 목록</title>
+
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+<link rel="stylesheet" href="/dist/assets/css/attendclass.css">
+
+<div class="sectionHeaderLine">
+
+	<c:if test="${not empty college}">
+        <div class="sectionHeaderTitle">${college.collegeName}</div>
+    </c:if>
+	
+	<a href="/staff/college/departmentInsert.do" class="submitButton" style="float:right">+ 등록</a>
+</div>
+
+<div class="section">
+	<div class="lecture-list-container">
+		<c:set var="displayedCount" value="0" />
+		<c:choose>
+			<c:when test="${not empty departmentList }">
+				<c:forEach items="${departmentList}" var="dept" varStatus="status">
+						
+						<a href="/staff/college/departmentDetail.do?departmentNo=${dept.departmentNo}" class="lecture-item-link">
+							<div class="lecture-item-content">
+								<div class="lecture-info-group">
+									<div class="lecture-icon-wrapper">
+										<svg xmlns="http://www.w3.org/2000/svg" class="lecture-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+										</svg>
+									</div>
+									<div>
+										<span class="lecture-name">${dept.departmentName}</span>
+										<p class="lecture-details">
+											・ 코드: ${dept.departmentNo} <br>
+										</p>
+									</div>
+								</div>
+							</div>
+						</a>
+					<c:set var="displayedCount" value="${displayedCount + 1}" />
+				</c:forEach>
+			</c:when>
+		</c:choose>
+		
+		<c:if test="${displayedCount == 0}">
+			<div class="no-lecture-message">
+				등록된 학과가 존재하지 않습니다.
+			</div>
+		</c:if>
+	</div>
+</div>
+    
+    
+<script>
+    function confirmDeleteNotice(button) { 
+        // 클릭한 버튼에서 data-collegeno 추출
+        const departmentNo = button.closest('tr').getAttribute('data-deparmentno');
+        
+        // 현재 URL에서 collegeNo 파라미터를 가져옵니다.
+        // departmentList.do 페이지가 collegeNo를 URL로 받아서 학과 목록을 필터링한다고 가정합니다.
+        const urlParams = new URLSearchParams(window.location.search);
+        const collegeNo = urlParams.get('collegeNo');
+        
+        // 확인창 띄우기
+        const isConfirmed = confirm("정말로 이 학과를 삭제하시겠습니까?");
+        if (isConfirmed) {
+            // 삭제 처리
+            window.location.href = "/staff/college/departmentDelete.do?departmentNo=" + departmentNo + "&collegeNo=" + collegeNo;;
+        }
+    }
+</script>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.staffmanage.mapper.StaffmanageMapper">
+	
+	
+	<resultMap id="staffMap" type="StaffVO" autoMapping="true">
+    <!-- 상속된 UserVO 필드 -->
+    <id property="userNo" column="USER_NO"/>
+    <result property="userName" column="USER_NAME"/>
+    <result property="userTel" column="USER_TEL"/>
+    <result property="userEmail" column="USER_EMAIL"/>
+    <result property="userRole" column="USER_ROLE"/>
+    <result property="gender" column="GENDER"/>
+    <result property="userRegno1" column="USER_REGNO1"/>
+    <result property="userRegno2" column="USER_REGNO2"/>
+    <result property="userZip" column="USER_ZIP"/>
+    <result property="userAdd1" column="USER_ADD1"/>
+    <result property="userAdd2" column="USER_ADD2"/>
+    <result property="bankCd" column="BANK_CD"/>
+    <result property="userBankno" column="USER_BANKNO"/>
+
+    <!-- StaffVO 자체 필드 -->
+    <result property="staffDepartment" column="STAFF_DEPARTMENT"/>
+    <result property="staffPosition" column="STAFF_POSITION"/>
+    <result property="staffHiredate" column="STAFF_HIREDATE"/>
+    <result property="staffRdate" column="STAFF_RDATE"/>
+
+    <!-- TypeVO 연관 객체 -->
+    <association property="type" javaType="TypeVO" autoMapping="true">
+        <id property="typeCode" column="TYPE_CODE"/>
+        <result property="typeName" column="TYPE_NAME"/>
+        <result property="isActive" column="IS_ACTIVE"/>
+        <result property="typeGroup" column="TYPE_GROUP"/>
+    </association>
+</resultMap>
+	
+	
+	<select id="selectStaffTotalCount">
+		SELECT COUNT(*) 
+		  FROM STAFF S
+	INNER JOIN TB_USER U ON S.USER_NO = U.USER_NO
+	</select>
+	
+	<select id="selectStaffTotalCountByKeyword">
+		SELECT COUNT(*)
+		  FROM STAFF S
+		  JOIN TB_USER U ON S.USER_NO = U.USER_NO
+		 WHERE S.USER_NO LIKE '%' || #{keyword} || '%'
+		    OR U.USER_NAME LIKE '%' || #{keyword} || '%'
+		    OR S.STAFF_DEPARTMENT LIKE '%' || #{keyword} || '%'
+		    OR S.STAFF_POSITION LIKE '%' || #{keyword} || '%'
+	</select>
+	
+	<select id="selectStaffList" resultMap="staffMap">
+	  SELECT A.*
+	    FROM (
+	      SELECT ROW_NUMBER() OVER (ORDER BY S.STAFF_HIREDATE DESC) AS RNUM,
+	             S.USER_NO,
+	             U.USER_NAME,
+	             S.STAFF_DEPARTMENT,
+	             S.STAFF_POSITION,
+	             S.STAFF_HIREDATE,
+	             S.STAFF_RDATE,
+	             U.USER_EMAIL,
+	             U.USER_TEL,
+	             U.USER_ROLE,
+	             T.TYPE_CODE,
+	             T.TYPE_NAME,
+	             T.IS_ACTIVE,
+	             T.TYPE_GROUP
+	        FROM STAFF S
+	       JOIN TB_USER U ON S.USER_NO = U.USER_NO
+	  LEFT JOIN TYPE T ON U.BANK_CD = T.TYPE_CODE AND T.TYPE_GROUP = 'BANK'
+	      <where>
+	        <if test="searchType == 'userNo'">
+	          S.USER_NO LIKE '%' || #{keyword} || '%'
+	        </if>
+	        <if test="searchType == 'userName'">
+	          U.USER_NAME LIKE '%' || #{keyword} || '%'
+	        </if>
+	        <if test="searchType == 'staffDepartment'">
+	          S.STAFF_DEPARTMENT LIKE '%' || #{keyword} || '%'
+	        </if>
+	        <if test="searchType == 'staffPosition'">
+	          S.STAFF_POSITION LIKE '%' || #{keyword} || '%'
+	        </if>
+	        <if test="searchType == 'all'">
+	          (S.USER_NO LIKE '%' || #{keyword} || '%'
+	           OR U.USER_NAME LIKE '%' || #{keyword} || '%'
+	           OR S.STAFF_DEPARTMENT LIKE '%' || #{keyword} || '%'
+	           OR S.STAFF_POSITION LIKE '%' || #{keyword} || '%')
+	        </if>
+	      </where>
+	       ORDER BY S.STAFF_HIREDATE DESC
+	    ) A
+	  <![CDATA[
+	   WHERE RNUM >= ${firstRecordIndex} AND RNUM <= ${lastRecordIndex}
+	  ]]>
+	</select>
+	
+	<select id="selectStaff" resultMap="staffMap">
+		SELECT 
+		    S.USER_NO, 
+		    U.USER_NAME, 
+		    S.STAFF_POSITION, 
+		    S.STAFF_DEPARTMENT, 
+		    S.STAFF_HIREDATE, 
+		    S.STAFF_RDATE, 
+		    U.GENDER, 
+		    U.USER_REGNO1, 
+		    U.USER_REGNO2, 
+		    U.USER_TEL, 
+		    U.USER_ZIP, 
+		    U.USER_ADD1, 
+		    U.USER_ADD2, 
+		    U.USER_EMAIL, 
+		    U.BANK_CD, 
+		    U.USER_ROLE, 
+		    U.USER_BANKNO,
+		    T.TYPE_CODE,
+		    T.TYPE_NAME,
+		    T.IS_ACTIVE,
+		    T.TYPE_GROUP
+		FROM STAFF S
+		JOIN TB_USER U ON S.USER_NO = U.USER_NO
+		LEFT JOIN TYPE T ON U.BANK_CD = T.TYPE_CODE AND T.TYPE_GROUP = 'BANK'
+		WHERE S.USER_NO = #{userNo}
+	</select>
+
+	<update id="updateStaff" parameterType="StaffVO">
+		UPDATE STAFF 
+    	   SET STAFF_DEPARTMENT = #{staffDepartment},
+			   STAFF_POSITION = #{staffPosition}
+         WHERE USER_NO = #{userNo}
+	</update>
+	
+	<update id="updateUser" parameterType="UserVO">
+    	 UPDATE TB_USER SET
+            USER_NAME = #{userName},
+            USER_TEL = #{userTel},
+            USER_ZIP = #{userZip},
+            USER_ADD1 = #{userAdd1},
+            USER_ADD2 = #{userAdd2},
+            USER_EMAIL = #{userEmail},
+            BANK_CD = #{bankCd},
+            USER_BANKNO = #{userBankno}
+        WHERE USER_NO = #{userNo}
+    </update>
+    
+    <insert id="insertStaff">
+    	INSERT ALL
+            INTO TB_USER (
+                USER_NO, USER_NAME, USER_PASS, GENDER, USER_REGNO1, USER_REGNO2,
+                USER_TEL, USER_ZIP, USER_ADD1, USER_ADD2, USER_EMAIL, 
+                BANK_CD, USER_ROLE, USER_BANKNO
+            )
+            VALUES (
+                'AD' || LPAD(SEQ_STAFF.NEXTVAL, 8, '0'), #{userName}, #{userPass}, #{gender}, #{userRegno1}, #{userRegno2},
+                #{userTel}, #{userZip}, #{userAdd1}, #{userAdd2}, #{userEmail},
+                #{bankCd}, #{userRole}, #{userBankno}
+            )
+            INTO STAFF (
+                USER_NO, STAFF_DEPARTMENT, STAFF_POSITION, 
+                STAFF_HIREDATE
+            )
+            VALUES (
+                'AD' || LPAD(SEQ_STAFF.NEXTVAL, 8, '0'), #{staffDepartment}, #{staffPosition},
+                TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+            )
+        SELECT * FROM DUAL
+    </insert>
+</mapper>

@@ -1,0 +1,294 @@
+package kr.or.ddit.pfcp.staff.college.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import kr.or.ddit.pfcp.common.vo.CollegeVO;
+import kr.or.ddit.pfcp.common.vo.CurriculumVO;
+import kr.or.ddit.pfcp.common.vo.DGRRequestVO;
+import kr.or.ddit.pfcp.common.vo.DepartmentVO;
+import kr.or.ddit.pfcp.staff.college.service.CollegeServiceImpl;
+import kr.or.ddit.pfcp.staff.college.service.CurriculumServiceImpl;
+import kr.or.ddit.pfcp.staff.college.service.DGRRequestServiceImpl;
+import kr.or.ddit.pfcp.staff.college.service.DepartmentServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * @author KGM
+ * @since 250630
+ * @see
+ */
+@Controller
+@RequestMapping("/staff/college")
+@Slf4j
+public class CollegeController {
+	
+	@Autowired
+	private CollegeServiceImpl service;
+	
+	@Autowired
+	private DepartmentServiceImpl departmentService;
+	
+	@Autowired
+	private CurriculumServiceImpl curriculumService;
+	
+	@Autowired
+	private DGRRequestServiceImpl dgrRequestService;
+	
+	/**
+	 * 단과대학 목록 조회	
+	 * @return
+	 */
+	@GetMapping("collegeList.do")
+	public String collegeList(
+			Model model
+			) {
+        List<CollegeVO> collegeList = service.readCollegeList();
+		model.addAttribute("college", service.readCollegeList());
+		return "pfcp/staff/college/collegeList";
+	}
+		
+	/**
+	 * 단과대학 상세 조회(학과 목록)
+	 * @return
+	 */
+	@GetMapping("departmentList.do")
+	public String collegeRead(
+			@RequestParam("collegeNo") String collegeNo
+			, Model model
+			, RedirectAttributes redirectAttributes
+			) {
+		log.info("단과대학 상세 조회 요청, collegeNo: {}", collegeNo);
+
+		// 1. 단과 대학 상세 정보 조회
+	    List<CollegeVO> college = service.readCollege(collegeNo);
+	    
+	    if (college != null) {
+	        model.addAttribute("college", college); // 조회된 단과 대학 객체를 모델에 추가
+	        log.info("서비스에서 받아온 CollegeVO: {}", college);
+
+	        // 2. 해당 단과 대학의 학과 목록 조회
+	        List<DepartmentVO> departmentList = departmentService.readDepartmentByCollege(collegeNo);
+	        model.addAttribute("departmentList", departmentList); // 학과 목록을 모델에 추가
+	        log.info("서비스에서 받아온 DepartmentList: {}", departmentList);
+
+	        return "pfcp/staff/college/departmentList";
+	    } else {
+	        log.warn("collegeNo {}에 해당하는 단과대학을 찾을 수 없습니다. (컨트롤러에서 서비스 반환값 null)", collegeNo);
+            redirectAttributes.addFlashAttribute("errorMessage", "해당 단과대학 정보를 찾을 수 없습니다."); // 오류 메시지 추가
+			return "redirect:/staff/college/collegeList";
+		}
+	}
+	
+	/**
+	 * 단과 대학 상세(커리큘럼, 졸업 요건,)
+	 * @param departmentNo
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("departmentDetail.do")
+	public String departmentDetail(
+	@RequestParam("departmentNo") String departmentNo
+	, Model model
+	) {
+		
+	    DepartmentVO department = departmentService.readDepartment(departmentNo);
+	    // 커리큘럼 조회 서비스 만들어서
+	    List<CurriculumVO> curriculumList = curriculumService.readCurriculum(departmentNo);
+
+	    DGRRequestVO dgrList = dgrRequestService.readDGRRequest(departmentNo);
+
+	    model.addAttribute("department", department);
+	    model.addAttribute("curriculumList", curriculumList);
+	    model.addAttribute("dgrList", dgrList);
+	    
+	    return "pfcp/staff/college/departmentDetail"; 
+	}
+	
+	
+//	/**
+//     * 단과대학 수정 폼
+//     */
+//    @GetMapping("collegeUpdate.do")
+//    public String collegeUpdateForm(
+//    		@RequestParam("collegeNo") String collegeNo
+//    		, Model model
+//    		) {
+//        log.info("단과대학 수정 폼 요청, collegeNo: {}", collegeNo);
+//
+//        CollegeVO college = service.readCollege(collegeNo); 
+//        
+//        if (college != null) {
+//            model.addAttribute("college", college);
+//            log.info("단과대학 정보 로드 성공: {}", college.getCollegeName());
+//            
+//            return "pfcp/staff/college/collegeUpdate"; // 수정 폼 JSP
+//        } else {
+//            log.warn("collegeNo {}에 해당하는 단과대학을 찾을 수 없습니다.", collegeNo);
+//            
+//            return "redirect:/staff/college/collegeList.do";
+//        }
+//    }
+   
+//    /**
+//     * 단과대학 삭제 처리
+//     */
+//    @PostMapping("deleteCollege.do")
+//    public String deleteCollege(@RequestParam("collegeNo") String collegeNo) {
+//        log.info("단과대학 삭제 처리 요청, collegeNo: {}", collegeNo);
+//
+//        service.removeCollege(collegeNo);
+//
+//        return "redirect:/staff/college/collegeList.do";
+//    }
+	
+//	/**
+//	 * 단과대학 등록
+//	 * @return
+//	 */
+//	@GetMapping("collegeInsert.do")
+//	public String collegeInsert() {
+//		return "pfcp/staff/college/collegeInsert";
+//	}
+	
+//	// 새로운 단과대학 등록 처리 (POST 요청)
+//	@PostMapping("insertCollege.do") // 이 매핑이 'collegeInsert.jsp'의 폼 action과 일치해야 합니다.
+//	public String insertCollege(CollegeVO college) { // 폼에서 넘어온 'collegeName'이 CollegeVO에 자동으로 매핑됩니다.
+//		log.info("새로운 단과대학 등록 요청: {}", college); // 콘솔에서 입력값 확인용
+//
+//		// 서비스 계층을 호출하여 DB에 데이터 저장
+//		int res = service.createCollege(college);
+//
+//		if (res > 0) {
+//			// 등록 성공 시, 단과대학 목록 페이지로 리다이렉트하여 새로 등록된 항목을 보여줍니다.
+//			return "redirect:/staff/college/collegeList.do";
+//		} else {
+//			// 등록 실패 시 (예: DB 오류 등), 다시 등록 폼으로 이동하거나 에러 메시지를 표시할 수 있습니다.
+//			// 여기서는 간단히 다시 등록 폼으로.
+//			log.warn("단과대학 등록 실패: {}", college);
+//			return "pfcp/staff/college/collegeInsert";
+//		}
+//	}
+	
+	/**
+	 * 졸업 요건 조회
+	 * @return
+	 */
+	@GetMapping("graduateList.do")
+	public String graduate() {
+		return "pfcp/staff/college/graduateList";
+	}
+	
+	/**
+	 * 졸업 요건 등록
+	 * @return
+	 */
+	@GetMapping("graduateInsert.do")
+	public String graduateInsert() {
+		return "pfcp/staff/college/graduateInsert";
+	}
+	
+	/**
+	 * 졸업 요건 상세조회, 수정, 삭제
+	 * @return
+	 */
+	@GetMapping("graduateDetail.do")
+	public String graduateDetail() {
+		return "pfcp/staff/college/graduateDetail";
+	}
+	
+	/**
+	 * 졸업 신청 조회, 반려
+	 * @return
+	 */
+	@GetMapping("graduateApply.do")
+	public String graduateApply() {
+		return "pfcp/staff/college/graduateApply";
+	}
+	
+	/**
+	 * 이수 학점 조회
+	 * @return
+	 */
+	@GetMapping("graduateCreditList.do")
+	public String graduateCredit() {
+		return "pfcp/staff/college/graduateCreditList";
+	}
+	
+	/**
+	 * 이수 학점 등록
+	 * @return
+	 */
+	@GetMapping("graduateCreditInsert.do")
+	public String graduateCreditInsert() {
+		return "pfcp/staff/college/graduateCreditInsert";
+	}
+	
+	/**
+	 * 이수 학점 상세 조회, 수정, 삭제
+	 * @return
+	 */
+	@GetMapping("graduateCreditDetail.do")
+	public String graduateCreditDetail() {
+		return "pfcp/staff/college/graduateCreditDetail";
+	}
+	
+	/**
+	 * 커리큘럼 조회
+	 * @return
+	 */
+	@GetMapping("curriculumList.do")
+	public String curriculumList() {
+		return "pfcp/staff/college/curriculumList";
+	}
+	
+	/**
+	 * 커리큘럼 등록
+	 * @return
+	 */
+	@GetMapping("curriculumInsert.do")
+	public String curriculumInsert() {
+		return "pfcp/staff/college/curriculumInsert";
+	}
+	
+	/**
+	 * 커리큘럼 상세조회
+	 * @return
+	 */
+//	@GetMapping("curriculumDetail.do")
+//	public String curriculumDetail(
+//			@RequestParam("curNo") String curNo
+//			, Model model
+//			, RedirectAttributes redirectAttributes
+//			) {
+//		log.info("커리큘럼 상세 조회 요청, collegeNo: {}", curNo);
+
+//		CurriculumVO curriculum = curriculumService.readCurriculum(curNo);
+	    
+//	    if (curriculum != null) {
+//	        model.addAttribute("curriculumDetail", curriculum);
+//	        log.info("서비스에서 받아온 CurriculumVO: {}", curriculum);
+
+//	        List<CurriculumVO> curriculumList = curriculumService.readCurriculumList(curNo);
+//	        model.addAttribute("departmentList", curriculumList);
+//	        log.info("서비스에서 받아온 DepartmentList: {}", curriculumList);
+//
+//	        return "pfcp/staff/college/curriculumDetail";
+//	    }
+//	    else {
+//	        log.warn("curNo {}에 해당하는 커리큘럼을 찾을 수 없습니다.", curNo);
+//            redirectAttributes.addFlashAttribute("errorMessage", "해당 커리큘럼 정보를 찾을 수 없습니다.");
+//            
+//			return "redirect:/staff/college/departmentDetail.do";
+//		}
+	    
+//	}
+	
+}

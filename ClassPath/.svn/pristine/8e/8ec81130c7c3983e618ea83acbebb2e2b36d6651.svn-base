@@ -1,0 +1,325 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   교수용 성적 관리 시스템 - 업무성 디자인
+   ========================================================================== */
+
+/* 전체 컨테이너 */
+.gradeStdList .container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 20px;
+    background-color: #f8f9fa;
+    font-family: 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #212529;
+    min-height: 100vh;
+}
+
+/* 페이지 제목 */
+.gradeStdList .container h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a202c;
+/*     margin-bottom: 24px; */
+    padding: 20px 0 0 0;
+/*     border-bottom: 3px solid #2b6cb0; */
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.gradeStdList .h1-hr{
+	border: 1px solid #2b6cb0;
+}
+
+/* 강의 정보 섹션 */
+.gradeStdList .container p {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    margin: 8px 0;
+    font-size: 0.95rem;
+    color: #2d3748;
+    border-left: 4px solid #4299e1;
+}
+
+.gradeStdList .container p strong {
+    color: #1a202c;
+    font-weight: 600;
+    margin-right: 8px;
+    min-width: 100px;
+    display: inline-block;
+}
+
+/* 메시지 스타일 */
+.gradeStdList .container div[style*="color: green"] {
+    background: #f0fff4 !important;
+    color: #22543d !important;
+    border: 1px solid #9ae6b4 !important;
+    border-left: 4px solid #38a169 !important;
+    padding: 12px 16px !important;
+    margin: 16px 0 !important;
+    border-radius: 4px !important;
+    font-weight: 500 !important;
+}
+
+/* 폼 스타일 */
+.gradeStdList #gradeForm {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 0;
+    margin-top: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 테이블 반응형 컨테이너 */
+.gradeStdList .table-responsive {
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+}
+
+/* 성적 테이블 */
+.gradeStdList .grade-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    background: #ffffff;
+    margin: 0;
+}
+
+.gradeStdList .grade-table thead {
+    background: #f7fafc;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.gradeStdList .grade-table th {
+    padding: 14px 8px;
+    text-align: center;
+    font-weight: 600;
+    color: #2d3748;
+    border-bottom: 2px solid #cbd5e0;
+    border-right: 1px solid #e2e8f0;
+    white-space: nowrap;
+    vertical-align: middle;
+    background: #f7fafc;
+}
+
+.gradeStdList .grade-table th:last-child {
+    border-right: none;
+}
+
+.gradeStdList .grade-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.gradeStdList .grade-table tbody tr:nth-child(even) {
+    background-color: #fefefe;
+}
+
+.gradeStdList .grade-table tbody tr:hover {
+/*     background-color: #edf2f7; */
+}
+
+.gradeStdList .grade-table td {
+    padding: 10px 8px;
+    text-align: center;
+    color: #2d3748;
+    border-right: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.gradeStdList .grade-table td:last-child {
+    border-right: none;
+}
+
+/* 학번, 이름, 학과 열 - 좌측 정렬 */
+.gradeStdList .grade-table td:nth-child(1),
+.gradeStdList .grade-table td:nth-child(2),
+.gradeStdList .grade-table td:nth-child(3) {
+    text-align: center;
+    font-weight: 500;
+}
+
+/* 학번 열 */
+.gradeStdList .grade-table td:nth-child(1) {
+    font-family: 'Consolas', monospace;
+    color: #4a5568;
+}
+
+/* 이름 열 */
+.gradeStdList .grade-table td:nth-child(2) {
+    font-weight: 600;
+    color: #1a202c;
+}
+
+/* 점수 입력 필드 */
+.gradeStdList .input-score {
+    width: 70px;
+    padding: 6px 8px;
+    border: 1px solid #cbd5e0;
+    border-radius: 3px;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background: #ffffff;
+    color: #2d3748;
+    transition: all 0.2s ease;
+}
+
+.gradeStdList .input-score:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+    background: #ffffff;
+}
+
+/* 읽기 전용 입력 필드 (과제 점수) */
+.gradeStdList .readonly-input {
+    background: #f7fafc !important;
+    color: #4a5568 !important;
+    border-color: #e2e8f0 !important;
+    cursor: not-allowed;
+    font-weight: 500;
+}
+
+/* 총점 표시 */
+.gradeStdList .final-grade {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #1a202c;
+    padding: 4px 8px;
+    background: #edf2f7;
+    border-radius: 3px;
+    min-width: 50px;
+    display: inline-block;
+}
+
+/* 등급 표시 */
+.gradeStdList .grade-table td:last-child {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+/* 등급별 색상 */
+.gradeStdList .grade-table td:last-child {
+    padding: 8px;
+}
+
+/* A등급 계열 */
+.gradeStdList .grade-table tbody tr td:last-child:contains("A") {
+    color: #22543d;
+    background: #f0fff4;
+}
+
+/* B등급 계열 */
+.gradeStdList .grade-table tbody tr td:last-child:contains("B") {
+    color: #2a69ac;
+    background: #ebf8ff;
+}
+
+/* C등급 계열 */
+.gradeStdList .grade-table tbody tr td:last-child:contains("C") {
+    color: #744210;
+    background: #fefcbf;
+}
+
+/* D등급 이하 */
+.gradeStdList .grade-table tbody tr td:last-child:contains("D"),
+.gradeStdList .grade-table tbody tr td:last-child:contains("F") {
+    color: #742a2a;
+    background: #fed7d7;
+}
+
+/* 버튼 컨테이너 */
+.gradeStdList .button-container {
+    padding: 20px;
+    background: #f7fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+/* 버튼 기본 스타일 */
+.gradeStdList .button-container button {
+    padding: 10px 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 120px;
+}
+
+/* 뒤로 가기 버튼 */
+.gradeStdList .button-container button[onclick="history.back()"] {
+    background: #e2e8f0;
+    color: #4a5568;
+    border: 1px solid #cbd5e0;
+}
+
+.gradeStdList .button-container button[onclick="history.back()"]:hover {
+    background: #cbd5e0;
+    color: #2d3748;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 성적 수정 버튼 */
+.gradeStdList .button-container button[type="submit"] {
+    background: #2b6cb0;
+    color: #ffffff;
+    border: 1px solid #2b6cb0;
+}
+
+.gradeStdList .button-container button[type="submit"]:hover {
+    background: #2a5298;
+    border-color: #2a5298;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(43, 108, 176, 0.3);
+}
+
+/* 데이터 없음 메시지 */
+.gradeStdList .grade-table td[colspan] {
+    text-align: center;
+    padding: 40px 20px;
+    color: #718096;
+    font-style: italic;
+    background: #f7fafc;
+}
+
+/* ==========================================================================
+   점수별 색상 구분 (선택사항)
+   ========================================================================== */
+
+/* 90점 이상 */
+.gradeStdList .input-score[value^="9"]:not([readonly]) {
+    border-left: 3px solid #38a169;
+}
+
+/* 80-89점 */
+.gradeStdList .input-score[value^="8"]:not([readonly]) {
+    border-left: 3px solid #4299e1;
+}
+
+/* 70-79점 */
+.gradeStdList .input-score[value^="7"]:not([readonly]) {
+    border-left: 3px solid #ed8936;
+}
+
+/* 70점 미만 */
+.gradeStdList .input-score[value^="6"]:not([readonly]),
+.gradeStdList .input-score[value^="5"]:not([readonly]),
+.gradeStdList .input-score[value^="4"]:not([readonly]),
+.gradeStdList .input-score[value^="3"]:not([readonly]),
+.gradeStdList .input-score[value^="2"]:not([readonly]),
+.gradeStdList .input-score[value^="1"]:not([readonly]),
+.gradeStdList .input-score[value^="0"]:not([readonly]) {
+    border-left: 3px solid #e53e3e;
+}
+

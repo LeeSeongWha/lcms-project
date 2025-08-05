@@ -1,0 +1,92 @@
+package kr.or.ddit.pfcp.staff.notice.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.vo.BoardVO;
+import kr.or.ddit.pfcp.staff.notice.mapper.NoticeMapper;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * @author YSM
+ * @since 2025. 6. 30.
+ *
+ * << 개정이력(Modification Information) >>
+ * 수정일		|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 2025. 6. 30.	|	양수민	|	최초 생성
+ */
+@Service
+@RequiredArgsConstructor
+public class NoticeServiceImpl implements NoticeService{
+	private final NoticeMapper noticeMapper;
+	
+	@Override
+	public int readTotalCount(Map<String, Object> paramMap) {
+		// TODO Auto-generated method stub
+		return noticeMapper.selectTotalCount(paramMap);
+	}
+
+	@Override
+	public List<BoardVO> readBoardList(Map<String, Object> paramMap) {
+		// TODO Auto-generated method stub
+		return noticeMapper.selectBoardList(paramMap);
+	}
+
+	@Override
+	public BoardVO readBoard(String boardNo) {
+		// TODO Auto-generated method stub
+		return noticeMapper.selectBoard(boardNo);
+	}
+
+	@Override
+	public void modifyBoard(BoardVO board) {
+		// TODO Auto-generated method stub
+		noticeMapper.updateBoard(board);
+	}
+
+	@Override
+	public void createBoard(BoardVO board) {
+		// TODO Auto-generated method stub
+		noticeMapper.insertBoard(board);
+	}
+
+	@Override
+	public BoardVO readBoardByScheduleNo(String ScheduleNo) {
+		// TODO Auto-generated method stub
+		return noticeMapper.selectByScheduleNo(ScheduleNo);
+	}
+
+	@Override
+	public void modifyBoardDeleted(String what) {
+		// TODO Auto-generated method stub
+		noticeMapper.updateBoardDeleted(what);
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

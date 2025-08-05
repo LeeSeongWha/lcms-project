@@ -1,0 +1,372 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<!DOCTYPE html>
+<html>
+<head>
+<title>비교과 프로그램 관리</title>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css" />
+<link rel="stylesheet" href="/dist/assets/css/attendclass.css">
+<link rel="stylesheet" href="/dist/assets/css/staff/programChart.css">
+<script>
+   
+document.addEventListener("DOMContentLoaded", function () {
+     document.querySelectorAll('[data-tab]').forEach(tab => {
+       tab.addEventListener('click', function () {
+         const selected = this.dataset.tab;
+
+         // 탭 활성화 처리
+         document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
+         this.classList.add('active');
+
+         // 콘텐츠 보이기 처리
+         document.querySelectorAll('[data-tab-content]').forEach(div => {
+           div.style.display = div.dataset.tabContent === selected ? 'block' : 'none';
+         });
+
+        /*  //  신청 관리 탭 클릭 시 
+         if (selected === 'apply') {
+           loadProgramEnrollList({ page: 1 });
+         } */
+       });
+     });
+   });
+function goToApplyPage(programNo) {
+   location.href = '/staff/program/apply/' + programNo;
+}
+
+function goToDetail(programNo) {
+     location.href = '/staff/program/edit/' + programNo;
+}
+
+function deleteProgram(programNo) {
+     if (!confirm("정말 이 프로그램을 삭제하시겠습니까?")) return;
+
+     fetch('/staff/program/delete/' + programNo, {
+       method: 'Delete'
+     })
+     .then(res => {
+       if (res.ok) {
+         alert("삭제되었습니다.");
+         location.reload();
+       } else {
+         alert("삭제 실패");
+       }
+     })
+     .catch(() => alert("서버 오류"));
+}
+function loadFeedbackList() {
+	  fetch("/feedbackList")
+	    .then(res => res.json())
+	    .then(list => {
+	      const container = document.getElementById("feedbackListContainer");
+	      container.innerHTML = "";
+
+	      if (list.length === 0) {
+	        container.innerHTML = "<p style='text-align:center;'>등록된 피드백이 없습니다.</p>";
+	        return;
+	      }
+
+	      list.forEach(fb => {
+	        const starHTML = [...Array(5).keys()].map(i =>
+	          `<span class="${i < fb.feedbackAccount ? 'star filled' : 'star'}">★</span>`
+	        ).join("");
+
+	        container.innerHTML += `
+	          <div class="feedback-card">
+	            <div class="feedback-header">
+	              <div class="program-title">${fb.program.programTitle}</div>
+	              <div class="star-rating">${starHTML}</div>
+	            </div>
+	            <div class="feedback-content">${fb.feedbackComment}</div>
+	            <div class="feedback-footer">
+	              <span>${fb.user.userName}</span>
+	              <span>${fb.submitDate}</span>
+	            </div>
+	          </div>
+	        `;
+	      });
+	    });
+	}
+
+
+</script>
+
+</head>
+<body>
+	<div class="container">
+		<h1>비교과 프로그램 관리 시스템</h1>
+		<%-- <p class="stat-update-time">
+         마지막 갱신 시각: <strong>${stat.regDate}</strong>
+      </p> --%>
+
+
+		<div class="summary-grid">
+			<div>
+				전체 프로그램<span>${liveStat.totalPrograms }</span>
+			</div>
+			<div>
+				총 참여자 수<span>${liveStat.totalApplicants }</span>
+			</div>
+			<div>
+				이번 달 신청 수<span>${liveStat.monthlyApply }</span>
+			</div>
+			<div>
+				완료율<span>${liveStat.completeRate }%</span>
+			</div>
+		</div>
+
+		<div class="tab-menu">
+			<button data-tab="program" class="tab active">프로그램 관리</button>
+			<button data-tab="apply" class="tab">신청 관리</button>
+			<!--          <button data-tab="followup" class="tab">사후 관리</button> -->
+			<button data-tab="statistics" class="tab">통계 분석</button>
+			<button data-tab="survey" class="tab">설문 관리</button>
+
+		</div>
+
+
+		<!--비교과 프로그램 관리 탭  -->
+		<div class="tab-content" data-tab-content="program"
+			style="display: block;">
+			<h3>비교과 프로그램 관리</h3>
+			<div class="add-button">
+
+				<button type="button" class="btn-add"
+					onclick="location.href='/staff/program/form'">새 프로그램 추가</button>
+			</div>
+			<table>
+				<thead>
+					<tr>
+						<th>프로그램명</th>
+						<th>기간</th>
+						<th>상태</th>
+						<th>유형</th>
+						<th>정원</th>
+						<th>장소</th>
+						<th>관리</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach var="p" items="${programList}">
+						<tr class="ahover">
+							<td onclick="goToDetail('${p.programNo}')">${p.programTitle}</td>
+							<td onclick="goToDetail('${p.programNo}')">${p.startDate}~${p.endDate}</td>
+							<td onclick="goToDetail('${p.programNo}')"><c:choose>
+									<c:when test="${p.programActive eq 'N'}">
+                              모집중
+                           </c:when>
+									<c:when test="${p.programActive eq 'Y'}">
+                              진행중
+                           </c:when>
+									<c:when test="${p.programActive eq 'C'}">
+                              완료
+                           </c:when>
+								</c:choose></td>
+							<td onclick="goToDetail('${p.programNo}')">${p.type.typeName }</td>
+							<td onclick="goToDetail('${p.programNo}')">${p.programCapacity }</td>
+							<td onclick="goToDetail('${p.programNo}')">${p.place }</td>
+							<td>
+								<button onclick="deleteProgram('${p.programNo}')" title="삭제"
+									style="background: none; border: none; cursor: pointer;">
+									🗑</button>
+							</td>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+		</div>
+
+
+		<div class="tab-content" data-tab-content="apply"
+			style="display: none;">
+			<div class="section">
+				<div class="sectionHeaderLine">
+					<div>
+						<div class="sectionHeaderTitle">비교과 프로그램 신청 관리</div>
+					</div>
+				</div>
+
+				<div class="lecture-list-container">
+					<c:set var="displayedCount" value="0" />
+					<c:choose>
+						<c:when test="${not empty openProgramList}">
+							<c:forEach var="p" items="${openProgramList}">
+								<c:url value="/staff/program/apply/${p.programNo}"
+									var="detailURL" />
+								<a href="${detailURL}" class="lecture-item-link">
+									<div class="lecture-item-content">
+										<div class="lecture-info-group">
+											<div class="lecture-icon-wrapper">
+												<svg xmlns="http://www.w3.org/2000/svg" class="lecture-icon"
+													fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                 <path stroke-linecap="round"
+														stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                              </svg>
+											</div>
+											<div>
+												<span class="lecture-name">${p.programTitle}</span>
+												<p class="lecture-details">
+													・ 프로그램 번호: ${p.programNo}<br> ・ 유형: ${p.type.typeName}<br>
+													・ 기간: ${p.startDate} ~ ${p.endDate}<br> ・ 정원:
+													${p.programCapacity}명
+												</p>
+											</div>
+										</div>
+									</div>
+								</a>
+								<c:set var="displayedCount" value="${displayedCount + 1}" />
+							</c:forEach>
+						</c:when>
+					</c:choose>
+
+					<c:if test="${displayedCount == 0}">
+						<div class="no-lecture-message">모집 중인 비교과 프로그램이 없습니다.</div>
+					</c:if>
+				</div>
+			</div>
+		</div>
+
+		<div class="tab-content" data-tab-content="statistics"
+			style="display: none;">
+
+			<!-- 기존 통계 개요 + donut 차트를 하나의 행으로 감싸기 -->
+			<div class="chart-row">
+				<div class="chart-box">
+					<h4 class="chart-title">📊 통계 개요</h4>
+					<canvas id="programStatChart" width="300" height="250"></canvas>
+					<p class="chart-desc">
+						✅ 전체 이수율: <strong>${stat.completeRate}%</strong>
+					</p>
+				</div>
+
+				<div class="chart-box">
+					<h4 class="chart-title">📊 유형별 신청자 통계</h4>
+					<canvas id="donutChart" width="300" height="250"></canvas>
+				</div>
+			</div>
+
+			<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+			<script>
+             const barCtx = document.getElementById('programStatChart').getContext('2d');
+         
+             new Chart(barCtx, {
+               type: 'bar',
+               data: {
+                 labels: ['전체 프로그램 수', '전체 신청자 수', '당월 신청자 수'],
+                 datasets: [{
+                   label: '${stat.statDate} 기준 통계',
+                   data: [${stat.totalPrograms}, ${stat.totalApplicants}, ${stat.monthlyApply}],
+                   backgroundColor: ['#4e79a7', '#f28e2b', '#e15759'],
+                   borderColor: ['#4e79a7', '#f28e2b', '#e15759'],
+                   borderWidth: 1,
+                   borderRadius: 5
+                 }]
+               },
+               options: {
+                 responsive: true,
+                 plugins: {
+                   legend: {
+                     display: true,
+                     position: 'bottom',
+                     labels: {
+                       font: { size: 12 },
+                       color: '#333'
+                     }
+                   },
+                   title: {
+                     display: false
+                   },
+                   tooltip: {
+                     backgroundColor: '#333',
+                     titleFont: { weight: 'bold' },
+                     bodyFont: { size: 13 },
+                     padding: 10
+                   }
+                 },
+                 scales: {
+                   y: {
+                     beginAtZero: true,
+                     grid: {
+                       color: '#eee'
+                     },
+                     ticks: {
+                       stepSize: 1,
+                       font: { size: 12 }
+                     }
+                   },
+                   x: {
+                     ticks: {
+                       font: { size: 12 }
+                     }
+                   }
+                 }
+               }
+             });
+           </script>
+
+
+			<script>
+           fetch("/staff/program/donut/data")
+             .then(response => response.json())
+             .then(data => {
+               const labels = data.map(d => d.typeCode);
+               const values = data.map(d => d.applyCount);
+         
+               const ctx = document.getElementById('donutChart').getContext('2d');
+               new Chart(ctx, {
+                 type: 'doughnut',
+                 data: {
+                   labels: labels,
+                   datasets: [{
+                     label: '신청자 수',
+                     data: values,
+                     backgroundColor: [
+                       '#4e79a7', '#f28e2b', '#e15759', '#76b7b2',
+                       '#59a14f', '#edc948', '#b07aa1', '#ff9da7'
+                     ],
+                     borderWidth: 1
+                   }]
+                 },
+                 options: {
+                   responsive: true,
+                   plugins: {
+                     legend: {
+                       position: 'bottom'
+                     },
+                     title: {
+                       display: false
+                     }
+                   }
+                 }
+               });
+             });
+      </script>
+
+
+
+		</div>
+		<div class="tab-content" data-tab-content="survey"
+			style="display: none;">
+			<div class="survey-summary-grid">
+				<!-- 좌측: 피드백 카드 -->
+				<div class="feedback-card-wrapper">
+					<h4>💬 피드백 관리</h4>
+					<div id="feedbackListContainer"></div>
+				</div>
+
+				<!-- 우측: 만족도 통계 -->
+				<div class="satisfaction-chart-wrapper">
+					<h4>📋 만족도 조사</h4>
+					<div class="total-score" id="totalScoreBox"></div>
+					<div id="satisfactionChartBox"></div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</body>
+</html>
+
+
+

@@ -1,0 +1,12 @@
+package kr.or.ddit.pfcp.staff.lecturemanage.lecture.service;
+
+import java.util.List;
+
+import kr.or.ddit.pfcp.common.vo.LectureVO;
+
+public interface StaffLectureService {
+
+	public List<LectureVO> readLectureList();
+	public int readTotalCount();
+
+}

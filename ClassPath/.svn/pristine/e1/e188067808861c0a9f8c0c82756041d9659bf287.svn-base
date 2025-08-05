@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.student.certificate.mapper.StudentCertificateMapper">
+	<resultMap type="ProgramVO" id="programMap" autoMapping="true">
+		<id property="programNo" column="PROGRAM_NO"/>
+		
+		<association property="programEnroll" javaType="ProgramEnrollVO">
+			<id property="enrollNo" column="ENROLL_NO"/>
+			<result property="programNo" column="PROGRAM_NO"/>
+		</association>
+	</resultMap>
+
+	<select id="selectStudentName">
+		SELECT B.USER_NAME
+	      FROM STUDENT A
+	INNER JOIN TB_USER B ON A.USER_NO=B.USER_NO
+	     WHERE B.USER_NO=#{userNo}
+	</select>
+	
+	<select id="selectProgramList">
+		SELECT A.PROGRAM_NO
+	           , A.TYPE_CODE
+	           , A.PROGRAM_TITLE
+	           , A.PROGRAM_DESP
+	           , A.PROGRAM_CAPACITY
+	           , A.START_DATE
+	           , A.END_DATE
+	           , A.PLACE
+	           , A.PROGRAM_ACTIVE
+	           , A.USER_NO
+	           , A.APPLY_START_DATE
+	           , A.APPLY_END_DATE
+	      FROM PROGRAM A
+	INNER JOIN PROGRAM_ENROLL B ON A.PROGRAM_NO=B.PROGRAM_NO
+	     WHERE B.USER_NO=#{userNo}
+	</select>
+
+	<select id="selectProgramTitle" parameterType="map">
+		SELECT A.PROGRAM_TITLE
+		       , B.ENROLL_NO
+	      FROM PROGRAM A
+	INNER JOIN PROGRAM_ENROLL B ON A.PROGRAM_NO=B.PROGRAM_NO
+	     WHERE A.PROGRAM_NO=#{programNo}
+	       AND B.USER_NO=#{userNo}
+	</select>
+	
+	<insert id="insertProgramCertReq">
+		INSERT INTO PROGRAM_CERT_REQ (
+			CERT_REQNO
+			, ENROLL_NO
+			, USER_NO
+			, CERREQ_DATE
+			, CERREQ_STATUS
+			, CERREQ_COMMENT
+		) VALUES (
+			'CERT' || LPAD(SEQ_CERT_REQ.NEXTVAL, 3, '0')
+			, #{enrollNo}
+			, #{userNo}
+			, TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+			, '대기'
+			, #{cerreqComment}
+		)
+	</insert>
+</mapper>

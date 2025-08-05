@@ -1,0 +1,133 @@
+<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css" />
+
+<h2 class="sectionTitle">비교과 프로그램 이수증 발급 처리</h2>
+<div class="section">
+	<div class="card">
+		<%-- ${enroll} --%>
+		<h3 class="sectionTitle">신청자 기본 정보</h3>
+		<div class="form-row" style="display: flex; gap: 20px;">
+			<div class="form-group" style="flex: 1;">
+				<label class="inputLabel">신청자 이름</label> <input type="text"
+					class="inputField" value="${enroll.student.user.userName}" readonly />
+			</div>
+			<div class="form-group" style="flex: 1;">
+				<label class="inputLabel">학번</label> <input type="text"
+					class="inputField" value="${enroll.userNo}" readonly />
+			</div>
+			<div class="form-group" style="flex: 1;">
+				<label class="inputLabel">신청일</label> <input type="text"
+					class="inputField" value="${enroll.applyDate}" readonly />
+			</div>
+		</div>
+
+		<div class="form-row" style="display: flex; gap: 20px;">
+			<div class="form-group" style="flex: 1;">
+				<label class="inputLabel">프로그램명</label> <input type="text"
+					class="inputField" value="${enroll.program.programTitle}" readonly />
+			</div>
+			<div class="form-group" style="flex: 1;">
+				<label class="inputLabel">프로그램 기간</label> <input type="text"
+					class="inputField"
+					value="${enroll.program.startDate} ~ ${enroll.program.endDate}"
+					readonly />
+			</div>
+			<div class="form-group" style="flex: 1;">
+				<label class="inputLabel">신청 상태</label> 
+				<c:choose>
+					<c:when test="${empty enroll.programcert }">
+						<span class="badge badgeRed">발급신청 없음</span>
+					</c:when>
+					<c:otherwise>
+						<span class="badge badgeBlue">${enroll.programcert.cerreqStatus}</span>
+					</c:otherwise>
+				</c:choose>
+			</div>
+		</div>
+	</div>
+
+	<div class="card">
+		<h3 class="sectionTitle">이수증 발급 처리</h3>
+		<form id="certIssueForm">
+			<input type="hidden" name="enrollNo" id="enrollNo"
+				value="${enroll.enrollNo}" /> <input type="hidden" name="certReqno"
+				id="certReqno" value="${enroll.programcert.certReqno}" />
+
+			<c:if test="${enroll.isCertIssued eq 'N' || empty enroll.isCertIssued}">
+				<%-- <div class="form-group">
+					<label class="inputLabel">발급 메모 (선택사항)</label>
+					<textarea name="certMemo" id="certMemo" class="inputField" rows="4"
+						placeholder="발급 관련 메모사항을 입력하세요...">${enroll.programcert.cerreqComment}</textarea>
+				</div> --%>
+			</c:if>
+
+
+			<div class="button-group" style="margin-top: 20px;">
+				<button type="button" class="cancelButton" onclick="history.back()">목록</button>
+
+				<c:if
+					test="${enroll.isCompleted eq 'Y' && enroll.programcert.cerreqStatus eq '대기중'}">
+					<button type="button" class="submitButton"
+						onclick="issueCertificate()">발급하기</button>
+				</c:if>
+
+				<c:if test="${enroll.programcert.cerreqStatus eq '승인완료'}">
+					<button type="button" class="submitButton" onclick="pdfPreview()">이수증 보기</button>
+				</c:if>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script>
+function issueCertificate() {
+    if (!confirm("이수증을 발급하시겠습니까?")) return;
+
+    const certReqno = document.getElementById("certReqno").value;
+    const enrollNo = document.getElementById("enrollNo").value;
+
+    fetch("/staff/program/cert/issue", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            certReqno: certReqno,
+            enrollNo: enrollNo
+        })
+    })
+    .then(res => {
+        if (res.ok) {
+            alert("이수증 발급 완료!");
+            location.reload();
+        } else {
+            alert("발급 처리 실패");
+        }
+    })
+    .catch(err => {
+        console.error("서버 오류", err);
+        alert("서버 오류가 발생했습니다.");
+    });
+}
+
+
+function pdfPreview() {
+	  const certReqno = "${enroll.programcert.certReqno}";
+
+	  fetch(`/staff/program/cert/view/\${certReqno}`)
+	    .then(res => {
+	      if (!res.ok) throw new Error("PDF 로딩 실패");
+	      return res.blob();
+	    })
+	    .then(blob => {
+	      const url = URL.createObjectURL(blob);
+	      window.open(url, "_blank");
+	    })
+	    .catch(err => {
+	      console.error("PDF 미리보기 실패:", err);
+	      alert("PDF 파일을 불러오지 못했습니다.");
+	    });
+	}
+
+</script>

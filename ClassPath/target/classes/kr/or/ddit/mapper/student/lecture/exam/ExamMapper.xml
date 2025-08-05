@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.student.eclass.exam.mapper.ExamMapper">
+	<select id="selectExamList" parameterType="map">
+		SELECT A.EXAM_NO
+			   , A.LEC_NO
+			   , A.EXAM_NAME
+			   , A.EXAM_DATE
+			   , A.EXAM_TYPE
+			   , A.EXAM_LIMIT
+			   , A.FACILITY_NO
+			   , A.FILE_REF_NO
+			   , A.STATUS
+			   , B.USER_NO
+	      FROM EXAM A
+	 LEFT JOIN (
+	        SELECT DISTINCT LEC_NO, USER_NO
+	          FROM LECTURE_ENR
+	         WHERE USER_NO = #{userNo}) B ON A.LEC_NO = B.LEC_NO
+	     WHERE A.LEC_NO=#{lecNo}
+	</select>
+	
+	<select id="selectExamDetail">
+		SELECT A.EXAM_NO
+	           , A.LEC_NO
+	           , A.EXAM_NAME
+	           , A.EXAM_DATE
+	           , A.EXAM_TYPE
+	           , A.EXAM_LIMIT
+	           , A.FACILITY_NO
+	           , A.FILE_REF_NO
+	           , A.STATUS
+	           , D.ATCH_ID
+	           , D.ATCH_CONTENT
+	      FROM EXAM A
+	INNER JOIN FILE_REF C ON A.FILE_REF_NO=C.FILE_REF_NO
+	INNER JOIN ATCH_FILE D ON C.ATCH_ID=D.ATCH_ID
+	     WHERE A.EXAM_NO=#{examNo}
+	</select>
+	
+	<select id="selectPdfContentByExamNo" parameterType="String" resultType="ExamVO">
+	    SELECT C.ATCH_CONTENT as atchContent
+	    FROM EXAM A
+	    INNER JOIN FILE_REF B ON A.FILE_REF_NO = B.FILE_REF_NO
+	    INNER JOIN ATCH_FILE C ON C.ATCH_ID = B.ATCH_ID
+	    WHERE A.EXAM_NO=#{examNo}
+	</select>
+	
+	<select id="selectExamNoByExamName" parameterType="map" resultType="String">
+	    SELECT EXAM_NO
+	      FROM EXAM
+	     WHERE EXAM_NAME=#{examName}
+	       AND LEC_NO=#{lecNo}
+	</select>
+	
+	<select id="selectQuestionCountByExamNo">
+		SELECT COUNT(QUESTION_SEQ)
+	      FROM QUESTION_ANSWER
+	     WHERE EXAM_NO=#{examNo}
+	</select>
+	
+	<select id="selectQuestionByExamNo">
+		SELECT QUESTION_SEQ
+			   , ANSWER
+			   , QUESTION_SCORE
+	      FROM QUESTION_ANSWER
+	     WHERE EXAM_NO=#{examNo}
+	</select>
+	
+	<select id="selectExamType" parameterType="String" resultType="String">
+	    SELECT EXAM_TYPE
+	      FROM EXAM
+	     WHERE EXAM_NO=#{examNo}
+	</select>
+	
+	<select id="selectLectureNoByExamNo" parameterType="String" resultType="String">	
+	    SELECT LEC_NO
+	      FROM EXAM
+	     WHERE EXAM_NO = #{examNo}
+	</select>
+	
+	<select id="selectSubmissionStatus">
+		SELECT IS_SUBMITTED
+	      FROM EXAM_SUBMISSION
+	     WHERE STUDENT_NO = #{userNo}
+	       AND EXAM_NO = #{examNo}
+	</select>
+	
+	<insert id="upsertExamSubmission">
+	    MERGE INTO EXAM_SUBMISSION ES
+	    USING DUAL
+	    ON (ES.STUDENT_NO = #{userNo} AND ES.EXAM_NO = #{examNo})
+	    WHEN MATCHED THEN
+	        UPDATE SET IS_SUBMITTED = 'Y'
+	    WHEN NOT MATCHED THEN
+	        INSERT (ES_NO, STUDENT_NO, EXAM_NO, IS_SUBMITTED)
+	        VALUES (#{esNo}, #{userNo}, #{examNo}, 'Y')
+	</insert>
+	
+	<select id="selectExamSubmission" parameterType="map" resultType="kr.or.ddit.pfcp.common.vo.ExamSubmissionVO">
+        SELECT ES_NO
+               , STUDENT_NO
+               , EXAM_NO
+               , IS_SUBMITTED
+               , START_TIME
+          FROM EXAM_SUBMISSION
+         WHERE STUDENT_NO = #{userNo}
+           AND EXAM_NO = #{examNo}
+    </select>
+    
+    <insert id="insertExamSubmissionStart">
+        INSERT INTO EXAM_SUBMISSION(
+        	ES_NO
+            , STUDENT_NO
+            , EXAM_NO
+            , IS_SUBMITTED
+            , START_TIME)
+        VALUES(
+        	#{esNo}
+        	, #{userNo}
+        	, #{examNo}
+        	, 'N'
+        	, SYSDATE)
+    </insert>
+
+    <update id="updateExamSubmissionStartTime">
+        UPDATE EXAM_SUBMISSION
+           SET START_TIME = SYSDATE
+         WHERE STUDENT_NO = #{userNo}
+           AND EXAM_NO = #{examNo}
+           AND START_TIME IS NULL
+    </update>
+</mapper>

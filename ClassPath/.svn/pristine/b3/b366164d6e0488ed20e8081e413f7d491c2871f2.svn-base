@@ -1,0 +1,25 @@
+package kr.or.ddit.pfcp.staff.certification.service;
+
+import java.util.List;
+
+import jakarta.servlet.http.HttpServletResponse;
+import kr.or.ddit.pfcp.common.vo.CertificateInfoVO;
+
+public interface StaffCertificationService {
+
+	public void generateStudentCertificateById(String studentId, HttpServletResponse response);
+
+	public List<CertificateInfoVO> readCertificationList();
+
+	public String readFileRefNo(String certCode);
+
+	public void modifyFileRefNo(String certCode, String fileRefNo);
+
+	public void createCertificateInfo(CertificateInfoVO certificationInfo);
+
+	public void modifyCertificationActiveToN(String certCode);
+
+	
+	
+
+}

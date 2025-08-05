@@ -1,0 +1,312 @@
+package kr.or.ddit.pfcp.student.notice.controller;
+
+import java.io.IOException;
+import java.security.Principal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import kr.or.ddit.pfcp.common.service.AtchFileService;
+import kr.or.ddit.pfcp.common.service.FileRefService;
+import kr.or.ddit.pfcp.common.vo.AtchFileVO;
+import kr.or.ddit.pfcp.common.vo.BoardVO;
+import kr.or.ddit.pfcp.common.vo.FileRefVO;
+import kr.or.ddit.pfcp.staff.notice.service.NoticeService;
+import kr.or.ddit.validate.utils.ErrorsUtils;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/student/notice")
+public class StudentNoticeController {
+  
+  @ModelAttribute
+  public BoardVO board() {
+    return new BoardVO();
+  }
+  
+  static final String MODELNAME = "board";
+  
+  @Autowired
+  private NoticeService noticeService;
+  
+  @Autowired
+  private AtchFileService atchFileService;
+  
+  @Autowired
+  private FileRefService fileRefService;
+  
+  @Autowired
+  private ErrorsUtils errorsUtils;
+  
+  @GetMapping("noticeList.do")
+  public String goNoticeList(
+        Model model,
+        @RequestParam(defaultValue = "1") int pageNo,
+        Authentication authentication
+      ) {
+    
+    try {
+        if(authentication == null) {
+            model.addAttribute("errorCode", "401");
+            model.addAttribute("errorMessage", "로그인이 필요합니다.");
+            model.addAttribute("returnUrl", "/login");
+            return "error/401";
+        }
+        
+        int totalCnt = noticeService.readTotalCount();
+        int pageSize = 10;
+        int offset = (pageNo - 1) * pageSize;
+        int totalPage = (int) Math.ceil((double) totalCnt / pageSize);
+        
+        List<BoardVO> noticeList = noticeService.readBoardList(offset,pageSize);
+        
+        if(noticeList == null || noticeList.isEmpty()) {
+            log.warn("공지사항 목록이 비어있습니다.");
+            // 비어있어도 정상 페이지 표시
+        }
+        
+        log.info("noticeList : {}", noticeList);
+        
+        model.addAttribute("noticeList", noticeList);
+        model.addAttribute("totalCount", totalCnt);
+        model.addAttribute("pageNo", pageNo);
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("totalPage", totalPage);
+        
+        String loginUserNo = authentication.getName();
+        model.addAttribute("loginUserNo", loginUserNo);
+        
+        return "pfcp/student/notice/studentNoticeList";
+        
+    } catch (Exception e) {
+        log.error("공지사항 목록 조회 중 오류 발생", e);
+        model.addAttribute("errorCode", "500");
+        model.addAttribute("errorMessage", "공지사항 목록을 불러오는 중 오류가 발생했습니다.");
+        model.addAttribute("returnUrl", "/student/notice/noticeList.do");
+        return "error/500";
+    }
+  }
+  
+  /**
+   * 공지 사항 상세 조회
+   * @return
+   */
+  @GetMapping("noticeDetail.do")
+  public String goNoticeDetail(
+      @RequestParam String boardNo,
+      Model model,
+      Authentication authentication,
+      RedirectAttributes redirectAttributes
+  ) {
+      
+      try {
+          if(authentication == null){
+              model.addAttribute("errorCode", "401");
+              model.addAttribute("errorMessage", "로그인이 필요합니다.");
+              model.addAttribute("returnUrl", "/login");
+              return "error/401";
+          }
+          
+          if(boardNo == null || boardNo.trim().isEmpty()) {
+              model.addAttribute("errorCode", "400");
+              model.addAttribute("errorMessage", "잘못된 요청입니다. 게시글 번호가 필요합니다.");
+              model.addAttribute("returnUrl", "/student/notice/noticeList.do");
+              return "error/400";
+          }
+          
+          BoardVO notice = noticeService.readBoard(boardNo);
+          
+          if(notice == null) {
+              model.addAttribute("errorCode", "404");
+              model.addAttribute("errorMessage", "요청하신 공지사항을 찾을 수 없습니다.");
+              model.addAttribute("returnUrl", "/student/notice/noticeList.do");
+              return "error/404";
+          }
+          
+          model.addAttribute("noticeDetail", notice);
+          
+          String userNo = authentication.getName();
+          model.addAttribute("userNo", userNo);
+          
+          if ("건의사항".equals(notice.getCategory())) {
+              String currentUser = authentication.getName();
+              Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+              boolean isStaff = authorities.stream()
+                  .anyMatch(auth -> auth.getAuthority().equals("ROLE_STAFF"));
+
+              if (!notice.getWriterNo().equals(currentUser) && !isStaff) {
+                  model.addAttribute("errorCode", "403");
+                  model.addAttribute("errorMessage", "해당 건의사항에 접근할 권한이 없습니다.");
+                  model.addAttribute("returnUrl", "/student/notice/noticeList.do");
+                  return "error/403";
+              }
+          }
+          
+          return "pfcp/student/notice/studentNoticeDetail";
+          
+      } catch (AccessDeniedException e) {
+          log.warn("접근 권한 없음: {}", e.getMessage());
+          model.addAttribute("errorCode", "403");
+          model.addAttribute("errorMessage", e.getMessage());
+          model.addAttribute("returnUrl", "/student/notice/noticeList.do");
+          return "error/403";
+          
+      } catch (Exception e) {
+          log.error("공지사항 상세 조회 중 오류 발생", e);
+          model.addAttribute("errorCode", "500");
+          model.addAttribute("errorMessage", "공지사항을 불러오는 중 오류가 발생했습니다.");
+          model.addAttribute("returnUrl", "/student/notice/noticeList.do");
+          return "error/500";
+      }
+  }
+  
+  /**
+   * 공지 사항 등록
+   * @return
+   */
+  @GetMapping("noticeInsert.do")
+  public String noticeInsertUI(
+      Principal principal,
+      Model model
+  
+  ) {
+      try {
+          if(principal == null) {
+              model.addAttribute("errorCode", "401");
+              model.addAttribute("errorMessage", "로그인이 필요합니다.");
+              model.addAttribute("returnUrl", "/login");
+              return "error/401";
+          }
+          
+          String userNo = principal.getName();
+          model.addAttribute("userNo", userNo);
+          
+          return "pfcp/student/notice/studentNoticeInsert";
+          
+      } catch (Exception e) {
+          log.error("공지사항 등록 페이지 접근 중 오류 발생", e);
+          model.addAttribute("errorCode", "500");
+          model.addAttribute("errorMessage", "페이지를 불러오는 중 오류가 발생했습니다.");
+          model.addAttribute("returnUrl", "/student/notice/noticeList.do");
+          return "error/500";
+      }
+  }
+  
+  /**
+   * 공지 사항 등록 fromProcess
+   * @return
+   */
+  @PostMapping("noticeInsertProcess.do")
+  public String noticeInsertProcessUI(
+      @ModelAttribute(MODELNAME) BoardVO board,
+      Principal principal,
+      BindingResult errors,
+      RedirectAttributes redirectAttributes,
+      Model model       
+  ) {
+      try {
+          if(principal == null) {
+              model.addAttribute("errorCode", "401");
+              model.addAttribute("errorMessage", "로그인이 필요합니다.");
+              model.addAttribute("returnUrl", "/login");
+              return "error/401";
+          }
+          
+          String userNo = principal.getName();
+          board.setWriterNo(userNo);
+          
+          if(!errors.hasErrors()) {
+              // -------------------------------
+              // 파일 처리 시작!
+              // -------------------------------
+              MultipartFile file = board.getUploadFile();
+              
+              if (file != null && !file.isEmpty()) {
+                  // 파일 크기 검증 (예: 10MB 제한)
+                  if (file.getSize() > 10 * 1024 * 1024) {
+                      model.addAttribute("errorCode", "400");
+                      model.addAttribute("errorMessage", "파일 크기는 10MB를 초과할 수 없습니다.");
+                      model.addAttribute("returnUrl", "/student/notice/noticeInsert.do");
+                      return "error/400";
+                  }
+                  
+                  // ID 생성
+                  String atchId = "ATCH" + System.currentTimeMillis();
+                  String fileRefNo = "FR" + System.currentTimeMillis();
+                  
+                  byte[] fileBytes = file.getBytes();
+
+                  // ATCH_FILE insert
+                  AtchFileVO atchFile = new AtchFileVO();
+                  atchFile.setAtchId(atchId);
+                  atchFile.setAtchMime(file.getContentType());
+                  atchFile.setAtchOriginName(file.getOriginalFilename());
+                  atchFile.setAtchSaveName(atchId + "_" + file.getOriginalFilename());
+                  atchFile.setAtchSize(file.getSize());
+                  atchFile.setAtchDate(LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE));
+                  atchFile.setAtchContent(fileBytes);
+                  
+                  atchFileService.createAtchFile(atchFile);
+                  
+                  // FILE_REF insert
+                  FileRefVO fileRef = new FileRefVO();
+                  fileRef.setFileRefNo(fileRefNo);
+                  fileRef.setFileRefType("BOARD_APPLY");
+                  fileRef.setFileRefTargetId(board.getBoardNo());
+                  fileRef.setAtchId(atchId);
+                  
+                  fileRefService.createFileRef(fileRef);
+                  
+                  board.setFileRefNo(fileRefNo);
+              }
+              // -------------------------------
+              // 파일 처리 끝!
+              // -------------------------------
+              
+              noticeService.createBoard(board);
+              
+              redirectAttributes.addFlashAttribute("success", "등록 완료!");
+              
+              return "redirect:/student/notice/noticeList.do";
+              
+          } else {
+              redirectAttributes.addFlashAttribute(MODELNAME, board);
+              
+              MultiValueMap<String, String> customErrors = errorsUtils.errorsToMap(errors);
+              redirectAttributes.addFlashAttribute("errors", customErrors);
+              return "redirect:/student/notice/noticeInsert.do";
+          }
+          
+      } catch (IOException e) {
+          log.error("파일 처리 중 오류 발생", e);
+          model.addAttribute("errorCode", "500");
+          model.addAttribute("errorMessage", "파일 업로드 중 오류가 발생했습니다.");
+          model.addAttribute("returnUrl", "/student/notice/noticeInsert.do");
+          return "error/500";
+          
+      } catch (Exception e) {
+          log.error("공지사항 등록 중 오류 발생", e);
+          model.addAttribute("errorCode", "500");
+          model.addAttribute("errorMessage", "공지사항 등록 중 오류가 발생했습니다.");
+          model.addAttribute("returnUrl", "/student/notice/noticeInsert.do");
+          return "error/500";
+      }
+  }
+  
+}

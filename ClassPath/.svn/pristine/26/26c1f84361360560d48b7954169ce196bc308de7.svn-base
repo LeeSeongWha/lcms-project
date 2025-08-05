@@ -1,0 +1,64 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>비교과 프로그램 목록</title>
+    <link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+</head>
+<body>
+
+<div class="container">
+    <h2>비교과 프로그램 목록</h2>
+
+    <!-- 등록 버튼: STAFF 또는 PROFESSOR만 표시 -->
+    <c:if test="${sessionUser.userRole eq 'ROLE_STAFF' or sessionUser.userRole eq 'ROLE_PROF'}">
+        <button onclick="location.href='/staff/program/form'">+ 등록하기</button>
+    </c:if>
+
+    <!-- 프로그램 리스트 테이블 -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>프로그램 번호</th>
+                <th>제목</th>
+                <th>유형</th>
+                <th>운영기간</th>
+                <th>정원</th>
+                <th>상태</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="program" items="${programList}">
+                <tr>
+                    <td>${program.programNo}</td>
+                    <td>
+                        <a href="/staff/program/edit/${program.programNo}">
+                            ${program.programTitle}
+                        </a>
+                    </td>
+                    <td>${program.typeCode}</td>
+                    <td>${program.startDate} ~ ${program.endDate}</td>
+                    <td>${program.programCapacity}</td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${program.programActive eq 'Y'}">활성</c:when>
+                            <c:otherwise>비활성</c:otherwise>
+                        </c:choose>
+                    </td>
+                </tr>
+            </c:forEach>
+
+            <c:if test="${empty programList}">
+                <tr>
+                    <td colspan="6" style="text-align:center;">등록된 프로그램이 없습니다.</td>
+                </tr>
+            </c:if>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

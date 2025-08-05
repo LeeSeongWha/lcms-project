@@ -1,0 +1,26 @@
+package kr.or.ddit.pfcp.staff.college.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import kr.or.ddit.pfcp.common.vo.CurriculumVO;
+
+/**
+ * @author KGM
+ * @since 250701
+ * @see
+ */
+@Mapper
+public interface CurriculumMapper {
+	
+	List<CurriculumVO> selectAllCurriculumList();
+
+	CurriculumVO selectCurriculum(String curNo);
+
+	int insertCurriculum(CurriculumVO curriculum);
+
+	int updateCurriculum(CurriculumVO curriculum);
+
+	int deleteCurriculum(String curNo);
+}

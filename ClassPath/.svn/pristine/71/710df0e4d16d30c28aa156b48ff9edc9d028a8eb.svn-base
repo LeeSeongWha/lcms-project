@@ -1,0 +1,66 @@
+package kr.or.ddit.pfcp.staff.notice.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.pfcp.staff.facility.service.FacilityService;
+import kr.or.ddit.pfcp.staff.notice.service.NoticeService;
+
+/**
+ * @author YSM
+ * @since 250628
+ */
+@Controller
+@RequestMapping("/staff/notice")
+public class NoticeController {
+	
+	@Autowired
+	private NoticeService service;
+	
+	/**
+	 * 공지 사항 전체 조회
+	 * @return
+	 */
+	@GetMapping("noticeList.do")
+	public String noticeListUI() {
+		return "pfcp/staff/notice/noticeList";
+	}
+	
+	/**
+	 * 공지 사항 상세 조회
+	 * @return
+	 */
+	@GetMapping("noticeDetail.do")
+	public String noticeDetailUI() {
+		return "pfcp/staff/notice/noticeDetail";
+	}
+	
+	/**
+	 * 공지 사항 등록
+	 * @return
+	 */
+	@GetMapping("noticeInsert.do")
+	public String noticeInsertUI() {
+		return "pfcp/staff/notice/noticeInsert";
+	}
+	
+	/**
+	 * 공지 사항 수정
+	 * @return
+	 */
+	@GetMapping("noticeUpdate.do")
+	public String noticeUpdateUI() {
+		return "pfcp/staff/notice/noticeDetail";
+	}
+	
+	/**
+	 * 공지 사항 삭제
+	 * @return
+	 */
+	@GetMapping("noticeDelete.do")
+	public String noticeDeleteUI() {
+		return "redirect:/staff/notice/noticeList.do";
+	}
+}

@@ -1,0 +1,9 @@
+package kr.or.ddit.pfcp.common.mapper;
+
+import org.apache.ibatis.annotations.Mapper;
+import kr.or.ddit.pfcp.common.vo.UserVO;
+
+@Mapper
+public interface UserMapper {
+  public UserVO selectUser(String userNo);
+}

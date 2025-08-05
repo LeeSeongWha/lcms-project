@@ -1,0 +1,5 @@
+package kr.or.ddit.pfcp.staff.staffmanage.service;
+
+public interface StaffmanageService {
+
+}

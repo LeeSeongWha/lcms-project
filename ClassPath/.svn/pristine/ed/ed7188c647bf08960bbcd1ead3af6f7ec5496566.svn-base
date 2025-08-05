@@ -1,0 +1,377 @@
+@charset "UTF-8";
+
+.lecture-list-container-flex {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+    align-items: flex-start; /* 추가: 상단 정렬로 변경 */
+    height: calc(100vh - 200px); /* 전체 화면 높이에서 헤더 등을 제외한 높이 */
+    overflow: hidden; /* 전체 컨테이너의 스크롤 방지 */
+}
+
+.lecture-list-left {
+    width: 70%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    align-content: start; /* 추가: 그리드 아이템들이 상단에 정렬되도록 */
+    height: 100%; /* 부모 컨테이너 높이에 맞춤 */
+    overflow-y: auto; /* 카드가 많을 경우 스크롤 */
+    padding-right: 10px; /* 스크롤바 공간 확보 */
+}
+
+.lecture-details-right {
+    width: 60%;
+    min-height: 200px;
+    height: 100%; /* 부모 컨테이너 높이에 맞춤 */
+    overflow-y: auto; /* 스크롤 가능하도록 */
+    padding-right: 10px; /* 스크롤바 공간 확보 */
+}
+
+.college-item-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    transition: all 0.2s;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    height: fit-content; /* 추가: 내용에 맞는 높이로 고정 */
+    align-self: start; /* 추가: 그리드 아이템이 상단에 정렬되도록 */
+}
+
+.college-item-card:hover {
+    border-color: #a7c3ff;
+    box-shadow: 0 4px 12px rgba(167, 195, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+.college-item-card.active {
+    border-color: #a7c3ff;
+    background-color: #f0f9ff;
+    box-shadow: 0 0 0 2px rgba(167, 195, 255, 0.3);
+}
+
+.lecture-info-group {
+    display: flex;
+    align-items: center; /* flex-start에서 center로 변경하여 아이콘과 텍스트 가운데 정렬 */
+    gap: 12px;
+}
+
+.lecture-icon-wrapper {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background-color: #f8fafc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.college-item-card:hover .lecture-icon-wrapper {
+    background-color: #a7c3ff;
+    color: #1e3a8a;
+}
+
+.lecture-icon {
+    width: 20px;
+    height: 20px;
+    color: #64748b;
+    transition: color 0.2s;
+}
+
+.college-item-card:hover .lecture-icon {
+    color: #1e3a8a;
+}
+
+.lecture-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.lecture-details {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0.25rem 0;
+}
+
+.no-lecture-message {
+    text-align: center;
+    padding: 2rem;
+    color: #64748b;
+    background-color: #f8fafc;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+}
+
+.detail-placeholder {
+    color: #64748b;
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.875rem;
+}
+
+.college-detail-header {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #a7c3ff;
+}
+
+.department-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    color: #475569;
+    box-shadow: 0 2px 8px rgba(167, 195, 255, 0.2);
+    background-color: #fff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    table-layout: fixed; /* 테이블 레이아웃 고정 */
+}
+
+.department-table th {
+    background-color: #dbeafe;
+    color: #1e3a8a;
+    font-weight: 600;
+    padding: 0.75rem;
+    text-align: center; /* 가운데 정렬 */
+    border-bottom: 2px solid #a7c3ff;
+}
+
+.department-table td {
+    padding: 0.75rem;
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    color: #475569;
+}
+
+/* 학과명 가운데 정렬 */
+.department-table td:nth-child(1), td:nth-child(2){
+    text-align: center;
+}
+
+/* 등록금 오른쪽 정렬 */
+.department-table td:nth-child(3) {
+    text-align: right;
+}
+
+/* 학과별 등록금 테이블 열 비율 설정 */
+.department-table th:nth-child(1) { width: 30%; } /* 학과 코드 */
+.department-table th:nth-child(2) { width: 30%; } /* 학과명 */
+.department-table th:nth-child(3) { width: 40%; } /* 등록금 */
+
+.department-table tr:hover {
+    background-color: #f0f9ff;
+}
+
+.department-table tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+.department-table tr.selected-department {
+    background-color: #dbeafe !important;
+    border-left: 4px solid #3b82f6;
+}
+
+.department-table tr.selected-department:hover {
+    background-color: #bfdbfe !important;
+}
+
+.tuition-amount {
+    font-weight: 600;
+    color: #6b7fff;
+}
+
+.error-message {
+    color: #dc2626;
+    text-align: center;
+    padding: 1rem;
+    background-color: #fee2e2;
+    border-radius: 0.375rem;
+    border: 1px solid #fecaca;
+}
+
+.department-detail-header {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #334155;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #c7d2fe;
+}
+
+.department-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem; /* 폰트 크기 줄임 */
+    color: #475569;
+    box-shadow: 0 4px 12px rgba(199, 210, 254, 0.3);
+    background-color: #fff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    table-layout: fixed; /* 테이블 레이아웃 고정 */
+}
+
+.department-detail-table th,
+.department-detail-table td {
+    padding: 0.5rem 0.75rem; /* 패딩 줄임 */
+    text-align: center; /* 모든 내용 가운데 정렬 */
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    word-wrap: break-word; /* 긴 텍스트 줄바꿈 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.department-detail-table thead th {
+    background-color: #e0e7ff;
+    color: #3730a3;
+    font-weight: 700;
+    font-size: 0.75rem; /* 헤더 폰트 크기 더 줄임 */
+    white-space: nowrap; /* 헤더 텍스트 줄바꿈 방지 */
+    padding: 0.5rem 0.25rem; /* 헤더 패딩 더 줄임 */
+    text-align: center; /* 헤더 가운데 정렬 */
+}
+
+/* 각 열의 너비 조정 */
+.department-detail-table th:nth-child(1) { width: 15%; } /* 졸업 요건 번호 */
+.department-detail-table th:nth-child(2) { width: 12%; } /* 졸업 요구 학점 */
+.department-detail-table th:nth-child(3) { width: 12%; } /* 전공 학점 */
+.department-detail-table th:nth-child(4) { width: 12%; } /* 교양 학점 */
+.department-detail-table th:nth-child(5) { width: 12%; } /* 자유 이수 학점 */
+.department-detail-table th:nth-child(6) { width: 12%; } /* 봉사 시간 */
+.department-detail-table th:nth-child(7) { width: 25%; } /* 적용 날짜 */
+
+.department-detail-table tbody tr:hover {
+    background-color: #f0f9ff;
+}
+
+.department-detail-table tbody tr:nth-child(even) {
+    background-color: #f8faff;
+}
+
+
+
+/* 단과대학 추가 카드 스타일 */
+.college-item-card.add-college-card {
+    background: #ffffff;
+    border: 2px dashed #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.2rem;
+    transition: all 0.2s;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+    align-self: start;
+}
+
+.college-item-card.add-college-card:hover {
+    border-color: #a7c3ff;
+    box-shadow: 0 4px 12px rgba(167, 195, 255, 0.25);
+    transform: translateY(-2px);
+    background-color: #f0f9ff;
+}
+
+.college-item-card.add-college-card .lecture-info-group {
+    display: flex;
+    flex-direction: column; /* Changed to column to stack items vertically */
+    justify-content: center; /* Vertically centers items within the group */
+    align-items: center; /* Horizontally centers items within the group */
+    min-height: 100%; /* Ensure it takes full height of the parent card */
+    gap: 12px; /* Maintain the gap between items */
+}
+
+.college-item-card.add-college-card .lecture-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    background-color: #dbeafe;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.college-item-card.add-college-card:hover .lecture-icon-wrapper {
+    background-color: #a7c3ff;
+    transform: scale(1.05);
+}
+
+.college-item-card.add-college-card .lecture-icon {
+    width: 20px;
+    height: 20px;
+    color: #1e3a8a;
+    stroke-width: 2.5;
+    transition: color 0.2s;
+}
+
+.college-item-card.add-college-card:hover .lecture-icon {
+    color: #1e3a8a;
+}
+
+.add-college-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #64748b;
+    text-align: center;
+    transition: color 0.2s;
+}
+
+.college-item-card.add-college-card:hover .add-college-text {
+    color: #1e3a8a;
+}
+
+.tuition-input {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: right;
+    font-size: 14px;
+}
+
+.tuition-input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.save-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.save-button:hover {
+    background-color: #218838;
+}
+
+.save-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.department-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.department-table-header h3 {
+    margin: 0;
+}

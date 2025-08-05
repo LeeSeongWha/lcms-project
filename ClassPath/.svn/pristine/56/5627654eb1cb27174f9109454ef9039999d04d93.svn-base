@@ -1,0 +1,21 @@
+package kr.or.ddit.pfcp.staff.notice.service;
+
+import java.util.List;
+
+import kr.or.ddit.pfcp.common.vo.BoardVO;
+
+public interface NoticeService {
+
+	public List<BoardVO> readBoardList();
+
+	public BoardVO readBoard(String boardNo);
+
+	public void modifyBoard(BoardVO board);
+
+	public void createBoard(BoardVO board);
+	
+	public BoardVO readBoardByScheduleNo(String ScheduleNo);
+
+	public void modifyBoardDeleted(String what);
+
+}

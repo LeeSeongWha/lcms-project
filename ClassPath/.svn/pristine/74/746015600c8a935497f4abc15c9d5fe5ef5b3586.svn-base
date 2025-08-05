@@ -1,0 +1,10 @@
+package kr.or.ddit.pfcp.student.lecture.enroll.mapper;
+
+import java.util.List;
+import org.apache.ibatis.annotations.Mapper;
+import kr.or.ddit.pfcp.common.vo.LectureEnrVO;
+
+@Mapper
+public interface LectureEnrMapper {
+  public List<LectureEnrVO> selectLectureEnrollmentsByUserNo(String studentNo);
+}

@@ -1,0 +1,109 @@
+package kr.or.ddit.common.util;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.Font;
+import com.lowagie.text.Image;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfWriter;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class PdfCertGenerator {
+
+	public static byte[] generatePdf(String studentName, String programTitle, String issueDate) {
+		
+
+		// Null-safe 기본값
+		if (studentName == null || studentName.isBlank())
+			studentName = "수료자 없음";
+		if (programTitle == null || programTitle.isBlank())
+			programTitle = "프로그램명 없음";
+		if (issueDate == null || issueDate.isBlank())
+			issueDate = "발급일자 없음";
+
+		try {
+			// 문서 생성
+			Document document = new Document(PageSize.A4, 50, 50, 70, 50);
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			PdfWriter writer = PdfWriter.getInstance(document, out);
+			document.open();
+
+			// Pretendard 폰트 로딩
+			InputStream fontStream = PdfCertGenerator.class.getResourceAsStream("/static/fonts/Pretendard-Regular.ttf");
+			// 이미지 배경
+			InputStream imageStream = PdfCertGenerator.class
+					.getResourceAsStream("/static/dist/assets/img/logo.png");
+
+			if (imageStream == null) {
+				throw new RuntimeException("배경 이미지 파일을 찾을 수 없습니다.");
+			}
+
+			Image bgImage = Image.getInstance(imageStream.readAllBytes());
+
+			// PDF 페이지 중앙 위치 계산
+			float x = (PageSize.A4.getWidth() - 300) / 2; // 300은 이미지 너비 기준
+			// 예: 50pt 위로
+			float y = (PageSize.A4.getHeight() - 300) / 2 + 50;
+
+
+			bgImage.setAbsolutePosition(x, y);
+			bgImage.scaleAbsolute(300, 300); // 이미지 크기 조절 (원하는 크기 조정)
+
+			// 흐림 효과처럼 보이게 투명도 조정
+			bgImage.setTransparency(new int[] { 0x00, 0x10 });
+			// 배경 레이어에 추가
+			PdfContentByte canvas = writer.getDirectContentUnder();
+			canvas.addImage(bgImage);
+
+			if (fontStream == null) {
+				throw new RuntimeException("Pretendard 폰트를 찾을 수 없습니다.");
+			}
+
+			BaseFont baseFont = BaseFont.createFont("Pretendard-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED,
+					true, fontStream.readAllBytes(), null);
+
+			Font titleFont = new Font(baseFont, 24, Font.BOLD);
+			Font bodyFont = new Font(baseFont, 13);
+
+			// 제목
+			Paragraph title = new Paragraph("비교과 프로그램 이수증", titleFont);
+			title.setAlignment(Paragraph.ALIGN_CENTER);
+			title.setSpacingAfter(30f);
+			document.add(title);
+
+			// 본문
+			document.add(new Paragraph("수료자명: " + studentName, bodyFont));
+			document.add(Chunk.NEWLINE);
+			document.add(new Paragraph("프로그램명: " + programTitle, bodyFont));
+			document.add(Chunk.NEWLINE);
+			document.add(new Paragraph("발급일자: " + issueDate, bodyFont));
+			document.add(Chunk.NEWLINE);
+			document.add(bgImage);
+
+			Paragraph desc = new Paragraph("위 사람은 위 프로그램을 성실히 이수하였음을 확인하며 이에 이수증을 발급합니다.", bodyFont);
+			desc.setSpacingBefore(30f);
+			desc.setAlignment(Paragraph.ALIGN_JUSTIFIED);
+			document.add(desc);
+
+			Paragraph footer = new Paragraph("\n\n(기관명 또는 담당자 서명)", bodyFont);
+			footer.setAlignment(Paragraph.ALIGN_RIGHT);
+			document.add(footer);
+
+			document.close();
+			return out.toByteArray();
+
+		} catch (Exception e) {
+			log.error("PDF 생성 중 오류 발생", e);
+			return null;
+		}
+	}
+
+}

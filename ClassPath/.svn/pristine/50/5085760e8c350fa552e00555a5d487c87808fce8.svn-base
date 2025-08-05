@@ -1,0 +1,138 @@
+package kr.or.ddit.pfcp.student.facility.reservation.controller;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.or.ddit.pfcp.common.vo.FacilityReservationVO;
+import kr.or.ddit.pfcp.common.vo.FacilityVO;
+import kr.or.ddit.pfcp.common.vo.ReservationTimestampVO;
+import kr.or.ddit.pfcp.staff.facility.service.FacilityService;
+import kr.or.ddit.pfcp.staff.reservationTimestamp.facility.service.FacilityRTService;
+import kr.or.ddit.pfcp.student.facility.reservation.service.FacilityReservationService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/student/facility")
+@RequiredArgsConstructor
+public class StudentFacilityReservationController {
+   
+   private final FacilityReservationService facilityReservationService;
+   
+   @Autowired
+   private FacilityRTService facilityRTService;
+   
+   @Autowired
+   private FacilityService facilityService;
+   
+   // 예약 폼 페이지 이동 (GET)
+   @GetMapping("/reservation.do")
+   public String reserveForm(
+       @RequestParam String facilityNo,
+       Model model
+       ){
+     
+     FacilityVO facility = facilityService.readFacility(facilityNo);
+     model.addAttribute("facility", facility);
+     
+     List<String> reservedTimes = facilityReservationService.getReservedTimesByFacility(facilityNo);
+     model.addAttribute("reservedTimes", reservedTimes);
+
+     List<ReservationTimestampVO> facilityRT = facilityRTService.readFacilityRT(facilityNo);
+     model.addAttribute("facilityRT", facilityRT);
+     log.info("facilityRT" + facilityRT);
+     
+       return "pfcp/student/facility/studentFacilityReservation";
+   }
+   
+// 예약 요청 처리 (POST)
+   @PostMapping("/reserve")
+   public ResponseEntity<?> reserveFacility(
+       @RequestParam("facilityNo") String facilityNo,
+       @RequestParam("selectedSlots") String selectedSlotsJson,
+       Authentication authentication
+   ) {
+       Map<String, Object> result = new HashMap<>();
+
+       // 1️⃣ 로그인한 사용자 정보에서 USER_NO 가져오기
+       String userNo = authentication.getName();
+       if (userNo == null) {
+           result.put("success", false);
+           result.put("message", "로그인 정보가 없습니다.");
+           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+       }
+
+       // 2️⃣ 선택된 슬롯 JSON → List<FacilityReservationVO> 로 변환
+       ObjectMapper mapper = new ObjectMapper();
+       List<Map<String, Object>> selectedSlots;
+       try {
+           selectedSlots = mapper.readValue(selectedSlotsJson, new TypeReference<List<Map<String, Object>>>(){});
+       } catch (Exception e) {
+           result.put("success", false);
+           result.put("message", "선택된 시간 정보 파싱 중 오류가 발생했습니다.");
+           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+       }
+
+       Map<String, DayOfWeek> dayMap = Map.of(
+           "MON", DayOfWeek.MONDAY,
+           "TUE", DayOfWeek.TUESDAY,
+           "WED", DayOfWeek.WEDNESDAY,
+           "THU", DayOfWeek.THURSDAY,
+           "FRI", DayOfWeek.FRIDAY,
+           "SAT", DayOfWeek.SATURDAY,
+           "SUN", DayOfWeek.SUNDAY
+       );
+
+       for (Map<String, Object> slot : selectedSlots) {
+           String day = ((String) slot.get("day")).toUpperCase();
+           int hour = (int) slot.get("hour");
+
+           DayOfWeek targetDay = dayMap.get(day);
+           if (targetDay == null) {
+               result.put("success", false);
+               result.put("message", "잘못된 요일 값입니다: " + day);
+               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+           }
+
+           LocalDate today = LocalDate.now();
+           LocalDate targetDate = today.with(TemporalAdjusters.nextOrSame(targetDay));
+           LocalDateTime preferredDate = LocalDateTime.of(targetDate, LocalTime.of(hour, 0));
+
+           FacilityReservationVO reservation = new FacilityReservationVO();
+           reservation.setFacilityNo(facilityNo);
+           reservation.setUserNo(userNo);
+           reservation.setPreferredDate(preferredDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+
+           boolean success = facilityReservationService.reserveFacility(reservation);
+           if (!success) {
+               result.put("success", false);
+               result.put("message", day + "요일 " + hour + "시 예약에 실패했습니다. 이미 예약되었거나 가능한 시간이 아닙니다.");
+               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+           }
+       }
+
+       // 4️⃣ 모두 성공
+       result.put("success", true);
+       result.put("message", "예약이 성공적으로 완료되었습니다.");
+       return ResponseEntity.ok(result);
+   }
+}

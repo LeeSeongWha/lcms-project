@@ -1,0 +1,7 @@
+package kr.or.ddit.pfcp.student.lecture.material.service;
+
+import kr.or.ddit.pfcp.common.vo.LectureMaterialVO;
+
+public interface LectureMaterialService {
+  public int createLectureMaterial(LectureMaterialVO lectureMaterial);
+}

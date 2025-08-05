@@ -1,0 +1,24 @@
+//package kr.or.ddit.pfcp.staff.reservationTimestamp.consult.mapper;
+//
+//import java.util.List;
+//
+//import org.apache.ibatis.annotations.Mapper;
+//import org.apache.ibatis.annotations.Param; // 파라미터가 2개 이상일 때 사용
+//
+//import kr.or.ddit.pfcp.common.vo.ReservationTimestampVO;
+//
+//@Mapper // 또는 @Repository
+//public interface ConsultRTMapper { // ConsultScheduleMapper 또는 기존의 ConsultRTMapper 이름 유지
+//
+//    // 특정 교수의 상담 시간표 조회
+//    List<ReservationTimestampVO> selectConsultRTByUserNo(@Param("userNo") String userNo);
+//
+//    // 특정 교수의 모든 상담 시간표 삭제
+//    void deleteConsultRTByUserNo(@Param("userNo") String userNo);
+//
+//    // 단일 상담 시간표 추가
+//    int insertConsultRT(ReservationTimestampVO consultTime);
+//
+//    // 여러 상담 시간표를 한 번에 삽입 (선택 사항)
+//    // void insertConsultRTList(List<ReservationTimestampVO> consultTimes);
+//}

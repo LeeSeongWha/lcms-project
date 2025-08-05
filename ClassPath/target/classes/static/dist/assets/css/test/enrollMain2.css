@@ -1,0 +1,521 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+/* ========================================================== */
+/* 수강신청 페이지 (.enroll-body)에만 적용되는 스타일 */
+/* 이 스타일은 다른 페이지의 동일한 클래스명에는 영향을 주지 않습니다. */
+/* ========================================================== */
+
+/* 기본 설정은 bodyFormat.css와 main-header.css에서 이미 로드되므로,
+   여기서는 .enroll-body 내부의 요소에만 집중합니다. */
+
+/* .enroll-body의 직접적인 스타일은 없으므로, 내부의 .container부터 시작 */
+.enroll-body .container {
+    margin: 20px auto; /* 상하 여백, 좌우 자동 (중앙 정렬) */
+    position: relative;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    color: #333; /* 기본 텍스트 색상을 어둡게 조정 */
+    padding: 30px; /* 내부 여백 */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* 섹션 간의 기본 간격 */
+    width: 90%;
+    max-width: 1200px;
+}
+
+.notice-banner {
+	text-align:center;
+	align-items:center;
+	margin: 0 auto;
+	width: 90%;
+	background-color: #e6f2ff;
+	border-radius: 12px;
+	padding: 1rem 1.5rem;
+	border: 1px solid #b3d7ff;
+	color: #003366;
+	font-size: 1rem;
+	line-height: 1.5;
+	box-shadow: 0 2px 4px rgba(0, 102, 204, 0.1);
+}
+
+.notice-banner strong {
+	font-size: 1.1rem;
+	color: #2b77ef;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 아래부터는 .enroll-body 내부의 요소들에만 적용되도록 .enroll-body 접두사를 붙입니다. */
+
+.enroll-body h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #222; /* H1 글자색 더 어둡게 */
+}
+
+.enroll-body h3 {
+    font-size: 1.8em;
+    font-weight: 600;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    color: #333; /* H3 글자색 어둡게 */
+    border-bottom: 1px solid #ddd; /* 경계선 색상 조정 */
+    padding-bottom: 10px;
+}
+
+.enroll-body span {
+    font-size: 0.95em;
+    color: #555; /* span 글자색 어둡게 */
+    margin-bottom: 15px;
+    display: block; /* 블록 요소로 만들어 줄바꿈 */
+}
+
+/* 탭 메뉴 스타일 */
+.enroll-body .tab-menu {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    background: linear-gradient(to right, #4A76FF, #8E44AD); /* 탭 메뉴 배경만 그라데이션 유지 */
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.enroll-body .tab {
+    background-color: white; /* 흰색 배경 유지 */
+    border: none;
+    color: #4A76FF; /* 탭 글자색 (그라데이션과 어울리게 파란색 계열) */
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 500;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    flex-grow: 1; /* 모든 탭이 균등하게 공간 차지 */
+    text-align: center;
+}
+
+.enroll-body .tab:hover {
+	background-color: #F8FCFF;
+    color: #2e59b2; /* 호버 시 텍스트 색상 변경 (더 잘 보이도록) */
+    cursor:pointer;
+}
+
+.enroll-body .tab.active {
+    background-color: rgba(255, 255, 255, 0.25); /* 활성 탭 배경 유지 */
+    color: white; /* 활성 탭 텍스트는 흰색 유지 */
+    font-weight: 700;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 탭 콘텐츠 스타일 (기본적으로는 HTML에서 display:none으로 제어됨) */
+.enroll-body .tab-content {
+    background-color: #fff; /* 탭 콘텐츠 배경을 흰색으로 변경 */
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    color: #333; /* 탭 콘텐츠 내부 텍스트 색상을 어둡게 조정 */
+}
+
+
+/* 폼 그룹 및 필터 스타일 */
+.enroll-body .form-group {
+    margin-bottom: 1rem;
+}
+
+.enroll-body .form-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
+}
+
+.enroll-body .form-col {
+    flex: 1; /* 컬럼들이 공간을 균등하게 차지 */
+    min-width: 200px; /* 최소 너비 설정 */
+    display: flex;
+    flex-direction: column;
+}
+
+.enroll-body .form-control {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc; /* 테두리 색상 조정 */
+    background-color: #f8f8f8; /* 입력 필드 배경색 밝게 조정 */
+    color: #333; /* 입력 필드 텍스트 색상 어둡게 */
+    font-size: 1em;
+    box-sizing: border-box; /* 패딩이 너비에 포함 */
+}
+
+.enroll-body .form-control::placeholder {
+    color: #888; /* 플레이스홀더 색상 어둡게 */
+}
+
+.enroll-body .form-control:focus {
+    outline: none;
+    border-color: #88ccee; /* 포커스 시 밝은 파랑 유지 */
+    box-shadow: 0 0 0 3px rgba(136, 204, 238, 0.4);
+}
+
+.enroll-body label {
+    font-size: 0.9em;
+    color: #555; /* 라벨 글자색 어둡게 */
+    margin-bottom: 5px;
+    display: block;
+}
+
+.enroll-body .card {
+    background-color: #fff; /* 카드 배경을 흰색으로 변경 */
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    color: #333; /* 카드 내부 텍스트 색상 어둡게 */
+    margin-bottom: 20px; /* 아래 요소와의 간격 */
+}
+
+/* 버튼 스타일 */
+.enroll-body .searchButton,
+.enroll-body .cancelButton,
+.enroll-body .btn-add,
+.enroll-body .saveButton,
+.enroll-body .deleteButton,
+.enroll-body .submitButton {
+    background-color: #6a1b9a; /* 보라색 계열 유지 */
+    color: white; /* 텍스트 색상 유지 */
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    white-space: nowrap; /* 버튼 텍스트 줄바꿈 방지 */
+}
+
+.enroll-body .searchButton:hover,
+.enroll-body .cancelButton:hover,
+.enroll-body .btn-add:hover,
+.enroll-body .saveButton:hover,
+.enroll-body .deleteButton:hover,
+.enroll-body .submitButton:hover {
+    background-color: #7b24b2; /* 호버 시 더 진하게 유지 */
+    transform: translateY(-2px);
+}
+
+.enroll-body .cancelButton {
+    background-color: #dc3545; /* 빨간색 계열 유지 */
+}
+
+.enroll-body .cancelButton:hover {
+    background-color: #c82333;
+}
+
+.enroll-body .deleteButton {
+    background-color: #dc3545; /* 빨간색 계열 유지 */
+}
+
+.enroll-body .deleteButton:hover {
+    background-color: #c82333;
+}
+
+.enroll-body .saveButton { /* '담기' 버튼 */
+    background-color: #28a745; /* 녹색 계열 유지 */
+    padding: 8px 15px; /* 작은 패딩 유지 */
+    font-size: 0.9em;
+}
+
+.enroll-body .saveButton:hover {
+    background-color: #218838;
+}
+
+.enroll-body .btn-add { /* '신청' 버튼 */
+    background-color: #007bff; /* 파란색 계열 유지 */
+    padding: 8px 15px;
+    font-size: 0.9em;
+}
+
+.enroll-body .btn-add:hover {
+    background-color: #0056b3;
+}
+
+.enroll-body .btn-disabled {
+    background-color: #ccc; /* 회색 계열로 변경 */
+    color: #666; /* 텍스트 색상 어둡게 조정 */
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.enroll-body .btn-disabled:hover {
+    background-color: #ccc; /* 호버 효과 없음 유지 */
+    transform: none;
+}
+
+.enroll-body .button-group {
+    display: flex;
+    justify-content: flex-end; /* 버튼 오른쪽 정렬 유지 */
+    gap: 10px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* 테이블 스타일 */
+.enroll-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #F8FCFF;
+    border-radius: 8px;
+    overflow: hidden; /* 라운딩 적용을 위해 유지 */
+}
+
+.enroll-body table th, .enroll-body table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee; /* 테두리 색상 조정 */
+    color: #333; /* 텍스트 색상 어둡게 조정 */
+    font-size: 0.95em;
+}
+
+.enroll-body table th {
+    background-color: #e9ecef; /* 헤더 배경을 밝은 회색으로 변경 */
+    font-weight: 600;
+    position: sticky; /* 스크롤 시 헤더 고정 유지 */
+    top: 0;
+    z-index: 2; /* 다른 요소 위에 오도록 유지 */
+}
+
+.enroll-body table tbody tr:last-child td {
+    border-bottom: none; /* 마지막 행의 하단 테두리 제거 유지 */
+}
+
+.enroll-body table tbody tr:hover {
+    background-color: #EBF5FB; /* 행 호버 효과 밝게 조정 */
+}
+
+
+
+/* 수강목록 스크롤 영역 */
+/* .enroll-body 내부에 div[style="max-height: 450px; overflow-y: auto; border: 1px solid #ccc;"] 가 있다면,
+   이 선택자는 .enroll-body div[style*="max-height: 450px;"] 로 변경하는 것이 더 안전합니다.
+   하지만 현재 JSP의 해당 div는 style 속성만 있고 class가 없으므로, 더 구체적인 선택자가 필요합니다.
+   HTML에 class="scrollable-table-container" 등을 추가하는 것을 권장합니다.
+   일단 현재는 .enroll-body 내부에 있다면 적용되도록 합니다. */
+.enroll-body div[style*="max-height: 450px; overflow-y: auto; border: 1px solid #ccc;"] {
+    border: 1px solid #ccc !important; /* 기존 스타일 오버라이드 및 색상 조정 */
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+
+/* 시간표 테이블 */
+.enroll-body .timetable-table {
+    text-align: center !important; /* 시간표는 중앙 정렬 유지 */
+    table-layout: fixed;
+}
+
+.enroll-body .timetable-table tr:hover {
+    background-color: #F8FCFF; /* 행 호버 효과 밝게 조정 */
+}
+
+.enroll-body .timetable-table th, .enroll-body .timetable-table td {
+    text-align: center !important;
+    vertical-align: middle; /* Changed from 'top' to 'middle' for better vertical alignment within uniform cells */
+    border: 1px solid #EBF5FB;
+    cursor: default;
+}
+
+/* 취소된 강의 스타일 */
+.enroll-body .canceled {
+    color: #999 !important; /* 글자색 더 연하게, 어두운 계열로 변경 */
+    font-style: italic;
+    text-decoration: line-through; /* 취소선 유지 */
+}
+
+.enroll-body .canceled button {
+    background-color: #ccc !important; /* 버튼 배경색 변경 */
+    cursor: not-allowed !important;
+    opacity: 0.7;
+    color: #666 !important; /* 텍스트 색상 어둡게 조정 */
+}
+
+.enroll-body .canceled button:hover {
+    transform: none !important;
+}
+
+/* Empty Message */
+.enroll-body .empty-message {
+    text-align: center;
+    padding: 20px;
+    color: #666; /* 텍스트 색상 어둡게 조정 */
+    font-style: italic;
+    font-size: 1em;
+}
+
+.enroll-body .centerText { /* 예비신청 테이블의 colspan="8" 중앙 정렬 */
+    text-align: center !important;
+    color: #666; /* 텍스트 색상 어둡게 조정 */
+}
+
+
+/* 반응형 디자인 */
+@media (max-width: 992px) {
+    .enroll-body .container {
+        padding: 20px;
+        gap: 20px;
+    }
+
+    .enroll-body h1 {
+        font-size: 2em;
+    }
+
+    .enroll-body h3 {
+        font-size: 1.5em;
+        margin-top: 20px;
+    }
+
+    .enroll-body .tab-menu {
+        flex-wrap: wrap; /* 탭 버튼 줄바꿈 */
+        gap: 10px;
+        padding: 8px;
+    }
+
+    .enroll-body .tab {
+        padding: 10px 15px;
+        font-size: 1em;
+        flex-basis: 48%; /* 두 개씩 한 줄에 */
+        color: #4A76FF; /* 탭 텍스트 색상 유지 */
+    }
+
+    .enroll-body .form-row {
+        flex-direction: column; /* 필터 컬럼 세로로 쌓이도록 */
+        gap: 10px;
+    }
+
+    .enroll-body .form-col {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .enroll-body .button-group {
+        flex-direction: column; /* 버튼 세로로 쌓이도록 */
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .enroll-body .searchButton, .enroll-body .cancelButton {
+        width: 100%;
+    }
+
+    .enroll-body table th, .enroll-body table td {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    /* 모바일에서 테이블 스크롤 가능하게 */
+    /* 현재 JSP의 해당 div는 style 속성만 있고 class가 없으므로, 더 구체적인 선택자가 필요합니다.
+       HTML에 class="scrollable-table-container" 등을 추가하는 것을 권장합니다. */
+    .enroll-body div[style*="overflow-y: auto"] { /* 기존 div[style*="overflow-y: auto"]에 .enroll-body 추가 */
+        max-height: 300px !important; /* 모바일에서 높이 조정 */
+        overflow-x: auto; /* 가로 스크롤 가능하게 */
+    }
+    
+    .enroll-body .timetable-table {
+        min-width: 550px; /* 시간표가 너무 좁아지지 않도록 최소 너비 설정 */
+    }
+    
+    /* Small screens for timetable */
+    .enroll-body .timetable-table th, .enroll-body .timetable-table td {
+        font-size: 0.85em;
+        padding: 8px 5px;
+    }
+}
+
+@media (max-width: 576px) {
+    .enroll-body .container {
+        margin: 20px auto;
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .enroll-body h1 {
+        font-size: 2em;
+        margin-bottom: 15px;
+    }
+
+    .enroll-body h3 {
+        font-size: 1.3em;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+    }
+
+    /* Notice Banner는 .enroll-body 외부에 있으므로 여기서 .enroll-body 접두사 사용 안 함 */
+    /* .notice-banner { ... } */
+
+
+    .enroll-body .tab-menu {
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .enroll-body .tab {
+        padding: 10px 12px;
+        font-size: 0.95em;
+        flex-basis: 48%; /* 두 개씩 한 줄에 */
+        color: #4A76FF; /* 탭 텍스트 색상 유지 */
+    }
+    .enroll-body .tab.active {
+        background-color: rgba(255, 255, 255, 0.25); /* 원본 유지 */
+        color: white; /* 활성 탭 텍스트는 흰색 유지 */
+    }
+
+
+    .enroll-body .form-control {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+
+    .enroll-body label {
+        font-size: 0.8em;
+    }
+
+    .enroll-body .searchButton, .enroll-body .cancelButton, .enroll-body .btn-add, .enroll-body .saveButton, .enroll-body .deleteButton, .enroll-body .submitButton {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+    
+    .enroll-body table th, .enroll-body table td {
+        padding: 8px;
+        font-size: 0.85em;
+    }
+
+    .enroll-body .saveButton, .enroll-body .btn-add {
+        padding: 6px 10px;
+        font-size: 0.8em;
+    }
+
+    /* status-value, status-label은 현재 JSP에 없는 클래스이므로,
+       만약 사용한다면 .enroll-body를 붙여주고, 아니면 제거합니다. */
+    /* .enroll-body .status-value { ... } */
+    /* .enroll-body .status-label { ... } */
+
+    .enroll-body .timetable-table {
+        min-width: 450px; /* 더 작은 화면을 위해 최소 너비 조정 */
+    }
+
+    .enroll-body .empty-message {
+        font-size: 0.9em;
+        padding: 15px;
+    }
+}

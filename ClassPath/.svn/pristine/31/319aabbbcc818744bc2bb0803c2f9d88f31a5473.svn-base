@@ -1,0 +1,77 @@
+package kr.or.ddit.pfcp.student.lecture.enroll.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import kr.or.ddit.pfcp.common.vo.LectureEnrVO;
+import kr.or.ddit.pfcp.common.vo.LectureVO;
+import kr.or.ddit.pfcp.student.lecture.enroll.mapper.LectureEnrMapper;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class LectureEnrServiceImpl implements LectureEnrService {
+  private final LectureEnrMapper lectureEnrMapper;
+  
+  @Override
+  public List<LectureEnrVO> retrieveLectureEnrByUserNo(String studentNo) {
+    return lectureEnrMapper.selectLectureEnrollmentsByUserNo(studentNo);
+  }
+
+	@Override
+	public List<LectureVO> readLectureList(String semesterNo) {
+		return lectureEnrMapper.selectLectureListBySemester(semesterNo);
+	}
+
+	@Override
+	public String readNowSemester() {
+		return lectureEnrMapper.getCurrentSemester();
+	}
+
+	@Override
+	public int countEnrollLectureByStudent(String lecNo) {
+		return lectureEnrMapper.selectEnrollmentCountByLectureNO(lecNo);
+	}
+	
+	@Transactional
+	@Override
+	public void enrollLecture(String lecNo, String userNo) {
+		// 중복수강검증
+		if(lectureEnrMapper.existsEnrollment(userNo, lecNo)) {
+			throw new IllegalStateException("이미 신청한 강의입니다.");
+		}	
+		
+		// 정원 초과 검사
+		int current = lectureEnrMapper.selectCurrentEnrollment(lecNo);
+		int max = lectureEnrMapper.selectMaxCapacity(lecNo);
+		
+		if(current>= max) {
+			throw new IllegalStateException("정원이 초과되어 신청할 수 없습니다.");
+		}
+		
+		
+		
+		// 수강신청 테이블 등록
+		LectureEnrVO enrVo = new LectureEnrVO();
+		enrVo.setLecNo(lecNo);
+		enrVo.setUserNo(userNo);
+		// 수강신청등록
+		lectureEnrMapper.insertLectureEnrollmentCount(enrVo);
+		// 현재강의 수강신청 인원
+		lectureEnrMapper.incrementCurrentEnrollment(lecNo);
+	}
+
+	@Override
+	public List<LectureEnrVO> getMyEnrollList(String userNo) {
+		return lectureEnrMapper.selectMyLectureEnrollList(userNo);
+	}
+	
+	
+	
+	
+	
+	
+
+}

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.certification.mapper.StaffCertificationMapper">
+
+	<select id="selectCertificationList">
+	SELECT
+	    CERT_CODE,
+	    CERT_NAME,
+	    CERT_DESC,
+	    IS_ACTIVE,
+	    ISSUE_FEE,
+	    FILE_REF_NO
+	FROM
+	    CERTIFICATE_INFO
+	WHERE IS_ACTIVE != 'N'
+	</select>
+	
+	<update id="updateCertificationActiveToN" parameterType="String">
+	UPDATE certificate_info
+		SET
+		    IS_ACTIVE = 'N'
+		WHERE
+	        CERT_CODE = #{certCode}
+	</update>
+	
+	<insert id="insertCertificateInfo" parameterType="CertificateInfoVO">
+		INSERT INTO certificate_info (
+		    cert_code,
+		    cert_name,
+		    cert_desc,
+		    is_active,
+		    issue_fee,
+		    file_ref_no
+		) VALUES ( 'CERT' || LPAD(SEQ_CERTIFICATE_INFO.NEXTVAL, 3, '0'),
+		           #{certName},
+		           #{certDesc},
+		           'Y',
+		           #{issueFee},
+		           #{fileRefNo} )
+	</insert>
+	
+	<select id="selectFileRefNo">
+	SELECT FILE_REF_NO
+	FROM
+	    CERTIFICATE_INFO
+	WHERE CERT_CODE = #{certCode}
+	</select>
+	
+	<update id="updateFileRefNo">
+		UPDATE certificate_info
+		SET
+		    FILE_REF_NO = #{fileRefNo}
+		WHERE
+	        CERT_CODE = #{certCode}
+	</update>
+	
+	
+	
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.college.mapper.CollegeMapper">
+	<select id="selectAllCollegeList">
+	<!-- 전체 단대 조회 -->
+		SELECT COLLEGE_NO,
+       		   COLLEGE_NAME
+		FROM COLLEGE
+	</select>
+	
+	<select id="selectCollege">
+	<!-- 단대 상세조회 -->
+		SELECT COLLEGE_NO,
+       		   COLLEGE_NAME
+		FROM COLLEGE
+		WHERE COLLEGE_NO=#{collegeNo}
+	</select>
+	
+	
+</mapper>

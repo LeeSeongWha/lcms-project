@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.student.counsel.mapper.StudentCounselMapper">
+
+	<resultMap id="counselReqMap" type="kr.or.ddit.pfcp.common.vo.CounselReqVO">
+	    <id property="counselReqno" column="COUNSEL_REQNO"/>
+	    <result property="preferredDate" column="PREFERRED_DATE"/>
+	    <result property="typeCode" column="TYPE_CODE"/>
+	    <result property="userNo" column="USER_NO"/>
+	    <result property="status" column="STATUS"/>
+	    <result property="counselReqdate" column="COUNSEL_REQDATE"/>
+	    <result property="counselComment" column="COUNSEL_COMMENT"/>
+	    
+	    <association property="type" javaType="kr.or.ddit.pfcp.common.vo.TypeVO">
+	        <id property="typeCode" column="TYPE_CODE"/>
+	        <result property="typeName" column="TYPE_NAME"/>
+	    </association>
+	</resultMap>
+	
+	<insert id="insertStudentCounsel">
+		INSERT INTO COUNSEL_REQ (
+			COUNSEL_REQNO, 
+			PREFERRED_DATE, 
+			TYPE_CODE, 
+			USER_NO, 
+			STATUS, 
+			COUNSEL_REQDATE, 
+			COUNSEL_COMMENT)
+		VALUES (
+			#{counselReqno},
+			#{preferredDate},
+			#{typeCode},
+			#{userNo},
+			#{status},
+			#{counselReqdate},
+			#{counselComment})
+	</insert>
+
+	<select id="selectStudentCounselList" resultMap="counselReqMap" parameterType="String">
+		SELECT COUNSEL_REQNO, 
+		       PREFERRED_DATE, 
+		       TYPE_CODE, 
+		       TYPE_NAME,
+		       USER_NO, 
+		       STATUS, 
+		       COUNSEL_REQDATE, 
+		       COUNSEL_COMMENT
+		  FROM COUNSEL_REQ
+  NATURAL JOIN TYPE
+		 WHERE USER_NO=#{userNo}
+	</select>
+	
+	<select id="selectStudentCounsel">
+		
+	</select>
+</mapper>

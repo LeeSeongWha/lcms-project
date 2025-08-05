@@ -1,0 +1,20 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+
+@Data
+public class OnlineSessionVO {
+  private Integer sessionNo;
+  private String ocTitle;
+  private String scheduledAt;
+  private Integer duration;
+  private String sessionType;
+  private String startTime;
+  private String endTime;
+  private Integer maxParticipants;
+  private String sessionStatus;
+  private String createdAt;
+  private String olNo;
+  private String recordingUrl;
+  private String attendenceRequired;
+}

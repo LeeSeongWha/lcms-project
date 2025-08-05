@@ -1,0 +1,111 @@
+package kr.or.ddit.common.component;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
+import kr.or.ddit.pfcp.common.service.NotificationServiceImpl;
+import kr.or.ddit.pfcp.common.service.UserService;
+import kr.or.ddit.pfcp.common.vo.NotificationVO;
+
+/**
+ * @author seokyungdeok
+ * @since 2025. 7. 18.
+ *
+ * << 개정이력(Modification Information) >>
+ * 수정일		|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 2025. 7. 18.	|	서경덕	|	최초 생성
+ */
+@Component
+public class NotificationUtils {
+	private static NotificationServiceImpl staticNotificationService;
+	private static UserService staticUserService;
+	
+	@Autowired
+    private NotificationServiceImpl notificationService;
+	
+    @Autowired
+    private UserService userService;
+    
+    @PostConstruct
+    public void init() {
+        staticNotificationService = notificationService;
+        staticUserService = userService;
+    }
+    
+    /**
+     * 학생에게 알림 전송 메서드
+     * 
+     * @param message 전송하고자 하는 메시지
+     */
+    public static void sendToStudents(String message, String linkUrl) {
+    	List<String> studentList = staticUserService.readAllStudentList();
+    	
+        for (String student : studentList) {
+            NotificationVO noti = new NotificationVO();
+
+            noti.setNotiNo("NT" + UUID.randomUUID().toString().replace("-", "").substring(0, 12));
+            noti.setUserNo(student);
+            noti.setMessage(message);
+            noti.setLinkUrl(linkUrl);
+            noti.setFaIcon("fa-bell");
+            noti.setIconClass("notif-info");
+            noti.setTimeAgo("방금 전");
+
+            staticNotificationService.createNotification(noti);
+            staticNotificationService.notifyUser(student, noti);
+        }
+    }
+    
+    /**
+     * 교수에게 알림 전송 메서드
+     * 
+     * @param message 전송하고자 하는 메시지
+     */
+    public static void sendToProfessor(String message, String linkUrl) {
+    	List<String> professorList = staticUserService.readAllProfessorList();
+    	
+    	for (String professor : professorList) {
+    		NotificationVO noti = new NotificationVO();
+
+            noti.setNotiNo("NT" + UUID.randomUUID().toString().replace("-", "").substring(0, 12));
+            noti.setUserNo(professor);
+            noti.setMessage(message);
+            noti.setLinkUrl(linkUrl);
+            noti.setFaIcon("fa-bell");
+            noti.setIconClass("notif-info");
+            noti.setTimeAgo("방금 전");
+
+            staticNotificationService.createNotification(noti);
+            staticNotificationService.notifyUser(professor, noti);
+    	}
+    }
+    
+    /**
+     * 교직원에게 알림 전송 메서드
+     * 
+     * @param message 전송하고자 하는 메시지
+     */
+    public static void sendToStaff(String message, String linkUrl) {
+    	List<String> staffList = staticUserService.readAllStaffList();
+    	
+    	for (String staff : staffList) {
+    		NotificationVO noti = new NotificationVO();
+
+            noti.setNotiNo("NT" + UUID.randomUUID().toString().replace("-", "").substring(0, 12));
+            noti.setUserNo(staff);
+            noti.setMessage(message);
+            noti.setLinkUrl(linkUrl);
+            noti.setFaIcon("fa-bell");
+            noti.setIconClass("notif-info");
+            noti.setTimeAgo("방금 전");
+
+            staticNotificationService.createNotification(noti);
+            staticNotificationService.notifyUser(staff, noti);
+    	}
+    }
+}

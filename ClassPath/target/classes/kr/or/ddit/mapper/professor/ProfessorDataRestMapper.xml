@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.professor.data.mapper.ProfessorDataRestMapper">
+
+	<select id="totalStd" parameterType="string" resultType="int">
+	  SELECT COUNT(*) FROM STUDENT WHERE DEPARTMENT_NO = #{departmentNo}
+	</select>
+	
+	<select id="currentStd" parameterType="string" resultType="int">
+	  SELECT COUNT(*) FROM STUDENT
+	  WHERE DEPARTMENT_NO = #{departmentNo}
+	    AND STUDENT_GDATE IS NULL
+	    AND STU_STATUS = '재학'
+	</select>
+	
+	<select id="gradStd" parameterType="string" resultType="int">
+	  SELECT COUNT(*) FROM STUDENT
+	  WHERE DEPARTMENT_NO = #{departmentNo}
+	    AND STUDENT_GDATE IS NOT NULL
+	</select>
+	
+	<select id="leaveStd" parameterType="string" resultType="int">
+	  SELECT COUNT(*) FROM STUDENT
+	  WHERE DEPARTMENT_NO = #{departmentNo}
+	    AND STU_STATUS = '휴학'
+	</select>
+	
+	<select id="admYearCnt" parameterType="string" resultType="map">
+	  SELECT TO_CHAR(TO_DATE(STUDENT_EDATE, 'YYYY-MM-DD'), 'YYYY') AS ADMISSION_YEAR,
+	         COUNT(*) AS COUNT
+	  FROM STUDENT
+	  WHERE DEPARTMENT_NO = #{departmentNo}
+	  GROUP BY TO_CHAR(TO_DATE(STUDENT_EDATE, 'YYYY-MM-DD'), 'YYYY')
+	  ORDER BY ADMISSION_YEAR
+	</select>
+	
+	<select id="gradeCnt" parameterType="string" resultType="map">
+		SELECT STUDENT_GRADE, COUNT(*) AS count FROM STUDENT
+			WHERE DEPARTMENT_NO = #{departmentNo}
+		GROUP BY STUDENT_GRADE
+		ORDER BY STUDENT_GRADE
+	</select>	
+	
+	<select id="genderCnt" parameterType="String" resultType="map">
+		SELECT
+            TU.GENDER,              
+            COUNT(T.USER_NO) AS STUDENT_COUNT
+        FROM
+            TB_USER TU              
+        JOIN
+            STUDENT T ON TU.USER_NO = T.USER_NO
+        WHERE
+            T.DEPARTMENT_NO = #{departmnetNo}
+        GROUP BY
+            TU.GENDER
+	</select>
+	
+	<select id="professorCnt" parameterType="String" resultType="map">
+		SELECT
+		    PRO_POSITION,             
+		    COUNT(PRO_POSITION) AS POSITION_COUNT 
+		FROM
+		    PROFESSOR                  
+		WHERE
+		    DEPARTMENT_NO = #{departmentNo}    
+		GROUP BY
+		    PRO_POSITION
+	</select>
+	
+	<select id="departmentDgr" parameterType="String" resultType="map">
+		SELECT
+		    DR.DGR_NO,
+		    DR.DGR_GRADE,
+		    DR.DGR_MC,
+		    DR.DGR_LAC,
+		    DR.DGR_FCC,
+		    DR.DGR_DATE,
+		    DR.DGR_VOLUNTEER_HOUR
+		FROM
+		    DGR_REQ DR
+		JOIN
+		    DEPARTMENT D ON DR.DGR_NO = D.DGR_NO
+		WHERE
+		    D.DEPARTMENT_NO = #{departmentNo}
+	</select>
+	
+	<select id="dgrStatus" parameterType="String" resultType="map">
+	 	SELECT
+		    NVL(SubqueryAlias.GRADUATION_STATUS_BY_CREDIT, '총 학생 수') AS GRADUATION_STATUS_CATEGORY,
+		    COUNT(SubqueryAlias.USER_NO) AS STUDENT_COUNT
+		FROM (
+		    SELECT
+		        S.USER_NO,
+		        SUM(CASE WHEN LE.GRADE != 'F' AND LE.GRADE IS NOT NULL THEN SUB.CREDIT ELSE 0 END) AS TOTAL_CREDIT,
+		        CASE
+		            WHEN SUM(CASE WHEN LE.GRADE != 'F' AND LE.GRADE IS NOT NULL THEN SUB.CREDIT ELSE 0 END) >= 130 THEN '졸업 대상'
+		            WHEN SUM(CASE WHEN LE.GRADE != 'F' AND LE.GRADE IS NOT NULL THEN SUB.CREDIT ELSE 0 END) BETWEEN 120 AND 129 THEN '졸업 예정자'
+		            WHEN SUM(CASE WHEN LE.GRADE != 'F' AND LE.GRADE IS NOT NULL THEN SUB.CREDIT ELSE 0 END) BETWEEN 110 AND 119 THEN '졸업 보류 대상'
+		            ELSE '졸업 요건 미충족'
+		        END AS GRADUATION_STATUS_BY_CREDIT
+		    FROM STUDENT S
+		    JOIN LECTURE_ENR LE ON S.USER_NO = LE.USER_NO
+		    JOIN LECTURE L ON LE.LEC_NO = L.LEC_NO
+		    JOIN LECTURE_REQ LR ON L.REQ_NO = LR.REQ_NO
+		    JOIN SUBJECT SUB ON LR.SUBJECT_CODE = SUB.SUBJECT_CODE
+		    WHERE S.STUDENT_GRADE = 4
+		      AND S.STU_STATUS != '졸업'
+		      AND LE.GRADE IS NOT NULL
+		      AND S.DEPARTMENT_NO = #{departmentNo}
+		    GROUP BY S.USER_NO
+		) SubqueryAlias
+		GROUP BY ROLLUP(SubqueryAlias.GRADUATION_STATUS_BY_CREDIT)
+		ORDER BY
+		    CASE
+		        WHEN SubqueryAlias.GRADUATION_STATUS_BY_CREDIT IS NULL THEN 1 
+		        ELSE 0
+		    END,
+		    SubqueryAlias.GRADUATION_STATUS_BY_CREDIT
+	</select>
+	
+	<select id="totalSubjectData" parameterType="String" resultType="map">
+	SELECT
+		    LR.LEC_NAME AS LECTURE_NAME,
+		    '2025년 이전 평균' AS YEAR_CATEGORY,
+		    ROUND(AVG(LE.GRADE_POINT), 1) AS AVERAGE_GRADE_POINT,
+		    S.GRADE_LEVEL
+		FROM
+		    SUBJECT S
+		JOIN
+		    LECTURE_REQ LR ON S.SUBJECT_CODE = LR.SUBJECT_CODE
+		JOIN
+		    LECTURE L ON LR.REQ_NO = L.REQ_NO
+		JOIN
+		    LECTURE_ENR LE ON L.LEC_NO = LE.LEC_NO
+		WHERE
+		    S.DEPARTMENT_NO = #{departmentNo}
+		    AND SUBSTR(S.SEMESTER_NO, 1, 4) BETWEEN '2022' AND '2024'
+		    AND LE.GRADE_POINT IS NOT NULL
+		GROUP BY
+		    LR.LEC_NAME, S.GRADE_LEVEL 
+		
+		UNION ALL
+		
+		SELECT
+		    LR.LEC_NAME AS LECTURE_NAME,
+		    '2025 평균' AS YEAR_CATEGORY,
+		    ROUND(AVG(LE.GRADE_POINT), 1) AS AVERAGE_GRADE_POINT,
+		    S.GRADE_LEVEL 
+		FROM
+		    SUBJECT S
+		JOIN
+		    LECTURE_REQ LR ON S.SUBJECT_CODE = LR.SUBJECT_CODE
+		JOIN
+		    LECTURE L ON LR.REQ_NO = L.REQ_NO
+		JOIN
+		    LECTURE_ENR LE ON L.LEC_NO = LE.LEC_NO
+		WHERE
+		    S.DEPARTMENT_NO = #{departmentNo}
+		    AND SUBSTR(S.SEMESTER_NO, 1, 4) = '2025'
+		    AND LE.GRADE_POINT IS NOT NULL
+		GROUP BY
+		    LR.LEC_NAME, S.GRADE_LEVEL 
+		ORDER BY
+		    GRADE_LEVEL, 
+		    LECTURE_NAME,
+		    YEAR_CATEGORY
+	</select>
+	
+	<select id="yearSubjectData" parameterType="String" resultType="map">
+		SELECT
+		    S_SUB.GRADE_LEVEL,
+		    SUBSTR(S_SUB.SEMESTER_NO, 6, 1) AS SEMESTER,
+		    ROUND(AVG(LE.GRADE_POINT), 2) AS AVERAGE_GRADE_POINT_BY_SEMESTER
+		FROM
+		    STUDENT S
+		JOIN
+		    LECTURE_ENR LE ON S.USER_NO = LE.USER_NO
+		JOIN
+		    LECTURE L ON LE.LEC_NO = L.LEC_NO
+		JOIN
+		    LECTURE_REQ LR ON L.REQ_NO = LR.REQ_NO
+		JOIN
+		    SUBJECT S_SUB ON LR.SUBJECT_CODE = S_SUB.SUBJECT_CODE
+		WHERE
+		    S.DEPARTMENT_NO = #{departmentNo}
+		    AND LE.GRADE_POINT IS NOT NULL
+		    AND S_SUB.GRADE_LEVEL > 0 
+		    AND SUBSTR(S_SUB.SEMESTER_NO, 6, 1) IN ('1', '2') 
+		GROUP BY
+		    S_SUB.GRADE_LEVEL,
+		    SUBSTR(S_SUB.SEMESTER_NO, 6, 1) 
+		ORDER BY
+		    S_SUB.GRADE_LEVEL,
+		    SEMESTER
+	</select>
+	
+	<select id="gradeAvgData" parameterType="String" resultType="map">
+		SELECT
+		    S.STUDENT_GRADE, 
+		    ROUND(AVG(LE.GRADE_POINT), 2) AS AVERAGE_GRADE_POINT_BY_STUDENT_GRADE
+		FROM
+		    STUDENT S
+		JOIN
+		    LECTURE_ENR LE ON S.USER_NO = LE.USER_NO
+		WHERE
+		    S.DEPARTMENT_NO = #{departmentNo}
+		    AND LE.GRADE_POINT IS NOT NULL
+		    AND S.STUDENT_GRADE BETWEEN 1 AND 4
+		GROUP BY
+		    S.STUDENT_GRADE
+		ORDER BY
+		    S.STUDENT_GRADE
+	</select>
+	
+	<select id="totalLecture" parameterType="String" resultType="map">
+		SELECT
+		    COUNT(LEC_NO) AS TotalLecturesOpened
+		FROM
+		    LECTURE
+	</select>
+	
+	<select id="totalLectureEvalAvg" parameterType="String" resultType="map">
+		SELECT
+		    TRUNC(AVG(OVERALL_SCORE), 2) AS AverageLectureSatisfaction
+		FROM
+		    LECTURE_EVAL
+	</select>
+	
+	<select id="totalStdAvg" parameterType="String" resultType="map">
+		SELECT
+		    TRUNC(
+		        (SUM(CASE WHEN ATTEND_STATUS = '출석' THEN 1 ELSE 0 END) / COUNT(ATTEND_ID)) * 100, 2
+		    ) AS OverallAverageAttendanceRate
+		FROM
+		    ATTENDANCE
+	</select>
+	
+	<select id="totalYearCreateLec" parameterType="String" resultType="map">
+		SELECT
+		    SUBSTR(SEMESTER_NO, 1, 4) AS LectureYear,
+		    SUBSTR(SEMESTER_NO, 6, 1) AS Semester, 
+		    COUNT(SUBJECT_CODE) AS NumberOfLecturesOpened 
+		FROM
+		    SUBJECT
+		WHERE
+		    SUBSTR(SEMESTER_NO, 1, 4) BETWEEN '2022' AND '2025' 
+		GROUP BY
+		    SUBSTR(SEMESTER_NO, 1, 4),
+		    SUBSTR(SEMESTER_NO, 6, 1)
+		ORDER BY
+		    LectureYear ASC,
+		    Semester ASC
+	</select>
+	
+	<select id="semesterEvalAvg" parameterType="String" resultType="map">
+		SELECT
+		    SUBSTR(S.SEMESTER_NO, 1, 4) AS 년도, 
+		    SUBSTR(S.SEMESTER_NO, 6, 1) AS 학기, 
+		    TRUNC(AVG(LEVAL.OVERALL_SCORE), 2) AS 강의평가_평균
+		FROM
+		    LECTURE_EVAL LEVAL
+		JOIN
+		    LECTURE_ENR LE ON LEVAL.ENROLL_NO = LE.ENROLL_NO
+		JOIN
+		    LECTURE L ON LE.LEC_NO = L.LEC_NO 
+		JOIN
+		    LECTURE_REQ LR ON L.REQ_NO = LR.REQ_NO 
+		JOIN
+		    SUBJECT S ON LR.SUBJECT_CODE = S.SUBJECT_CODE 
+		WHERE
+		    SUBSTR(S.SEMESTER_NO, 1, 4) BETWEEN '2022' AND '2025' 
+		GROUP BY
+		    SUBSTR(S.SEMESTER_NO, 1, 4), 
+		    SUBSTR(S.SEMESTER_NO, 6, 1) 
+		ORDER BY
+		    년도 ASC,
+		    학기 ASC
+	</select>
+	
+	<select id="semesterAttAvg" parameterType="String" resultType="map">
+		SELECT
+		    SUBSTR(S.SEMESTER_NO, 1, 4) AS 년도,
+		    SUBSTR(S.SEMESTER_NO, 6, 1) AS 학기, 
+		    TRUNC(
+		        (SUM(CASE WHEN A.ATTEND_STATUS = '출석' THEN 1 ELSE 0 END) * 100.0) /
+		        NULLIF(COUNT(A.ATTEND_ID), 0), 2 
+		    ) AS 학기별_평균_출석률
+		FROM
+		    ATTENDANCE A 
+		JOIN
+		    LECTURE_ENR LE ON A.ENROLL_NO = LE.ENROLL_NO 
+		JOIN
+		    LECTURE L ON LE.LEC_NO = L.LEC_NO 
+		JOIN
+		    LECTURE_REQ LR ON L.REQ_NO = LR.REQ_NO 
+		JOIN
+		    SUBJECT S ON LR.SUBJECT_CODE = S.SUBJECT_CODE 
+		GROUP BY
+		    SUBSTR(S.SEMESTER_NO, 1, 4), 
+		    SUBSTR(S.SEMESTER_NO, 6, 1) 
+		ORDER BY
+		    년도 ASC,
+		    학기 ASC	
+	</select>
+	
+	<select id="allEvalAvg" parameterType="String" resultType="map">
+	SELECT
+	    SUBSTR(S.SUBJECT_NAME, 1, LENGTH(S.SUBJECT_NAME) - 4) AS 강의명,
+     	S.GRADE_LEVEL AS 학년,
+	    TRUNC(
+	        AVG(CASE WHEN SUBSTR(S.SEMESTER_NO, 1, 4) BETWEEN '2022' AND '2024' THEN LEVAL.OVERALL_SCORE END), 2
+	    ) AS "2025년_이전_평균_점수",
+	    TRUNC(
+	        AVG(CASE WHEN SUBSTR(S.SEMESTER_NO, 1, 4) = '2025' THEN LEVAL.OVERALL_SCORE END), 2
+	    ) AS "2025년_평균_점수" 
+	FROM
+	    LECTURE_EVAL LEVAL
+	JOIN
+	    LECTURE_ENR LE ON LEVAL.ENROLL_NO = LE.ENROLL_NO
+	JOIN
+	
+	    LECTURE L ON LE.LEC_NO = L.LEC_NO
+	JOIN
+	    LECTURE_REQ LR ON L.REQ_NO = LR.REQ_NO
+	JOIN
+	    SUBJECT S ON LR.SUBJECT_CODE = S.SUBJECT_CODE
+	WHERE
+	    SUBSTR(S.SEMESTER_NO, 1, 4) BETWEEN '2022' AND '2025' 
+	    AND S.DEPARTMENT_NO = #{departmentNo} 
+	GROUP BY
+	    SUBSTR(S.SUBJECT_NAME, 1, LENGTH(S.SUBJECT_NAME) - 4),
+	    S.GRADE_LEVEL
+	ORDER BY
+	    강의명 ASC, 학년 ASC
+	</select>
+	
+	<select id="allAttAvg" parameterType="String" resultType="map">
+		SELECT
+		    SUBSTR(S.SUBJECT_NAME, 1, LENGTH(S.SUBJECT_NAME) - 4) AS 강의명,
+		    S.GRADE_LEVEL AS 학년,
+		    TRUNC(
+		        (SUM(CASE WHEN SUBSTR(S.SEMESTER_NO, 1, 4) BETWEEN '2022' AND '2024' AND A.ATTEND_STATUS = '출석' THEN 1 ELSE 0 END) * 100.0) /
+		        NULLIF(COUNT(CASE WHEN SUBSTR(S.SEMESTER_NO, 1, 4) BETWEEN '2022' AND '2024' THEN A.ATTEND_ID END), 0), 2
+		    ) AS "2025년_이전_평균_출석률",
+		    TRUNC(
+		        (SUM(CASE WHEN SUBSTR(S.SEMESTER_NO, 1, 4) = '2025' AND A.ATTEND_STATUS = '출석' THEN 1 ELSE 0 END) * 100.0) /
+		        NULLIF(COUNT(CASE WHEN SUBSTR(S.SEMESTER_NO, 1, 4) = '2025' THEN A.ATTEND_ID END), 0), 2
+		    ) AS "2025년_평균_출석률"
+		FROM
+		    ATTENDANCE A
+		JOIN
+		    LECTURE_ENR LE ON A.ENROLL_NO = LE.ENROLL_NO
+		JOIN
+		    LECTURE L ON LE.LEC_NO = L.LEC_NO
+		JOIN
+		    LECTURE_REQ LR ON L.REQ_NO = LR.REQ_NO
+		JOIN
+		    SUBJECT S ON LR.SUBJECT_CODE = S.SUBJECT_CODE
+		WHERE
+		    SUBSTR(S.SEMESTER_NO, 1, 4) BETWEEN '2022' AND '2025'
+		    AND S.DEPARTMENT_NO = #{departmentNo}
+		GROUP BY
+		    SUBSTR(S.SUBJECT_NAME, 1, LENGTH(S.SUBJECT_NAME) - 4),
+		    S.GRADE_LEVEL
+		ORDER BY
+		    강의명 ASC, 학년 ASC
+	</select>
+	
+	
+	
+
+</mapper>

@@ -1,0 +1,12 @@
+package kr.or.ddit.pfcp.staff.facility.mapper;
+
+import org.apache.ibatis.annotations.Mapper;
+
+
+@Mapper
+public interface FacilityMapper {
+	public void readFacilityList();
+	public void readFacility(int facilityNo);
+	public void insertFacility();
+	public void modifyFacility();
+}

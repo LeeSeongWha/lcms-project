@@ -1,0 +1,695 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   시설 예약 가능 시간 설정 시스템 - 업무성 디자인
+   ========================================================================== */
+
+.navbar{
+	padding:0;
+}
+
+
+
+/* 전체 페이지 컨테이너 */
+.facility-schedule-page {
+    background-color: #f8f9fa;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #212529;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px 0;
+}
+
+.facility-schedule-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ==========================================================================
+   섹션 헤더
+   ========================================================================== */
+
+.sectionHeaderLine {
+    border-bottom: 1px solid #2b6cb0;
+    padding: 20px 24px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    border-radius: 4px;
+}
+
+.sectionHeaderTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0;
+}
+
+/* ==========================================================================
+   시설 정보 카드
+   ========================================================================== */
+
+.facility-info-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 30px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.facility-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2b6cb0;
+    margin: 0 0 12px 0;
+}
+
+.facility-location {
+    font-weight: 400;
+    color: #6b7280;
+}
+
+.facility-details {
+    font-size: 0.9rem;
+    color: #4a5568;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   알림 박스
+   ========================================================================== */
+
+.notice-box {
+    padding: 16px 20px;
+    border-radius: 4px;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.notice-warning {
+    background: #fef3cd;
+    border: 1px solid #fecba1;
+    color: #92400e;
+    box-shadow: 0 1px 3px rgba(146, 64, 14, 0.1);
+}
+
+/* ==========================================================================
+   스케줄 섹션
+   ========================================================================== */
+
+.schedule-section {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1a202c;
+    margin: 0 0 20px 0;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* ==========================================================================
+   테이블 스타일
+   ========================================================================== */
+
+.table-container {
+    overflow-x: auto;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    background: #ffffff;
+    margin: 0;
+}
+
+.schedule-table-head {
+    background: #f7fafc;
+}
+
+.schedule-table-th {
+    padding: 14px 12px;
+    text-align: center;
+    font-weight: 600;
+    color: #2d3748;
+    border-bottom: 2px solid #cbd5e0;
+    border-right: 1px solid #e2e8f0;
+    white-space: nowrap;
+    vertical-align: middle;
+    background: #f7fafc;
+}
+
+.schedule-table-th:last-child {
+    border-right: none;
+}
+
+.time-header {
+    width: 140px;
+    min-width: 140px;
+}
+
+.day-header {
+    width: calc((100% - 140px) / 5);
+    min-width: 120px;
+}
+
+.schedule-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background-color 0.15s ease;
+}
+
+.schedule-table tbody tr:nth-child(even) {
+    background-color: #fefefe;
+}
+
+.schedule-table tbody tr:hover {
+    background-color: #edf2f7;
+}
+
+.schedule-table-td {
+    padding: 12px;
+    text-align: center;
+    color: #2d3748;
+    border-right: 1px solid #f1f5f9;
+    vertical-align: middle;
+    transition: all 0.15s ease;
+}
+
+.schedule-table-td:last-child {
+    border-right: none;
+}
+
+/* 시간 컬럼 */
+.time-cell {
+    font-weight: 600;
+    color: #4a5568;
+    background: #f7fafc !important;
+    border-right: 2px solid #e2e8f0 !important;
+}
+
+/* 슬롯 셀 공통 */
+.slot-cell {
+    cursor: default;
+    position: relative;
+}
+
+.slot-cell span {
+    font-weight: 500;
+    font-size: 0.8rem;
+}
+
+/* 예약 가능한 슬롯 */
+.available-slot {
+    background-color: #bee3f8 !important;
+    color: #2b6cb0;
+    cursor: pointer;
+}
+
+.available-slot span {
+    color: #2b6cb0;
+    font-weight: 600;
+}
+
+.available-slot:hover {
+    background-color: #90cdf4 !important;
+    transform: scale(1.02);
+}
+
+/* 예약 불가능한 슬롯 */
+.unavailable-slot {
+    background-color: #ffffff !important;
+    color: #a0aec0;
+}
+
+.unavailable-slot span {
+    color: #a0aec0;
+}
+
+/* 수정 가능한 슬롯 */
+.editable-slot {
+    cursor: pointer;
+}
+
+.editable-slot:hover {
+    background-color: #f7fafc !important;
+    border: 1px solid #cbd5e0;
+}
+
+/* 새로 추가된 슬롯 */
+.new-slot {
+    background-color: #bbf7d0 !important;
+    color: #059669;
+    cursor: pointer;
+}
+
+.new-slot span {
+    color: #059669;
+    font-weight: 600;
+}
+
+.new-slot:hover {
+    background-color: #86efac !important;
+    transform: scale(1.02);
+}
+
+/* ==========================================================================
+   범례 (Legend)
+   ========================================================================== */
+
+.legend-container {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding: 16px;
+    background: #f7fafc;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #cbd5e0;
+    border-radius: 2px;
+}
+
+.available-legend {
+    background-color: #bee3f8;
+}
+
+.unavailable-legend {
+    background-color: #ffffff;
+}
+
+.new-slot-legend {
+    background-color: #bbf7d0;
+}
+
+.legend-text {
+    font-size: 0.8rem;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   버튼 스타일
+   ========================================================================== */
+
+.button-container {
+    text-align: center;
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.submitButton {
+    background: #2b6cb0;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+
+.submitButton:hover {
+    background: #2a5298;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(43, 108, 176, 0.3);
+}
+
+.editButton {
+    background: #22543d;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+
+.editButton:hover {
+    background: #1a202c;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(34, 84, 61, 0.3);
+}
+
+.cancelButton {
+    background: #e53e3e;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+
+.cancelButton:hover {
+    background: #c53030;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(229, 62, 62, 0.3);
+}
+
+/* ==========================================================================
+   반응형 디자인
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+    .facility-schedule-container {
+        max-width: 100%;
+        padding: 16px;
+    }
+    
+    .day-header {
+        min-width: 100px;
+    }
+    
+    .schedule-table-th,
+    .schedule-table-td {
+        padding: 10px 8px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .sectionHeaderLine {
+        padding: 16px 20px;
+    }
+    
+    .sectionHeaderTitle {
+        font-size: 1.25rem;
+    }
+    
+    .facility-info-card {
+        padding: 20px;
+    }
+    
+    .facility-name {
+        font-size: 1.125rem;
+    }
+    
+    .schedule-section {
+        padding: 20px;
+    }
+    
+    .time-header {
+        width: 120px;
+        min-width: 120px;
+    }
+    
+    .day-header {
+        min-width: 80px;
+    }
+    
+    .schedule-table-th,
+    .schedule-table-td {
+        padding: 8px 6px;
+        font-size: 0.75rem;
+    }
+    
+    .legend-container {
+        gap: 16px;
+    }
+    
+    .legend-text {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .facility-schedule-container {
+        padding: 12px;
+    }
+    
+    .sectionHeaderLine {
+        padding: 12px 16px;
+    }
+    
+    .sectionHeaderTitle {
+        font-size: 1.125rem;
+    }
+    
+    .facility-info-card {
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+    
+    .facility-name {
+        font-size: 1rem;
+    }
+    
+    .facility-details {
+        font-size: 0.8rem;
+    }
+    
+    .notice-box {
+        padding: 12px 16px;
+        font-size: 0.8rem;
+        margin-bottom: 20px;
+    }
+    
+    .schedule-section {
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+    
+    .section-title {
+        font-size: 1rem;
+        margin-bottom: 16px;
+    }
+    
+    .table-container {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        margin-left: -16px;
+        margin-right: -16px;
+    }
+    
+    .time-header {
+        width: 100px;
+        min-width: 100px;
+    }
+    
+    .day-header {
+        min-width: 70px;
+    }
+    
+    .schedule-table-th,
+    .schedule-table-td {
+        padding: 6px 4px;
+        font-size: 0.7rem;
+    }
+    
+    .slot-cell span {
+        font-size: 0.7rem;
+    }
+    
+    .legend-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+    }
+    
+    .legend-item {
+        gap: 6px;
+    }
+    
+    .legend-color {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .legend-text {
+        font-size: 0.7rem;
+    }
+    
+    .button-container {
+        margin-top: 20px;
+        gap: 8px;
+    }
+    
+    .submitButton,
+    .editButton,
+    .cancelButton {
+        padding: 10px 20px;
+        font-size: 0.8rem;
+        min-width: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .facility-schedule-container {
+        padding: 8px;
+    }
+    
+    .sectionHeaderLine {
+        padding: 10px 12px;
+    }
+    
+    .sectionHeaderTitle {
+        font-size: 1rem;
+    }
+    
+    .facility-info-card {
+        padding: 12px;
+    }
+    
+    .facility-name {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+    
+    .facility-details {
+        font-size: 0.75rem;
+    }
+    
+    .notice-box {
+        padding: 10px 12px;
+        font-size: 0.75rem;
+    }
+    
+    .schedule-section {
+        padding: 12px;
+    }
+    
+    .section-title {
+        font-size: 0.9rem;
+    }
+    
+    .table-container {
+        margin-left: -12px;
+        margin-right: -12px;
+    }
+    
+    .time-header {
+        width: 80px;
+        min-width: 80px;
+    }
+    
+    .day-header {
+        min-width: 60px;
+    }
+    
+    .schedule-table-th,
+    .schedule-table-td {
+        padding: 4px 2px;
+        font-size: 0.65rem;
+    }
+    
+    .slot-cell span {
+        font-size: 0.65rem;
+    }
+    
+    .legend-container {
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .legend-color {
+        width: 12px;
+        height: 12px;
+    }
+    
+    .legend-text {
+        font-size: 0.65rem;
+    }
+    
+    .button-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .submitButton,
+    .editButton,
+    .cancelButton {
+        width: 100%;
+        max-width: 200px;
+        padding: 8px 16px;
+        font-size: 0.75rem;
+    }
+}
+
+/* ==========================================================================
+   추가 애니메이션 및 효과
+   ========================================================================== */
+
+/* 호버 효과 개선 */
+.slot-cell {
+    transition: all 0.2s ease;
+}
+
+.available-slot:hover,
+.new-slot:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 클릭 효과 */
+.slot-cell:active {
+    transform: scale(0.98);
+}
+
+/* 포커스 효과 (접근성) */
+.slot-cell:focus {
+    outline: 2px solid #4299e1;
+    outline-offset: 2px;
+}
+
+/* 버튼 비활성화 상태 */
+.submitButton:disabled,
+.editButton:disabled,
+.cancelButton:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.submitButton:disabled:hover,
+.editButton:disabled:hover,
+.cancelButton:disabled:hover {
+    background: #a0aec0;
+    transform: none;
+    box-shadow: none;
+}

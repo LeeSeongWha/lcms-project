@@ -1,0 +1,20 @@
+package kr.or.ddit.pfcp.common.service;
+
+import java.util.List;
+import kr.or.ddit.pfcp.common.vo.ChatMessageVO;
+import kr.or.ddit.pfcp.common.vo.ClassroomParticipantVO;
+import kr.or.ddit.pfcp.common.vo.OnlineSessionVO;
+import kr.or.ddit.pfcp.common.vo.VirtualClassroomVO;
+
+public interface VirtualClassroomService {
+  public Integer createOnlineSession(OnlineSessionVO session);
+  public OnlineSessionVO getOnlineSession(Integer sessionNo);
+  public Integer createClassroom(VirtualClassroomVO classroomVO);
+  public VirtualClassroomVO getClassroom(Integer vcNo);
+  public Integer joinClassroom(ClassroomParticipantVO participantVO);
+  public List<ClassroomParticipantVO> getParticipantList(Integer vcNo);
+  public Integer saveChatMessage(ChatMessageVO chatMessageVO);
+  public List<ChatMessageVO> getChatMessages(Integer vcNo);
+  public void deactivateClassroom(Integer vcNo);
+  public void endSession(Integer sessionNo);
+}

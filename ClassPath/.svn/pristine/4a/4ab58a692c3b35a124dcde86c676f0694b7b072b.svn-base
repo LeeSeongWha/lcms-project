@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.student.program.mapper.StudentProgramMapper">
+	<resultMap type="kr.or.ddit.pfcp.common.vo.ProgramVO" id="programMap">
+		<id property="programNo" column="PROGRAM_NO" />
+		<result property="userNo" column="USER_NO" />
+		<result property="typeCode" column="TYPE_CODE" />
+		<result property="programTitle" column="PROGRAM_TITLE" />
+		<result property="programDesp" column="PROGRAM_DESP" />
+		<result property="programCapacity" column="PROGRAM_CAPACITY" />
+		<result property="startDate" column="START_DATE" />
+		<result property="endDate" column="END_DATE" />
+		<result property="place" column="PLACE" />
+		<result property="programActive" column="PROGRAM_ACTIVE" />
+		<result property="applyStartDate" column="APPLY_START_DATE"/>
+		<result property="applyEndDate" column="APPLY_END_DATE"/>
+		<result property="fileRefNo" column="FILE_REF_NO"/>
+		
+		<association property="type" javaType="kr.or.ddit.pfcp.common.vo.TypeVO">
+			<id property="typeCode" column="TYPE_CODE" />
+			<result property="typeName" column="TYPE_NAME" />
+			<result property="typeGroup" column="TYPE_GROUP" />
+			<result property="isActive" column="IS_ACTIVE" />
+		</association>
+		
+		<association property="user" javaType="UserVO">
+			<id property="userNo" column="USER_NO"/>
+			<result property="userName" column="USER_NAME"/>
+		</association>
+	</resultMap>
+	
+	<select id="selectProgramEvaluationList">
+		SELECT CRITERIA_NO
+		       , CRITERIA_NAME
+		       , COLUMN_ALIAS
+		       , CRITERIA_DESC
+		       , CRITERIA_USE
+		       , USE_FOR
+		  FROM EVAL_CRITERIA
+		 WHERE USE_FOR='PROGRAM'
+	</select>
+	
+	<select id="selectProgramList" resultMap="programMap">
+		SELECT A.PROGRAM_NO
+	           , A.TYPE_CODE
+	           , B.TYPE_NAME
+	           , A.PROGRAM_TITLE
+	           , A.PROGRAM_DESP
+	           , A.PROGRAM_CAPACITY
+	           , A.START_DATE
+	           , A.END_DATE
+	           , A.PLACE
+	           , A.PROGRAM_ACTIVE
+	           , A.USER_NO
+	           , A.APPLY_START_DATE
+	           , A.APPLY_END_DATE
+	      FROM PROGRAM A
+	INNER JOIN TYPE B ON A.TYPE_CODE=B.TYPE_CODE
+		 WHERE PROGRAM_ACTIVE='Y' OR PROGRAM_ACTIVE='N' OR PROGRAM_ACTIVE='C'
+	  ORDER BY CASE A.PROGRAM_ACTIVE
+		           WHEN 'N' THEN 1
+		           WHEN 'Y' THEN 2
+		           WHEN 'C' THEN 3
+		        END
+	</select>
+	
+	<select id="selectProgramEnrollDetail">
+		SELECT A.ENROLL_NO
+		       , A.PROGRAM_NO
+		       , A.USER_NO
+		       , A.APPLY_DATE
+		       , A.IS_ATTENDED
+		       , A.IS_COMPLETED
+               , C.FILE_REF_NO
+		  FROM PROGRAM_ENROLL A
+    INNER JOIN PROGRAM_CERT_REQ B ON A.ENROLL_NO=B.ENROLL_NO
+     LEFT JOIN PROGRAM_CERT_ISSUE C ON B.CERT_REQNO=C.CERT_REQNO
+		 WHERE A.USER_NO=#{userNo}
+		   AND A.PROGRAM_NO=#{programNo}
+	</select>
+	
+	<select id="selectProgramDetail" resultMap="programMap">
+		SELECT A.PROGRAM_NO
+	           , A.TYPE_CODE
+	           , B.TYPE_NAME
+	           , A.PROGRAM_TITLE
+	           , A.PROGRAM_DESP
+	           , A.PROGRAM_CAPACITY
+	           , A.START_DATE
+	           , A.END_DATE
+	           , A.PLACE
+	           , A.PROGRAM_ACTIVE
+	           , A.USER_NO
+	           , C.USER_NAME
+	           , A.APPLY_START_DATE
+	           , A.APPLY_END_DATE
+	      FROM PROGRAM A
+	INNER JOIN TYPE B ON A.TYPE_CODE=B.TYPE_CODE
+	INNER JOIN TB_USER C ON A.USER_NO=C.USER_NO
+    INNER JOIN PROGRAM_ENROLL D ON A.PROGRAM_NO=D.PROGRAM_NO
+    INNER JOIN PROGRAM_CERT_REQ E ON D.ENROLL_NO=E.ENROLL_NO
+	     WHERE A.PROGRAM_NO=#{programNo}
+	</select>
+	
+	<select id="countEnrollNo">
+		SELECT COUNT(ENROLL_NO)
+	      FROM PROGRAM_ENROLL
+	     WHERE PROGRAM_NO=#{programNo}
+	</select>
+	
+	<insert id="insertProgram">
+		INSERT INTO PROGRAM_ENROLL (
+			ENROLL_NO
+			, PROGRAM_NO
+			, USER_NO
+			, APPLY_DATE
+			, IS_ATTENDED
+			, IS_COMPLETED
+			, PROGRAM_SCORE
+			, VOLUNTEER_HOUR
+			, IS_CERT_ISSUED
+			, FILE_REF_NO
+		) VALUES (
+			'ENR' || LPAD(SEQ_PROGRAM_ENROLL_NO.NEXTVAL, 6, '0')
+			, #{programNo}
+			, #{userNo}
+			, TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+			, #{isAttended}
+			, #{isCompleted}
+			, #{programScore}
+			, #{volunteerHour}
+			, #{isCertIssued}
+			, #{fileRefNo}
+		)
+	</insert>
+	
+	<select id="validDuplication" parameterType="map">
+		SELECT ENROLL_NO
+	           , PROGRAM_NO
+	           , USER_NO
+	           , APPLY_DATE
+	           , IS_ATTENDED
+	           , IS_COMPLETED
+	           , PROGRAM_SCORE
+	           , VOLUNTEER_HOUR
+	           , IS_CERT_ISSUED
+	           , FILE_REF_NO
+	      FROM PROGRAM_ENROLL
+	     WHERE PROGRAM_NO=#{programNo}
+	       AND USER_NO=#{userNo}
+	</select>
+	
+	<insert id="insertProgramEval">
+		INSERT INTO PROGRAM_EVAL (
+			EVAL_NO
+			, ENROLL_NO
+			, EVAL_DATE
+			, OVERALL_SCORE
+			, EVAL_COMMENT
+		) 
+		VALUES (
+			#{evalNo}
+			, #{enrollNo}
+			, TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+			, #{overallScore}
+			, #{evalComment}
+		)
+	</insert>
+	
+	<insert id="insertProgramEvalScore">
+		INSERT INTO PROGRAM_EVAL_SCORE (
+			EVAL_SCORE
+			, EVAL_NO
+			, CRITERIA_NO
+		)
+		VALUES (
+			#{evalScore}
+			, #{evalNo}
+			, #{criteriaNo}
+		)
+	</insert>
+	
+	<select id="existsEvalByEnrollNo" resultType="boolean">
+		 SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+		   FROM PROGRAM_EVAL
+		  WHERE ENROLL_NO = #{enrollNo}
+	</select>
+	
+	<select id="selectProgramEnrollDetailByEnrollNo">
+		SELECT PROGRAM_NO
+		  FROM PROGRAM_ENROLL
+		 WHERE ENROLL_NO=#{enrollNo}
+	</select>
+</mapper>

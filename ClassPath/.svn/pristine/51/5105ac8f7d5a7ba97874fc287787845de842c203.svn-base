@@ -1,0 +1,346 @@
+// 에러 처리 함수들
+function showErrorModal(message) {
+    console.log('에러 모달 표시:', message);
+    
+    // 기존 모달이 있다면 제거
+    const existingModal = document.getElementById('errorModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // 새로운 모달 생성
+    const modalHtml = `
+        <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="errorModalLabel">로그인 실패</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p id="errorMessage" class="mb-0">${message}</p>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // body에 모달 추가
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // 모달 표시
+    const modalEl = document.getElementById('errorModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+    
+    // 모달이 닫힌 후 DOM에서 제거
+    modalEl.addEventListener('hidden.bs.modal', () => {
+        modalEl.remove();
+    });
+}
+
+function showToast(message, type = 'error') {
+    console.log(`Toast 표시: ${message} (${type})`);
+    
+    // 기존 toast 제거
+    const existingToasts = document.querySelectorAll('.toast');
+    existingToasts.forEach(toast => {
+        const bsToast = bootstrap.Toast.getInstance(toast);
+        if (bsToast) {
+            bsToast.hide();
+        }
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 300);
+    });
+
+    // Toast 컨테이너 확인 및 생성
+    let toastContainer = document.querySelector('.toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container';
+        toastContainer.setAttribute('aria-live', 'polite');
+        toastContainer.setAttribute('aria-atomic', 'true');
+        document.body.appendChild(toastContainer);
+    }
+    
+    const toastId = 'toast-' + Date.now();
+    
+    const toastEl = document.createElement('div');
+    toastEl.id = toastId;
+    toastEl.className = `toast ${type}`;
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+    
+    toastEl.innerHTML = `
+        <div class="toast-body d-flex align-items-center">
+            <span class="me-auto">${message}</span>
+            <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    `;
+    
+    toastContainer.appendChild(toastEl);
+    
+    const toast = new bootstrap.Toast(toastEl, {
+        autohide: true,
+        delay: 4000
+    });
+    
+    toast.show();
+    
+    // toast가 숨겨진 후 DOM에서 제거
+    toastEl.addEventListener('hidden.bs.toast', () => {
+        if (toastEl.parentNode) {
+            toastEl.remove();
+        }
+    });
+}
+
+function handleValidationErrors(fieldErrors) {
+    console.log('Validation 에러:', fieldErrors);
+    
+    // 기존 에러 메시지 제거
+    clearValidationErrors();
+    
+    let firstErrorField = null;
+    
+    // 각 필드별 에러 메시지 표시
+    for (const [fieldName, messages] of Object.entries(fieldErrors)) {
+        const field = document.getElementById(fieldName);
+        const errorDiv = document.getElementById(`${fieldName}-error`);
+        
+        if (field && errorDiv) {
+            // 필드에 에러 스타일 추가
+            field.classList.add('error');
+            
+            // 에러 메시지 표시 (배열 또는 문자열 처리)
+            const errorMessage = Array.isArray(messages) ? messages[0] : messages;
+            errorDiv.textContent = errorMessage;
+            errorDiv.style.display = 'block';
+            
+            // 첫 번째 에러 필드 저장
+            if (!firstErrorField) {
+                firstErrorField = field;
+            }
+        }
+    }
+    
+    // 첫 번째 에러 필드에 포커스
+    if (firstErrorField) {
+        firstErrorField.focus();
+    }
+    
+    // validation 에러가 있으면 toast도 표시
+    showToast('입력 정보를 확인해주세요.');
+}
+
+// Validation 에러 메시지 제거
+function clearValidationErrors() {
+    // 에러 스타일 제거
+    document.querySelectorAll('.form-control.error').forEach(field => {
+        field.classList.remove('error');
+    });
+    
+    // 에러 메시지 숨기기
+    document.querySelectorAll('.field-error').forEach(errorDiv => {
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+    });
+}
+
+// 로딩 상태 관리
+function setLoadingState(isLoading) {
+    const loginBtn = document.getElementById('loginBtn');
+    const btnText = loginBtn.querySelector('.btn-text');
+    const spinner = loginBtn.querySelector('.spinner');
+    
+    if (isLoading) {
+        loginBtn.classList.add('btn-loading');
+        loginBtn.disabled = true;
+        btnText.style.visibility = 'hidden';
+        spinner.style.display = 'block';
+    } else {
+        loginBtn.classList.remove('btn-loading');
+        loginBtn.disabled = false;
+        btnText.style.visibility = 'visible';
+        spinner.style.display = 'none';
+    }
+}
+
+async function handleLogin(loginData) {
+    try {
+        setLoadingState(true);
+        clearValidationErrors();
+        
+        // CSRF 토큰 추가 (Spring Security 사용 시)
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+        
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        
+        if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+        }
+        
+        console.log('로그인 요청 데이터:', loginData);
+        
+        const response = await axios.post("/common/auth", loginData, {
+            headers: headers,
+            withCredentials: true
+        });
+        
+        console.log('서버 응답:', response.data);
+        const data = response.data;
+        
+        // 성공 처리
+        if (data.success === true || response.status === 200) {
+            showToast('로그인 되었습니다.', 'success');
+            setTimeout(() => {
+                location.href = "/";
+            }, 1000);
+            return;
+        }
+        
+        // 실패 처리
+        handleLoginError(data);
+        
+    } catch (error) {
+        console.error('로그인 에러 상세:', error);
+        console.error('에러 응답:', error.response);
+        
+        if (error.response) {
+            // 서버에서 응답을 받았지만 에러 상태코드인 경우
+            const errorData = error.response.data;
+            console.log('에러 데이터:', errorData);
+            
+            // 다양한 에러 응답 형태 처리
+            if (errorData.fieldErrors) {
+                handleValidationErrors(errorData.fieldErrors);
+            } else if (errorData.message) {
+                showErrorModal(errorData.message);
+                showToast(errorData.message);
+            } else if (errorData.error) {
+                showErrorModal(errorData.error);
+                showToast(errorData.error);
+            } else if (typeof errorData === 'string') {
+                showErrorModal(errorData);
+                showToast(errorData);
+            } else {
+                // HTTP 상태코드별 기본 메시지
+                const statusMessages = {
+                    400: '잘못된 요청입니다. 입력 정보를 확인해주세요.',
+                    401: '아이디 또는 비밀번호가 올바르지 않습니다.',
+                    403: '접근 권한이 없습니다.',
+                    404: '요청하신 페이지를 찾을 수 없습니다.',
+                    500: '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
+                };
+                
+                const message = statusMessages[error.response.status] || 
+                               `로그인에 실패했습니다. (${error.response.status})`;
+                showErrorModal(message);
+                showToast(message);
+            }
+        } else if (error.request) {
+            // 요청이 전송되었지만 응답을 받지 못한 경우
+            const message = '서버와의 통신에 실패했습니다. 네트워크 연결을 확인해주세요.';
+            showErrorModal(message);
+            showToast(message);
+        } else {
+            // 요청을 만드는 중에 에러가 발생한 경우
+            const message = '요청 처리 중 오류가 발생했습니다.';
+            showErrorModal(message);
+            showToast(message);
+        }
+    } finally {
+        setLoadingState(false);
+    }
+}
+
+//로그인 에러 처리 함수
+function handleLoginError(data) {
+    console.log('로그인 에러 처리:', data);
+    
+    // 필드별 validation 에러
+    if (data.fieldErrors && typeof data.fieldErrors === 'object') {
+        handleValidationErrors(data.fieldErrors);
+        return;
+    }
+    
+    // 일반 에러 메시지들 (다양한 필드명 지원)
+    const errorMessage = data.message || 
+                        data.error || 
+                        data.errorMessage || 
+                        data.msg ||
+                        '로그인에 실패했습니다.';
+    
+    showErrorModal(errorMessage);
+    showToast(errorMessage);
+}
+
+// 입력 필드 에러 상태 제거 (실시간)
+document.getElementById('username').addEventListener('input', function() {
+    this.classList.remove('error');
+    document.getElementById('username-error').style.display = 'none';
+});
+
+document.getElementById('password').addEventListener('input', function() {
+    this.classList.remove('error');
+    document.getElementById('password-error').style.display = 'none';
+});
+
+// 일반 로그인 폼 처리
+document.getElementById('loginForm').addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const json = axios.formToJSON(e.target);
+    console.log('로그인 시도:', json);
+    await handleLogin(json);
+});
+
+// 학생 로그인
+document.getElementById('studentLogin').addEventListener("click", async (e) => {
+    const json = {
+        password: "java",
+        username: "ST20220810"
+    };
+    console.log('학생 로그인:', json);
+    await handleLogin(json);
+});
+
+// 교수 로그인
+document.getElementById('professorLogin').addEventListener("click", async (e) => {
+    const json = {
+        password: "java",
+        username: "PR20250701"
+    };
+    console.log('교수 로그인:', json);
+    await handleLogin(json);
+});
+
+// 교직원 로그인
+document.getElementById('staffLogin').addEventListener("click", async (e) => {
+    const json = {
+        password: "java",
+        username: "AD00000001"
+    };
+    console.log('교직원 로그인:', json);
+    await handleLogin(json);
+});
+
+// Enter 키 처리
+document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        const loginForm = document.getElementById('loginForm');
+        if (document.activeElement.closest('#loginForm')) {
+            e.preventDefault();
+            loginForm.dispatchEvent(new Event('submit'));
+        }
+    }
+});

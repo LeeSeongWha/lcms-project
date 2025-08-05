@@ -1,0 +1,19 @@
+package kr.or.ddit.pfcp.common.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.mapper.FileRefMapper;
+import kr.or.ddit.pfcp.common.vo.FileRefVO;
+
+@Service(value = "fileRefService")
+public class FileRefServiceImpl implements FileRefService {
+	@Autowired
+	private FileRefMapper fileRefMapper;
+	
+	@Override
+	public void createFileRef(FileRefVO fileRef) {
+		// TODO Auto-generated method stub
+		fileRefMapper.insertFileRef(fileRef);
+	}
+}

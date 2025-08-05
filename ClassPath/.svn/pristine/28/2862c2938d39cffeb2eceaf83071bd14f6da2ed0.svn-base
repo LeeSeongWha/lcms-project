@@ -1,0 +1,239 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+
+<title>시설 예약 가능 시간 설정</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css"> 
+
+
+	<!-- ======================================== -->
+	<div class="sectionHeaderLine">
+	  <!-- 왼쪽 제목 및 설명 -->
+	  <div>
+	    <div class="sectionHeaderTitle">교수 목록</div>
+	    <div class="sectionHeaderDescription">전체 ${count}명의 교수</div>
+	  </div>
+	
+	  <!-- 오른쪽 등록 버튼 -->
+	  <button type="button" class="submitButton">+ 등록</button>
+	</div>
+	<!-- ======================================== -->
+	<c:if test="${mode == 'edit'}">
+		<div class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+			<p class="text-yellow-800 font-medium text-center">📝 수정 모드:
+				시간표의 셀을 클릭하여 예약 가능 시간을 설정하세요.</p>
+		</div>
+	</c:if>
+
+
+
+		<div class="layout-wrapper" style="display: flex; gap: 2rem; align-items: flex-start;">
+
+	<!-- 왼쪽: 교수 목록 -->
+	<div style="flex: 0 0 40%;">
+		<div class="department-dropdown" style="margin-bottom: 1.5rem;">
+			<select class="selectBox" onchange="filterProfessors(this.value)">
+				<option value="">학과를 선택하세요</option>
+				<option value="DP001">컴퓨터공학과</option>
+				<option value="DP002">전자공학과</option>
+				<option value="DP003">시각디자인학과</option>
+				<option value="DP004">소프트웨어학과</option>
+				<option value="DP005">국어국문학과</option>
+			</select>
+		</div>
+		
+		<div class="professor-card-wrapper" style="display: flex; flex-wrap: wrap; gap: 1rem;">
+			<c:choose>
+				<c:when test="${not empty professor }">
+					<c:forEach items="${professor }" var="professor">
+						<div class="card professor-card"
+							 data-department="${professor.departmentNo}"
+							 data-prof-id="${professor.userNo}"
+							 onclick="selectProfessor('${professor.userNo}')"
+							 style="flex: 1 1 100%; cursor: pointer; display: flex; align-items: center; gap: 1rem; transition: transform 0.2s ease;">
+							
+							<div class="professor-card-icon"
+								 style="font-size: 2rem; background-color: #f1f5f9; border-radius: 9999px; padding: 0.75rem; color: #3b82f6;">
+								👨‍🏫
+							</div>
+							
+							<div class="professor-info">
+								<h4 style="margin: 0; font-size: 1rem; font-weight: 600; color: #1e293b;">${professor.user.userName}</h4>
+								<p style="margin: 0.25rem 0 0; font-size: 0.875rem; color: #64748b;">${professor.department.departmentName}</p>
+							</div>
+						</div>
+					</c:forEach>
+				</c:when>
+				<c:otherwise>
+					<div class="noticeBox noticeWarning" style="width: 100%;">
+						아직 교수 없음.
+					</div>
+				</c:otherwise>
+			</c:choose>
+		</div>
+	</div>
+
+	<!-- 오른쪽: 교수 상세 정보 (예: 상담 일정 테이블) -->
+	<div class="professor-detail" style="flex: 1;">
+		<div class="tableContainer">
+			<table class="defaultTable">
+				<thead class="tableHead">
+					<tr>
+						<th class="tableTh">날짜</th>
+						<th class="tableTh">요일</th>
+						<th class="tableTh">상담시작</th>
+						<th class="tableTh">상담종료</th>
+						<th class="tableTh">소속</th>
+						<th class="tableTh">이름</th>
+						<th class="tableTh">상담방법</th>
+						<th class="tableTh">정원</th>
+						<th class="tableTh">잔여석</th>
+					</tr>
+				</thead>
+				<tbody id="scheduleTableBody">
+					<tr class="tableRowHover time-slot available" onclick="bookCounseling(this)">
+						<td class="tableTd">2025-06-27</td>
+						<td class="tableTd">금요일</td>
+						<td class="tableTd">07:00</td>
+						<td class="tableTd">18:00</td>
+						<td class="tableTd">스마트융합대학/컴퓨터공학과/컴퓨터공학과</td>
+						<td class="tableTd prof-name-in-table">송지영</td>
+						<td class="tableTd">온라인상담</td>
+						<td class="tableTd">30</td>
+						<td class="tableTd">30</td>
+					</tr>
+					<!-- 교수 선택 시 AJAX로 동적으로 추가 가능 -->
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+</div>
+
+<script>
+  // 교수 정보 데이터 (가정된 데이터 - 실제로는 DB에서 가져옴)
+//   const professors = {
+//     prof1: { name: '송지영', dept: '스마트융합대학/컴퓨터공학과', major: '전공: 인공지능, 머신러닝' }
+//   };
+
+  let selectedProfessorId = null; // Currently selected professor ID
+
+  // 페이지 로드 시 안내 메시지 표시
+  window.onload = function() {
+    document.querySelector('.no-professors').classList.add('show');
+    // Hide modify button on initial load
+    document.getElementById('modifyCounselingTimeBtn').style.display = 'none';
+  };
+
+  function filterProfessors(department) {
+    const professorCards = document.querySelectorAll('.professor-card');
+    const noProfessorsMsg = document.querySelector('.no-professors');
+    const modifyBtn = document.getElementById('modifyCounselingTimeBtn');
+    
+    // 모든 교수 카드 숨기기
+    professorCards.forEach(card => {
+      card.classList.remove('show', 'selected');
+    });
+    
+    // Reset selected professor and hide modify button
+    selectedProfessorId = null;
+    modifyBtn.style.display = 'none';
+
+    if (department === '') {
+      // 학과를 선택하지 않은 경우 안내 메시지 표시
+      noProfessorsMsg.classList.add('show');
+      document.getElementById('scheduleView').style.display = 'none';
+    } else {
+      // 선택된 학과의 교수만 표시
+      noProfessorsMsg.classList.remove('show');
+      const filteredCards = document.querySelectorAll(`[data-department=${departmentNo}`);
+      filteredCards.forEach(card => {
+        card.classList.add('show');
+      });
+      
+      // 스케줄 뷰 숨기기 (새로운 학과 선택 시)
+      document.getElementById('scheduleView').style.display = 'none';
+    }
+  }
+
+  function showTab(id) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-menu button').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.currentTarget.classList.add('active');
+
+    // If switching to counseling tab, and no professor is selected, hide the modify button
+    if (id === 'counseling') {
+        const modifyBtn = document.getElementById('modifyCounselingTimeBtn');
+        if (!selectedProfessorId) {
+            modifyBtn.style.display = 'none';
+        } else {
+            modifyBtn.style.display = 'block'; // Show if a professor is already selected
+        }
+    }
+  }
+
+  function searchStudent() {
+    const q = document.getElementById("search").value.toLowerCase();
+    document.querySelectorAll("#studentTable tr").forEach(row => {
+      row.style.display = row.innerText.toLowerCase().includes(q) ? "" : "none";
+    });
+  }
+
+  function selectProfessor(profId) {
+    // Set the currently selected professor ID
+    selectedProfessorId = profId;
+
+    // Show the modify counseling time button
+    const modifyBtn = document.getElementById('modifyCounselingTimeBtn');
+    modifyBtn.style.display = 'block';
+    // Update the button's href to include the selected professor's ID
+    modifyBtn.onclick = function() {
+        location.href = `학생관리상담시간설정.html?profId=${selectedProfessorId}`;
+    };
+
+
+    // 모든 교수 카드에서 선택 상태 제거
+    document.querySelectorAll('.professor-card').forEach(card => {
+      card.classList.remove('selected');
+    });
+    
+    // 클릭한 교수 카드에 선택 상태 추가
+    event.currentTarget.classList.add('selected');
+    
+    // 교수 정보 업데이트
+    const prof = professors[profId];
+    document.getElementById('professorName').textContent = prof.name + ' 교수님 상담 시간표';
+    document.getElementById('professorDept').textContent = prof.dept;
+    
+    // 시간표의 교수 이름 업데이트 (uses class for multiple elements)
+    document.querySelectorAll('.prof-name-in-table').forEach(element => {
+        element.textContent = prof.name;
+    });
+    
+    // 스케줄 뷰 표시
+    document.getElementById('scheduleView').style.display = 'block';
+  }
+
+  function bookCounseling(row) {
+    if (row.classList.contains('available')) {
+      if (confirm('이 시간대로 상담을 예약하시겠습니까?')) {
+        row.classList.remove('available');
+        row.classList.add('booked');
+        // 잔여석 감소
+        const remainingCell = row.cells[8];
+        const remaining = parseInt(remainingCell.textContent) - 1;
+        remainingCell.textContent = remaining;
+        alert('상담이 예약되었습니다.');
+      }
+    } else if (row.classList.contains('booked')) {
+      alert('이미 예약된 시간대입니다.');
+    }
+  }
+
+  function changePage(direction) {
+    // 페이지네이션 기능 (실제로는 서버 연동 필요)
+    console.log('Page change:', direction);
+  }
+</script>

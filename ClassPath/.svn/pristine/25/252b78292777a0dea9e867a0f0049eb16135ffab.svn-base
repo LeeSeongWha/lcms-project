@@ -1,0 +1,163 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+
+<c:if test="${not empty success}">
+	<script>
+		alert("${success}");
+	</script>
+</c:if>
+
+<h4 class="pageTitle">공지 상세 정보</h4>
+
+<div class="detail-section">
+	<input type="hidden" id="boardNo" value="${noticeDetail.boardNo}" /> <input
+		type="hidden" id="userNo" value="${userNo}" /> <input type="hidden"
+		id="writerNo" value="${noticeDetail.writerNo}" />
+	<div class="titleContainer">
+		<h2>${noticeDetail.boardTitle}</h2>
+
+		<div class="metaInfo">
+			<p>
+				<strong>작성자:</strong> ${noticeDetail.user.userName}
+			</p>
+			<p>
+				<strong>작성일:</strong> ${noticeDetail.updateDate}
+			</p>
+		</div>
+
+	</div>
+
+	<div>
+		<strong>공지 내용:</strong>
+		<div class="content-box">${noticeDetail.boardContent}</div>
+	</div>
+
+	<div class="button-group">
+		<a class="btn btn-secondary" href="/student/notice/noticeList.do">목록으로</a>
+
+		<c:if test="${userNo eq noticeDetail.writerNo}">
+			<button type="button" class="btn btn-primary" onclick="goToEdit()">수정</button>
+			<button type="button" class="btn btn-danger"
+				onclick="confirmDelete()">삭제</button>
+		</c:if>
+	</div>
+</div>
+
+<script>
+	function goToEdit() {
+		const boardNo = document.getElementById("boardNo").value;
+		window.location.href = "/staff/notice/noticeUpdate.do?what=" + boardNo;
+	}
+
+	function confirmDelete() {
+		const boardNo = document.getElementById("boardNo").value;
+		if (confirm("정말로 삭제하시겠습니까?")) {
+			window.location.href = "/staff/notice/noticeDelete.do?what="
+					+ boardNo;
+		}
+	}
+</script>
+
+<style>
+.titleContainer {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	width: 100%;
+	margin-bottom: 20px;
+}
+
+.titleContainer h2 {
+	margin: 0;
+	font-size: 24px;
+}
+
+.metaInfo {
+	text-align: right;
+}
+
+.metaInfo p {
+	margin: 0 0 4px;
+	color: #444;
+}
+
+.detail-section {
+	margin-top: 30px;
+	padding: 20px;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	background-color: #f9f9f9;
+}
+
+.detail-section h2 {
+	font-size: 24px;
+	margin-bottom: 10px;
+}
+
+.detail-section p {
+	margin-bottom: 8px;
+	color: #444;
+}
+
+.content-box {
+	margin-top: 10px;
+	white-space: pre-wrap;
+	background: #fff;
+	padding: 15px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	font-size: 15px;
+	line-height: 1.6;
+	min-height: 400px;
+}
+
+/* Button Group */
+.button-group {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 20px;
+}
+
+/* General Button Styles */
+.btn {
+	padding: 8px 16px;
+	border: none;
+	border-radius: 4px;
+	font-size: 14px;
+	cursor: pointer;
+	text-decoration: none;
+	display: inline-block;
+}
+
+/* Button Types */
+.btn-primary {
+	background-color: #3498db;
+	color: #fff;
+}
+
+.btn-primary:hover {
+	background-color: #2980b9;
+}
+
+.btn-secondary {
+	background-color: #7f8c8d;
+	color: #fff;
+}
+
+.btn-secondary:hover {
+	background-color: #606f73;
+}
+
+.btn-danger {
+	background-color: #e74c3c;
+	color: #fff;
+}
+
+.btn-danger:hover {
+	background-color: #c0392b;
+}
+</style>

@@ -1,0 +1,555 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   교직원용 장학금 신청 목록 시스템 - 업무성 디자인 (studentList와 통일)
+   ========================================================================== */
+
+/* 전체 컨테이너 */
+.staffScholarshipApplyList {
+    max-width: 1600px;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #212529;
+    min-height: 100vh;
+}
+
+/* ==========================================================================
+   섹션 헤더 (studentList와 동일한 스타일)
+   ========================================================================== */
+
+.staffScholarshipApplyList .sectionHeaderLine {
+    border-bottom: 1px solid #2b6cb0;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.staffScholarshipApplyList .sectionHeaderTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 4px 0;
+}
+
+.staffScholarshipApplyList .sectionHeaderDescription {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   검색 폼 (studentList 스타일과 통일)
+   ========================================================================== */
+
+.staffScholarshipApplyList .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap;
+}
+
+.staffScholarshipApplyList .form-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.staffScholarshipApplyList .form-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.staffScholarshipApplyList .form-group:nth-child(1) {
+    flex: 0 0 140px; /* 처리 상태 - 고정폭 */
+}
+
+.staffScholarshipApplyList .form-group:nth-child(2) {
+    flex: 0 0 120px; /* 검색 항목 - 고정폭 */
+}
+
+.staffScholarshipApplyList .form-group:nth-child(3) {
+    flex: 1; /* 검색어 - 유동폭 */
+    min-width: 200px;
+}
+
+.staffScholarshipApplyList .form-group:nth-child(4) {
+    flex: 0 0 auto; /* 검색 버튼 - 내용에 맞춤 */
+}
+
+.staffScholarshipApplyList .selectBox {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    background: #ffffff;
+    color: #2d3748;
+    min-width: 120px;
+}
+
+.staffScholarshipApplyList .selectBox:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+}
+
+.staffScholarshipApplyList .inputField {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    background: #ffffff;
+    color: #2d3748;
+}
+
+.staffScholarshipApplyList .inputField:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+}
+
+.staffScholarshipApplyList .inputField::placeholder {
+    color: #a0aec0;
+}
+
+.staffScholarshipApplyList .searchButton {
+    background: #2b6cb0;
+    color: #ffffff;
+    border: none;
+    padding: 9px 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+/*     display: flex; */
+    align-items: center;
+    gap: 6px;
+}
+
+.staffScholarshipApplyList .searchButton:hover {
+    background: #2a5298;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(43, 108, 176, 0.3);
+}
+
+.staffScholarshipApplyList .searchButton i {
+    font-size: 0.75rem;
+}
+
+/* ==========================================================================
+   테이블 컨테이너 (studentList와 동일한 스타일)
+   ========================================================================== */
+
+.staffScholarshipApplyList .tableContainer {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    border-radius: 0;
+}
+
+/* 장학금 신청 목록 테이블 */
+.staffScholarshipApplyList .defaultTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    background: #ffffff;
+    margin: 0;
+}
+
+.staffScholarshipApplyList .tableHead {
+    background: #f7fafc;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.staffScholarshipApplyList .tableTh {
+    padding: 14px 12px;
+    text-align: center;
+    font-weight: 600;
+    color: #2d3748;
+    border-bottom: 2px solid #cbd5e0;
+    border-right: 1px solid #e2e8f0;
+    white-space: nowrap;
+    vertical-align: middle;
+    background: #f7fafc;
+}
+
+.staffScholarshipApplyList .tableTh:last-child {
+    border-right: none;
+}
+
+.staffScholarshipApplyList .defaultTable tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.staffScholarshipApplyList .tableRowHover {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.staffScholarshipApplyList .tableRowHover:nth-child(even) {
+    background-color: #fefefe;
+}
+
+.staffScholarshipApplyList .tableRowHover:hover {
+    background-color: #edf2f7;
+}
+
+.staffScholarshipApplyList .tableTd {
+    padding: 12px;
+    text-align: center;
+    color: #2d3748;
+    border-right: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.staffScholarshipApplyList .tableTd:last-child {
+    border-right: none;
+}
+
+/* 학번 열 - 고정폭 폰트 */
+.staffScholarshipApplyList .tableTd:nth-child(2) {
+    color: #4a5568;
+    font-weight: 500;
+}
+
+/* 신청자명 열 - 강조 */
+.staffScholarshipApplyList .tableTd:nth-child(3) {
+    font-weight: 600;
+    color: #1a202c;
+}
+
+/* 첨부파일 다운로드 링크 */
+.staffScholarshipApplyList .tableTd a {
+    color: #2b6cb0;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.staffScholarshipApplyList .tableTd a:hover {
+    color: #2a5298;
+    text-decoration: underline;
+}
+
+.staffScholarshipApplyList .tableTd a i {
+    font-size: 0.8rem;
+}
+
+/* 데이터 없음 메시지 */
+.staffScholarshipApplyList .noticeInfo {
+    text-align: center !important;
+    padding: 40px 20px !important;
+    color: #718096 !important;
+    font-style: italic !important;
+    background: #f7fafc !important;
+}
+
+/* ==========================================================================
+   배지 스타일 (상태별 표시)
+   ========================================================================== */
+
+.staffScholarshipApplyList .badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.staffScholarshipApplyList .badgeRed {
+    background-color: #fed7d7;
+    color: #742a2a;
+}
+
+.staffScholarshipApplyList .badgeGreen {
+    background-color: #c6f6d5;
+    color: #22543d;
+}
+
+.staffScholarshipApplyList .badgeGray {
+    background-color: #e2e8f0;
+    color: #4a5568;
+}
+
+/* ==========================================================================
+   페이지네이션 (studentList와 동일한 스타일)
+   ========================================================================== */
+
+.staffScholarshipApplyList .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    margin-top: 20px;
+    padding: 20px;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-top: none;
+}
+
+.staffScholarshipApplyList .pageButton {
+    padding: 8px 12px;
+    background: #ffffff;
+    border: 1px solid #cbd5e0;
+    color: #4a5568;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    border-radius: 0;
+}
+
+.staffScholarshipApplyList .pageButton:hover {
+    background: #edf2f7;
+    color: #2d3748;
+}
+
+.staffScholarshipApplyList .pageButton.active {
+    background: #2b6cb0;
+    color: #ffffff;
+    border-color: #2b6cb0;
+    font-weight: 600;
+}
+
+/* 이전/다음 버튼 */
+.staffScholarshipApplyList .pagination a[href*="이전"],
+.staffScholarshipApplyList .pagination a[href*="다음"] {
+    font-weight: 600;
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.staffScholarshipApplyList .pagination a[href*="이전"]:hover,
+.staffScholarshipApplyList .pagination a[href*="다음"]:hover {
+    background: #cbd5e0;
+    color: #2d3748;
+}
+
+/* ==========================================================================
+   반응형 디자인 (studentList와 일관성 있게)
+   ========================================================================== */
+
+@media (max-width: 1400px) {
+    .staffScholarshipApplyList {
+        max-width: 100%;
+        padding: 16px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .staffScholarshipApplyList .defaultTable {
+        font-size: 0.8rem;
+    }
+    
+    .staffScholarshipApplyList .tableTh,
+    .staffScholarshipApplyList .tableTd {
+        padding: 10px 8px;
+    }
+    
+    .staffScholarshipApplyList .sectionHeaderTitle {
+        font-size: 1.25rem;
+    }
+    
+    .staffScholarshipApplyList .form-group:nth-child(3) {
+        min-width: 160px;
+    }
+    
+    .staffScholarshipApplyList .searchButton {
+        padding: 9px 16px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .staffScholarshipApplyList .sectionHeaderLine {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .staffScholarshipApplyList .card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .staffScholarshipApplyList .form-row {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    .staffScholarshipApplyList .form-group:nth-child(1),
+    .staffScholarshipApplyList .form-group:nth-child(2) {
+        flex: 1 1 140px;
+    }
+    
+    .staffScholarshipApplyList .form-group:nth-child(3) {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+    
+    .staffScholarshipApplyList .form-group:nth-child(4) {
+        flex: 0 0 100%;
+    }
+    
+    .staffScholarshipApplyList .searchButton {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .staffScholarshipApplyList .selectBox,
+    .staffScholarshipApplyList .inputField {
+        min-width: 0;
+        width: 100%;
+    }
+    
+    .staffScholarshipApplyList .tableTh,
+    .staffScholarshipApplyList .tableTd {
+        padding: 8px 6px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .staffScholarshipApplyList {
+        padding: 12px;
+    }
+    
+    .staffScholarshipApplyList .sectionHeaderLine {
+        padding: 16px;
+    }
+    
+    .staffScholarshipApplyList .sectionHeaderTitle {
+        font-size: 1.125rem;
+    }
+    
+    .staffScholarshipApplyList .sectionHeaderDescription {
+        font-size: 0.8rem;
+    }
+    
+    .staffScholarshipApplyList .card {
+        padding: 16px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .staffScholarshipApplyList .form-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .staffScholarshipApplyList .form-group {
+        flex: 1 1 auto;
+    }
+    
+    .staffScholarshipApplyList .defaultTable {
+        font-size: 0.7rem;
+    }
+    
+    .staffScholarshipApplyList .tableTh,
+    .staffScholarshipApplyList .tableTd {
+        padding: 6px 4px;
+    }
+    
+    /* 모바일에서 첨부파일 컬럼 숨기기 */
+    .staffScholarshipApplyList .tableTd:nth-child(7),
+    .staffScholarshipApplyList .tableTh:nth-child(7) {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .staffScholarshipApplyList {
+        padding: 8px;
+    }
+    
+    .staffScholarshipApplyList .sectionHeaderLine {
+        padding: 12px;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .staffScholarshipApplyList .card {
+        padding: 12px;
+    }
+    
+    .staffScholarshipApplyList .form-row {
+        gap: 8px;
+    }
+    
+    .staffScholarshipApplyList .selectBox,
+    .staffScholarshipApplyList .inputField,
+    .staffScholarshipApplyList .searchButton {
+        font-size: 0.8rem;
+    }
+    
+    .staffScholarshipApplyList .searchButton {
+        padding: 8px 16px;
+    }
+    
+    .staffScholarshipApplyList .defaultTable {
+        font-size: 0.65rem;
+    }
+    
+    .staffScholarshipApplyList .tableTh,
+    .staffScholarshipApplyList .tableTd {
+        padding: 5px 3px;
+    }
+    
+    /* 초소형 화면에서 처리 일자도 숨기기 */
+    .staffScholarshipApplyList .tableTd:nth-child(6),
+    .staffScholarshipApplyList .tableTh:nth-child(6) {
+        display: none;
+    }
+    
+    .staffScholarshipApplyList .pagination {
+        padding: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .staffScholarshipApplyList .pageButton {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+}
+
+/* ==========================================================================
+   상태별 특별 스타일링 (studentList와 일관성)
+   ========================================================================== */
+
+/* 승인 행 강조 */
+.staffScholarshipApplyList .status-approved {
+    border-left: 3px solid #38a169;
+}
+
+/* 대기 행 */
+.staffScholarshipApplyList .status-waiting {
+    border-left: 3px solid #ed8936;
+}
+
+/* 반려 행 */
+.staffScholarshipApplyList .status-rejected {
+    border-left: 3px solid #e53e3e;
+}

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.scholarshipApply.mapper.StaffScholarshipApplyMapper">
+
+<resultMap id="scholarshipApplyMap" type="kr.or.ddit.pfcp.common.vo.ScholarshipApplyVO">
+	    <id property="applyNo" column="APPLY_NO"/>
+	    <result property="userNo" column="USER_NO"/>
+	    <result property="schTypeNo" column="SCH_TYPE_NO"/>
+	    <result property="requestDate" column="REQUEST_DATE"/>
+	    <result property="applyDate" column="APPLY_DATE"/>
+	    <result property="applyStatus" column="APPLY_STATUS"/>
+	    <result property="approveDate" column="APPROVE_DATE"/>
+	    <result property="requestComment" column="REQUEST_COMMENT"/>
+	    <result property="fileRefNo" column="FILE_REF_NO"/>
+	    <result property="applyComment" column="APPLY_COMMENT"/>
+	
+	    <association property="scholarshipType" javaType="kr.or.ddit.pfcp.common.vo.ScholarshipTypeVO">
+	        <id property="schTypeNo" column="SCH_TYPE_NO"/>
+	        <result property="schName" column="SCH_NAME"/>
+	    </association>
+	    
+	    <association property="user" javaType="kr.or.ddit.pfcp.common.vo.UserVO" autoMapping="true" />
+	</resultMap>
+	
+	<select id="selectScholarshipTypeName">
+		    SELECT
+			    SCH_NAME
+			FROM
+			    SCHOLARSHIP_TYPE
+			WHERE SCH_TYPE_NO = #{schTypeNo}    
+	</select>
+
+
+	<select id="selectScholarshipApply" resultMap="scholarshipApplyMap">
+			SELECT SA.APPLY_NO
+			       , SA.USER_NO
+			       , ST.SCH_TYPE_NO
+			       , ST.SCH_NAME
+			       , SA.REQUEST_DATE
+			       , SA.APPLY_DATE
+			       , SA.APPLY_STATUS
+			       , SA.APPROVE_DATE
+			       , SA.REQUEST_COMMENT
+			       , SA.FILE_REF_NO
+			       , SA.APPLY_COMMENT
+			       , TU.USER_NAME
+			  FROM SCHOLARSHIP_APPLY SA
+			  JOIN SCHOLARSHIP_TYPE ST ON SA.SCH_TYPE_NO = ST.SCH_TYPE_NO
+			  JOIN TB_USER TU ON TU.USER_NO = SA.USER_NO
+			 WHERE SA.APPLY_STATUS != '삭제됨'
+			   AND SA.APPLY_NO = #{applyNo}
+		</select>
+
+<!-- 	<select id="selectScholarshipApplyList" resultMap="scholarshipApplyMap"> -->
+<!-- 			SELECT SA.APPLY_NO -->
+<!-- 	       , SA.USER_NO -->
+<!-- 	       , ST.SCH_TYPE_NO -->
+<!-- 	       , ST.SCH_NAME -->
+<!-- 	       , SA.REQUEST_DATE -->
+<!-- 	       , SA.APPLY_DATE -->
+<!-- 	       , SA.APPLY_STATUS -->
+<!-- 	       , SA.APPROVE_DATE -->
+<!-- 	       , SA.REQUEST_COMMENT -->
+<!-- 	       , SA.FILE_REF_NO -->
+<!-- 	       , SA.APPLY_COMMENT -->
+<!-- 	       , TU.USER_NAME -->
+<!-- 	  FROM SCHOLARSHIP_APPLY SA -->
+<!-- 	  JOIN SCHOLARSHIP_TYPE ST ON SA.SCH_TYPE_NO = ST.SCH_TYPE_NO -->
+<!-- 	  JOIN TB_USER TU ON TU.USER_NO = SA.USER_NO -->
+<!-- 	 WHERE SA.APPLY_STATUS != '삭제됨' -->
+<!-- 	   AND ST.SCH_TYPE_NO = #{schTypeNo} -->
+<!-- 	 ORDER BY SA.REQUEST_DATE DESC -->
+<!-- 	OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY -->
+<!-- 	</select> -->
+	
+	<select id="selectApplyTotalCount">
+		SELECT COUNT(*) AS SCOUNT
+		FROM SCHOLARSHIP_APPLY
+		WHERE APPLY_STATUS!='삭제됨' AND SCH_TYPE_NO=#{schTypeNo}
+	</select>
+	
+	<update id="updateScholarshipApply" parameterType="kr.or.ddit.pfcp.common.vo.ScholarshipApplyVO">
+		UPDATE SCHOLARSHIP_APPLY
+		   SET APPLY_STATUS = #{applyStatus},
+		   	   APPLY_COMMENT = #{applyComment},
+		   	   APPROVE_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+		 WHERE APPLY_NO=#{applyNo}
+	</update>
+	
+<!-- 	신청 목록 전체 조회 -->
+	<select id="selectScholarshipApplyList" resultMap="scholarshipApplyMap">
+    SELECT *
+    FROM (
+        SELECT ROW_NUMBER() OVER (ORDER BY SA.REQUEST_DATE DESC) AS RNUM,
+               SA.APPLY_NO,
+               SA.USER_NO,
+               ST.SCH_TYPE_NO,
+               ST.SCH_NAME,
+               SA.REQUEST_DATE,
+               SA.APPLY_DATE,
+               SA.APPLY_STATUS,
+               SA.APPROVE_DATE,
+               SA.REQUEST_COMMENT,
+               SA.FILE_REF_NO,
+               SA.APPLY_COMMENT,
+               TU.USER_NAME
+        FROM SCHOLARSHIP_APPLY SA
+        JOIN SCHOLARSHIP_TYPE ST ON SA.SCH_TYPE_NO = ST.SCH_TYPE_NO
+        JOIN TB_USER TU ON TU.USER_NO = SA.USER_NO
+        <where>
+            SA.APPLY_STATUS != '삭제됨'
+            AND ST.SCH_TYPE_NO = #{schTypeNo}
+            <if test="applyStatus != null and applyStatus != ''">
+                AND SA.APPLY_STATUS = #{applyStatus}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'userNo'">
+                        AND SA.USER_NO LIKE '%' || #{keyword} || '%'
+                    </when>
+                    <when test="searchType == 'userName'">
+                        AND TU.USER_NAME LIKE '%' || #{keyword} || '%'
+                    </when>
+                    <when test="searchType == 'all'">
+                        AND (
+                            SA.USER_NO LIKE '%' || #{keyword} || '%'
+                            OR TU.USER_NAME LIKE '%' || #{keyword} || '%'
+                        )
+                    </when>
+                </choose>
+            </if>
+        </where>
+    ) A
+    <![CDATA[
+    WHERE RNUM BETWEEN ${firstRecordIndex} AND ${lastRecordIndex}
+    ]]>
+
+	</select>
+	
+	<select id="selectScholarshipApplyTotalCountByKeyword">
+		SELECT COUNT(*)
+		  FROM SCHOLARSHIP_APPLY SA
+	INNER JOIN SCHOLARSHIP_TYPE ST ON SA.SCH_TYPE_NO = ST.SCH_TYPE_NO
+  	INNER JOIN TB_USER TU ON TU.USER_NO = SA.USER_NO
+		 WHERE SA.APPLY_STATUS != '삭제됨'
+   			   AND ST.SCH_TYPE_NO = #{schTypeNo} 
+   			   <if test="applyStatus != null and applyStatus != ''">
+	                AND SA.APPLY_STATUS = #{applyStatus}
+	            </if>
+   			   <if test="keyword != null and keyword != ''">
+				AND (SA.USER_NO LIKE '%' || #{keyword} || '%'
+				     OR TU.USER_NAME LIKE '%' || #{keyword} || '%')
+				</if>
+	</select>
+	
+	<select id="selectScholarshipApplyTotalCount">
+		SELECT COUNT(*)
+		FROM SCHOLARSHIP_APPLY
+		WHERE APPLY_STATUS!='삭제됨' AND SCH_TYPE_NO=#{schTypeNo}
+	</select>
+
+	<insert id="insertAcceptedScholarship">
+		INSERT INTO SCHOLARSHIP(
+			SCHOLARSHIP_NO
+			, USER_NO
+			, SCH_TYPE_NO
+			, TUITION_AMOUNT
+			, DIS_AMOUNT
+			, APPLY_DATE
+			, APPLY_NO
+		) VALUES (
+			#{scholarshipNo}
+			, #{userNo}
+			, #{schTypeNo}
+			, #{tuitionAmount}
+			, #{disAmount}
+			, TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+			, #{applyNo}
+		)
+	</insert>
+	
+	<select id="selectDepartmentTuition">
+		SELECT DISTINCT
+	           A.DEPARTMENT_NAME
+	           , A.DEPARTMENT_TUITION
+      	  FROM DEPARTMENT A
+	INNER JOIN STUDENT B ON A.DEPARTMENT_NO=B.DEPARTMENT_NO
+	     WHERE B.USER_NO=#{userNo}
+	</select>
+	
+	<select id="selectScholarshipType">
+		SELECT SCH_TYPE_NO
+			   , SCH_NAME
+			   , RATE
+			   , SCH_DESC
+			   , SCH_ACTIVE
+			   , SCH_FILE_REF_NO
+		  FROM SCHOLARSHIP_TYPE
+		 WHERE SCH_TYPE_NO=#{schTypeNo}
+	</select>
+</mapper>

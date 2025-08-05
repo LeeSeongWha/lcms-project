@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.requestCollection.mapper.StaffRequestMapper">
+<!--     ================================================================================================= -->
+<resultMap id="requestMap" type="AcademicChangeRequestVO" autoMapping="true">
+    <id property="requestNo" column="REQUEST_NO"/>
+    <result property="userNo" column="USER_NO"/>
+    <result property="typeCode" column="TYPE_CODE"/>
+    <result property="semesterNo" column="SEMESTER_NO"/>
+    <result property="reason" column="REASON"/>
+    <result property="requestDate" column="REQUEST_DATE"/>
+    <result property="status" column="STATUS"/>
+    <result property="requestThing" column="REQUEST_THING"/>
+    
+    <association property="user" javaType="UserVO" autoMapping="true">
+        <result property="userName" column="USER_NAME"/>
+    </association>
+    
+    <association property="department" javaType="kr.or.ddit.pfcp.common.vo.DepartmentVO" autoMapping="true">
+        <result property="departmentName" column="DEPARTMENT_NAME"/>
+    </association>
+    
+    <association property="college" javaType="kr.or.ddit.pfcp.common.vo.CollegeVO" autoMapping="true">
+        <result property="collegeName" column="COLLEGE_NAME"/>
+    </association>
+    
+    <association property="type" javaType="TypeVO" autoMapping="true">
+        <result property="typeName" column="TYPE_NAME"/>
+    </association>
+</resultMap>
+<!--      requestStatusMap 시작 ================================================================================================= -->
+	<select id="selectTotalRequest">
+		SELECT COUNT(*) 
+		  FROM ACADEMIC_CHANGE_REQUEST ACR
+		 WHERE ACR.STATUS !='삭제'
+	</select>
+	<select id="selectWaitingRequest">
+		SELECT COUNT(*) 
+		  FROM ACADEMIC_CHANGE_REQUEST ACR
+		 WHERE ACR.STATUS ='대기중'
+	</select>
+	<select id="selectRejectedRequest">
+		SELECT COUNT(*) 
+		  FROM ACADEMIC_CHANGE_REQUEST ACR
+		 WHERE ACR.STATUS ='반려'
+	</select>
+	<select id="selectProcessingRequest">
+		SELECT COUNT(*) 
+		  FROM ACADEMIC_CHANGE_REQUEST ACR
+		 WHERE ACR.STATUS ='처리중'
+	</select>
+	<select id="selectCompleteRequest">
+		SELECT COUNT(*) 
+		  FROM ACADEMIC_CHANGE_REQUEST ACR
+		 WHERE ACR.STATUS ='승인' OR ACR.STATUS ='반려'
+	</select>
+<!--      requestStatusMap 끝 ================================================================================================= -->
+	
+
+<!--     전체 조회용 데이터 수집 시작 ================================================================================================= -->
+
+<!-- 1. 리스트 조회 (검색 + 필터 + typeCode + 페이징) -->
+<select id="selectRequestList" resultMap="requestMap" parameterType="map">
+    SELECT A.*
+    FROM (
+        SELECT ROW_NUMBER() OVER (ORDER BY ACR.REQUEST_DATE DESC) AS RNUM,
+               ACR.REQUEST_NO,
+               ACR.USER_NO,
+               ACR.TYPE_CODE,
+               ACR.SEMESTER_NO,
+               ACR.REASON,
+               ACR.REQUEST_DATE,
+               ACR.STATUS,
+               ACR.REQUEST_THING,
+               ACR.STATUS_COMMENT,
+               ACR.DECISION_DATE,
+               U.USER_NAME AS STUDENT_NAME,
+               UU.USER_NAME AS STAFF_NAME,
+               D.DEPARTMENT_NAME,
+               C.COLLEGE_NAME,
+               T.TYPE_NAME,
+               RD.DEPARTMENT_NAME AS REQUEST_DEPARTMENT_NAME
+        FROM ACADEMIC_CHANGE_REQUEST ACR
+        LEFT JOIN TYPE T ON ACR.TYPE_CODE = T.TYPE_CODE
+        LEFT JOIN TB_USER U ON ACR.USER_NO = U.USER_NO
+        LEFT JOIN TB_USER UU ON ACR.HANDLER = UU.USER_NO
+        LEFT JOIN STUDENT S ON S.USER_NO = U.USER_NO
+        LEFT JOIN DEPARTMENT D ON S.DEPARTMENT_NO = D.DEPARTMENT_NO
+        LEFT JOIN COLLEGE C ON D.COLLEGE_NO = C.COLLEGE_NO
+        LEFT JOIN DEPARTMENT RD ON ACR.REQUEST_THING = RD.DEPARTMENT_NO
+        <where>
+            ACR.STATUS != '삭제'
+            
+            <!-- 고정 탭 필터 -->
+            <if test="typeCode != null and typeCode != ''">
+                AND ACR.TYPE_CODE = #{typeCode}
+            </if>
+
+            <!-- 상태 필터 -->
+            <if test="status != null and status != ''">
+                AND ACR.STATUS = #{status}
+            </if>
+
+            <!-- 키워드 검색 -->
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'requestNo'">
+                        AND ACR.REQUEST_NO LIKE '%' || #{keyword} || '%'
+                    </when>
+                    <when test="searchType == 'userNo'">
+                        AND ACR.USER_NO LIKE '%' || #{keyword} || '%'
+                    </when>
+                    <when test="searchType == 'userName'">
+                        AND U.USER_NAME LIKE '%' || #{keyword} || '%'
+                    </when>
+                    <when test="searchType == 'departmentName'">
+                        AND D.DEPARTMENT_NAME LIKE '%' || #{keyword} || '%'
+                    </when>
+                    <when test="searchType == 'collegeName'">
+                        AND C.COLLEGE_NAME LIKE '%' || #{keyword} || '%'
+                    </when>
+                    <when test="searchType == 'typeName'">
+                        AND T.TYPE_NAME LIKE '%' || #{keyword} || '%'
+                    </when>
+                    <when test="searchType == 'all'">
+                        AND (
+                            ACR.REQUEST_NO LIKE '%' || #{keyword} || '%'
+                            OR ACR.USER_NO LIKE '%' || #{keyword} || '%'
+                            OR U.USER_NAME LIKE '%' || #{keyword} || '%'
+                            OR D.DEPARTMENT_NAME LIKE '%' || #{keyword} || '%'
+                            OR C.COLLEGE_NAME LIKE '%' || #{keyword} || '%'
+                            OR T.TYPE_NAME LIKE '%' || #{keyword} || '%'
+                        )
+                    </when>
+                </choose>
+            </if>
+        </where>
+    ) A
+    <![CDATA[
+    WHERE RNUM >= ${firstRecordIndex} AND RNUM <= ${lastRecordIndex}
+    ]]>
+</select>
+
+<!-- 2. 전체 카운트 (삭제 제외만 적용) -->
+<select id="selectRequestTotalCount" resultType="int">
+    SELECT COUNT(*)
+    FROM ACADEMIC_CHANGE_REQUEST ACR
+    WHERE ACR.STATUS != '삭제'
+</select>
+
+<!-- 3. 검색/필터 포함 카운트 (탭 typeCode 포함) -->
+<select id="selectRequestTotalCountByKeyword" resultType="int" parameterType="map">
+    SELECT COUNT(*)
+    FROM ACADEMIC_CHANGE_REQUEST ACR
+    JOIN TB_USER U ON ACR.USER_NO = U.USER_NO
+    JOIN STUDENT S ON S.USER_NO = U.USER_NO
+    JOIN DEPARTMENT D ON S.DEPARTMENT_NO = D.DEPARTMENT_NO
+    JOIN COLLEGE C ON D.COLLEGE_NO = C.COLLEGE_NO
+    JOIN TYPE T ON T.TYPE_CODE = ACR.TYPE_CODE
+    WHERE ACR.STATUS != '삭제'
+
+    <!-- 고정 탭 필터 -->
+    <if test="typeCode != null and typeCode != ''">
+        AND ACR.TYPE_CODE = #{typeCode}
+    </if>
+
+    <!-- 상태 필터 -->
+    <if test="status != null and status != ''">
+        AND ACR.STATUS = #{status}
+    </if>
+
+    <!-- 키워드 검색 -->
+    <if test="keyword != null and keyword != ''">
+        AND (
+            ACR.REQUEST_NO LIKE '%' || #{keyword} || '%'
+            OR ACR.USER_NO LIKE '%' || #{keyword} || '%'
+            OR U.USER_NAME LIKE '%' || #{keyword} || '%'
+            OR D.DEPARTMENT_NAME LIKE '%' || #{keyword} || '%'
+            OR C.COLLEGE_NAME LIKE '%' || #{keyword} || '%'
+            OR T.TYPE_NAME LIKE '%' || #{keyword} || '%'
+        )
+    </if>
+</select>
+
+<!--     전체 조회용 데이터 수집 끝 ================================================================================================= -->
+
+<update id="updateRequest" parameterType="map">
+	UPDATE ACADEMIC_CHANGE_REQUEST
+		SET
+		    STATUS = #{status},
+		    STATUS_COMMENT = #{statusComment},
+		    HANDLER = #{handler},
+		    DECISION_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+		WHERE
+		    REQUEST_NO = #{requestNo}
+</update>
+
+<update id="updateRequestStudent">
+	 UPDATE student
+		SET
+			<if test="typeCode == 'AC_RETURN'">
+			    stu_status = '재학'
+			</if>
+			<if test="typeCode == 'AC_SUSPEND'">
+			    stu_status = '휴학'
+			</if>
+			<if test="typeCode == 'AC_GRADSUS'">
+			    stu_status = '졸업유예'
+			</if>
+			<if test="typeCode == 'AC_MAJOR'">
+			    department_no = #{requestDepartmentNo}
+			</if>
+			<if test="typeCode == 'AC_DOUBLE'">
+			    sub_department_no = #{requestDepartmentNo}
+			</if>
+		WHERE
+		        user_no= #{studentNo}
+</update>
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

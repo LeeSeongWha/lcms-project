@@ -1,0 +1,25 @@
+package kr.or.ddit.pfcp.staff.reservationTimestamp.facility.service;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.vo.ReservationTimestampVO;
+import kr.or.ddit.pfcp.staff.reservationTimestamp.facility.mapper.FacilityRTMapper;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class FacilityRTServiceImpl implements FacilityRTService {
+
+	private final FacilityRTMapper mapper;
+	
+	@Override
+	public ReservationTimestampVO readFacilityRT(String facilityNo) {
+		return mapper.selectFacilityRT(facilityNo);
+	}
+
+	@Override
+	public void insertFacility(ReservationTimestampVO reservationTimestamp) {
+		mapper.insertFacilityRT(reservationTimestamp);
+	}
+
+}

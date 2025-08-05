@@ -1,0 +1,367 @@
+/* 기존 CSS 변수들 유지 */
+@charset "UTF-8";
+:root {
+    --primary-dark: #1a2035;
+    --primary-light: #2c3854;
+    --accent-blue: #4a90e2;
+    --accent-teal: #17a2b8;
+    --text-light: #e8ecef;
+    --text-muted: #adb5bd;
+    --success-green: #28a745;
+    --gradient-overlay: linear-gradient(135deg, rgba(26, 32, 53, 0.95), rgba(44, 56, 84, 0.9));
+}
+
+/* 브랜드 헤더 스타일 보완 */
+.brand-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+    padding: 30px 20px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.brand-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal), var(--success-green));
+    border-radius: 20px 20px 0 0;
+}
+
+.brand-title {
+    color: #ffffff;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.brand-subtitle {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 0;
+    opacity: 0.85;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* 로그인 헤더 스타일 */
+.login-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.login-subtitle {
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 400;
+    margin-bottom: 0;
+    opacity: 0.8;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* 폼 라벨 스타일 보완 */
+.form-label {
+    color: #ffffff !important;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    opacity: 1;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* 임시 로그인 섹션 스타일 보완 */
+.temp-login-section {
+    margin-top: 30px;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.temp-login-title {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 15px;
+    opacity: 0.9;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.temp-login-options {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.temp-login-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    color: var(--text-light);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0;
+}
+
+.temp-login-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--accent-blue);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+}
+
+.temp-login-btn input[type="radio"] {
+    display: none;
+}
+
+.temp-login-btn input[type="radio"]:checked + span {
+    color: var(--accent-blue);
+}
+
+.temp-login-btn:has(input[type="radio"]:checked) {
+    background: rgba(74, 144, 226, 0.2);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
+}
+
+/* 찾기 링크 스타일 보완 */
+.find-links {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.find-link {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 400;
+    transition: all 0.3s ease;
+    opacity: 0.85;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.find-link:hover {
+    color: var(--accent-blue);
+    opacity: 1;
+    text-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
+}
+
+/* 기존 스타일들 유지 */
+.auth-main {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-wrapper {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 80px rgba(74, 144, 226, 0.1);
+    overflow: hidden;
+    position: relative;
+    max-width: 450px;
+    width: 100%;
+}
+
+.auth-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal), var(--success-green));
+}
+
+.auth-form {
+    padding: 40px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.auth-header h2{
+	color: #ffffff !important;
+}
+
+.auth-header img {
+    filter: brightness(1.2);
+    margin-bottom: 20px;
+}
+
+.auth-header::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    border-radius: 2px;
+}
+
+.form-floating {
+    margin-bottom: 20px;
+}
+
+.form-floating .form-control {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    color: var(--text-light);
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.form-floating .form-control:focus {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+    color: var(--text-light);
+}
+
+.form-floating .form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.form-floating label {
+    color: var(--text-muted);
+    padding-left: 16px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+    background: linear-gradient(135deg, #5ba0f2, #23b3d1);
+}
+
+.system-title {
+    color: var(--text-light);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.system-subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 30px;
+}
+
+/* 장식 요소 */
+.floating-shapes {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.shape {
+    position: absolute;
+    opacity: 0.15;
+}
+
+.shape-1 {
+    top: 10%;
+    left: 10%;
+    width: 100px;
+    height: 100px;
+    background: var(--accent-blue);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
+}
+
+.shape-2 {
+    top: 60%;
+    right: 15%;
+    width: 80px;
+    height: 80px;
+    background: var(--accent-teal);
+    border-radius: 12px;
+    animation: float 8s ease-in-out infinite reverse;
+}
+
+.shape-3 {
+    bottom: 20%;
+    left: 15%;
+    width: 120px;
+    height: 120px;
+    background: var(--success-green);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    animation: float 10s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .auth-form {
+        padding: 30px 25px;
+    }
+    
+    .auth-header img {
+        width: 150px;
+        height: 45px;
+    }
+    
+    .system-title {
+        font-size: 1.3rem;
+    }
+    
+    .brand-header {
+        padding: 25px 15px;
+    }
+    
+    .brand-title {
+        font-size: 1.8rem;
+    }
+    
+    .temp-login-options {
+        flex-direction: column;
+        align-items: center;
+    }
+}

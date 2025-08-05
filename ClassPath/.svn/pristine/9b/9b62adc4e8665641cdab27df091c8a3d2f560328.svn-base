@@ -1,0 +1,13 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
+public class ScheduleRefVO {
+
+	private String scheduleNo;
+	@NotBlank(message="일정 유형을 선택하세요.")
+	private String refType;
+	private String refNo;
+}

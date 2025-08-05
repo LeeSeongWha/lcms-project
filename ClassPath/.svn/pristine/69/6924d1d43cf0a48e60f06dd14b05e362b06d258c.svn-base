@@ -1,0 +1,34 @@
+package kr.or.ddit.pfcp.staff.staffmanage.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import kr.or.ddit.pfcp.staff.requestCollection.controller.StaffRequestController;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * @author YSM
+ * @since 250724
+ * 
+ * 
+ * * 수정일		수정자		수정 내용
+ * ---------------------------------------
+ * 20250724     양수민        최초 생성
+ */
+
+@Slf4j
+@Controller
+@RequestMapping("/staff/staffmanage")
+public class StaffmanageController {
+
+	@GetMapping("staffmanageList.do")
+	public String noticeListUI(
+		Model model,
+		@RequestParam(defaultValue = "1") int pageNo
+	) {
+		return "pfcp/staff/staffmanage/staffmanageList";
+	}
+}

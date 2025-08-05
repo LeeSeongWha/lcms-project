@@ -1,0 +1,103 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%--
+    파일명 : facilityInsert.jsp
+    프로그렘명 : 시설 등록 화면
+    설 명 : 시설 등록[시설명/시설유형/위치/수용인원/시설상태]
+    작성자 : 양 수 민 (기존 페이지 기반)
+    작성일 : 2025. 07. 02
+--%>
+
+<title>시설 등록</title>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+<link rel="stylesheet" href="/dist/assets/css/test/studentInsert2.css">
+
+<c:if test="${not empty success}">
+  <script>
+    alert("${success}");
+  </script>
+</c:if>
+
+<div class="studentInsert">
+	<form method="post" action="/staff/facility/facilityInsertProcess.do">
+	<h1>시설 등록</h1>
+    <hr class="h1-hr">
+	
+		<div class="tableContainer">	
+	
+			<table class="defaultTable">
+				<tbody>
+					<tr class="tableRowHover">
+						<th class="tableTh">시설번호</th>
+						<td class="tableTd">
+							<input class="inputField" type="text" placeholder="자동으로 부여됩니다." readonly />
+						</td>
+						<th class="tableTh">시설명</th>
+						<td class="tableTd">
+							<input class="inputField" type="text" id="facilityName" name="facilityName" placeholder="시설명을 입력하세요" required />
+						</td>
+					</tr>
+					<tr class="tableRowHover">
+						<th class="tableTh">시설 유형</th>
+						<td class="tableTd">
+							<select id="facilityType" name="facilityType" class="selectBox" required>
+								<option value="">시설 유형 선택</option>
+								<option value="강의실">강의실</option>
+								<option value="실습실">실습실</option>
+								<option value="체육관">체육관</option>
+								<option value="회의실">회의실</option>
+								<option value="세미나실">세미나실</option>
+								<option value="도서관">도서관</option>
+								<option value="식당">식당</option>
+								<option value="기타">기타</option>
+							</select>
+						</td>
+						<th class="tableTh">위치</th>
+						<td class="tableTd">
+							<input type="text" id="location" name="location" class="inputField" placeholder="예: 본관 301호" required />
+						</td>
+						
+					</tr>
+					<tr class="tableRowHover">
+						<th class="tableTh">수용 인원</th>
+						<td class="tableTd">
+							<input type="number" id="facilityMp" name="facilityMp" class="inputField" placeholder="숫자만 입력하세요" min="0" required />
+						</td>
+						<th class="tableTh">시설 상태</th>
+						<td class="tableTd">
+							<select id="facilityStatus" name="facilityStatus" class="selectBox" required>
+								<option value="">상태 선택</option>
+								<option value="AVAILABLE" selected>사용가능</option>
+								<option value="MAINTENANCE">점검중</option>
+								<option value="UNAVAILABLE">예약불가</option>
+							</select>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<div style="margin-top:20px;" style="display:flex; justify-content:space-between">
+			<button type="submit" class="submitButton" style="float: right;">저장</button>
+			<button type="button" class="cancelButton" onclick="moveToList()">목록으로</button>
+			<button type="button" class="dummyButton" onclick="insertDummy()">더미 데이터 입력</button>
+			
+		</div>
+		
+	</form>
+</div>
+
+<script>
+	function moveToList(){
+		window.location.href='/staff/facility/facilityList.do';
+	}
+	
+	function insertDummy() {
+		document.getElementById("facilityName").value = "밤샘 도서관";
+		document.getElementById("facilityType").value = "도서관";
+		document.getElementById("location").value = "본관 4층";
+		document.getElementById("facilityMp").value = 50;
+		document.getElementById("facilityStatus").value = "AVAILABLE";
+	}
+</script>

@@ -1,0 +1,28 @@
+package kr.or.ddit.pfcp.videochat.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import kr.or.ddit.pfcp.common.vo.OnlineSessionVO;
+import kr.or.ddit.pfcp.videochat.mapper.SessionMapper;
+
+@Service
+public class SessionServiceImpl implements SessionService {
+  
+  @Autowired
+  SessionMapper mapper;
+
+  @Override
+  public void createSession(Integer sessionNo, String ocTitle) {
+    OnlineSessionVO session = new OnlineSessionVO();
+    
+    session.setSessionNo(sessionNo);
+    session.setOcTitle(ocTitle);
+    mapper.createSession(session);
+  }
+
+  @Override
+  public OnlineSessionVO getSession(Integer sessionNo) {
+    return mapper.getSession(sessionNo);
+  }
+
+}

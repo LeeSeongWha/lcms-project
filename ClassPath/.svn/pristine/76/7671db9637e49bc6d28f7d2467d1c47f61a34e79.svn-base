@@ -1,0 +1,112 @@
+function fillDemoData() {
+		const profSelect = document.getElementById("profNo");
+		const dateSelect = document.getElementById("preferredDate");
+
+		// 1. 교수 자동 선택
+		if (profSelect.options.length > 1) {
+			profSelect.selectedIndex = 1;
+
+			// 2. onchange 이벤트 강제로 트리거 (AJAX 호출)
+			profSelect.dispatchEvent(new Event("change"));
+		}
+
+		// 3. AJAX로 날짜가 채워질 시간이 필요하므로 약간 기다림
+		setTimeout(() => {
+			if (dateSelect.options.length > 1) {
+				dateSelect.selectedIndex = 1;
+			}
+		}, 500); // 0.5초 기다림 (필요시 조정 가능)
+
+		// 4. 상담 유형 및 내용 입력
+		document.getElementById("reqType").value = "대면";
+		document.querySelector("textarea[name='counselComment']").value = "학업 관련 진로 상담을 받고 싶습니다.";
+	}
+	
+	function fillDemoNotice() {
+		document.getElementById("typeCode").value = "SUG";
+		document.getElementById("boardTitle").value = "학사 일정 개선 건의";
+		document.getElementById("boardContent").value = "기말고사 일정과 과제 제출일이 너무 겹쳐 있어 학생들이 과중한 스트레스를 받고 있습니다. 일정 조정을 건의드립니다.";
+		
+		showCustomModal("데모 데이터가 입력되었습니다.", "alert");
+	}
+	
+	function fillDemoSchedule() {
+	// 데모 일정 제목
+	document.getElementById("scheduleTitle").value = "중간고사 대비 스터디";
+
+	// 일정 유형이 셀렉트박스로 구성되어 있고 옵션이 있다면 첫 번째 실제 값 선택
+	const scheduleTypeSelect = document.getElementById("scheduleType");
+	if (scheduleTypeSelect.options.length > 1) {
+		scheduleTypeSelect.selectedIndex = 4; // 두 번째 항목 (0번은 안내문)
+	}
+
+	// 오늘 날짜를 기준으로 입력
+	const today = new Date().toISOString().split("T")[0];
+	document.getElementById("startDate").value = today;
+	document.getElementById("endDate").value = today;
+
+	// 시간 설정
+	document.getElementById("startTime").value = "14:00";
+	document.getElementById("endTime").value = "16:00";
+
+	// 설명
+	document.getElementById("scheduleDesp").value = "중간고사 준비를 위한 과목별 질의응답 세션입니다. 시험 범위 요약 및 질의응답이 이루어집니다.";
+}
+
+function fillDemoLectureForm() {
+    // 강의명
+    document.getElementById("lecName").value = "캡스톤 디자인";
+
+    // 강의 분류 (첫 번째 실제 옵션 선택)
+    const lecCategory = document.getElementById("lecCategory");
+    if (lecCategory.options.length > 1) lecCategory.selectedIndex = 3;
+
+    // 강의 과목
+    const subjectCode = document.getElementById("subjectCode");
+    if (subjectCode.options.length > 1) subjectCode.selectedIndex = 37;
+
+    // 희망 요일 및 교시
+    document.getElementById("preDay").value = "월, 수";
+    document.getElementById("preTime").value = "2, 3교시";
+
+    // 강의실
+    const preClassrm = document.getElementById("preClassrm");
+    if (preClassrm.options.length > 1) preClassrm.selectedIndex = 11;
+
+    // 수강정원
+    document.getElementById("maxCapacity").value = "40";
+
+    // 파일 입력은 보안상 JS로 자동입력 불가능 (수동 업로드 필요)
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const addButton = document.getElementById("addDummyQuestions");
+  const questionField = document.querySelector(".questionField");
+
+  addButton.addEventListener("click", function () {
+    const countInput = document.querySelector("input[name='questionCount']");
+    const count = parseInt(countInput.value);
+
+    if (isNaN(count) || count <= 0) {
+      alert("문제 수를 올바르게 입력하세요.");
+      return;
+    }
+
+    // 기존 내용 초기화
+    questionField.innerHTML = "";
+
+    for (let i = 1; i <= count; i++) {
+      const questionDiv = document.createElement("div");
+      questionDiv.className = "form-group";
+      questionDiv.style.marginBottom = "10px";
+
+      questionDiv.innerHTML = `
+        <label class="inputLabel">문제 ${i}</label>
+        <input type="text" name="questions[${i - 1}].content" placeholder="문제 내용을 입력하세요" class="inputField" required>
+        <input type="text" name="questions[${i - 1}].answer" placeholder="정답 입력" class="inputField" required>
+      `;
+
+      questionField.appendChild(questionDiv);
+    }
+  });
+});

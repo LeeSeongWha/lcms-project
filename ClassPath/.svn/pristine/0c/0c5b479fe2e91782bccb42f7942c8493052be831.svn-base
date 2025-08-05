@@ -1,0 +1,15 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of="departmentNo")
+public class DepartmentVO {
+	private String departmentNo;
+	private String departmentName;
+	private Integer departmentTuition;
+	private String dgrNo;
+	private String collegeNo;
+	private String departmentDesc;
+}

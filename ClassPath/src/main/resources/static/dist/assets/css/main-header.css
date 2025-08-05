@@ -1,0 +1,136 @@
+@charset "UTF-8";
+/* 메인 헤더 배경 */
+.main-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #6b21a8 100%);
+    box-shadow: 0 2px 20px rgba(30, 58, 138, 0.25);
+    top: 0;
+    z-index: 1000;
+}
+
+/* 네비게이션 바 기본 설정 */
+.navbar-nav {
+    align-items: center;
+}
+
+.navbar-nav .nav-item {
+    display: flex;
+    align-items: center;
+}
+
+.nav-link {
+    gap: 1rem; /* 현재 0.5rem에서 늘리기 */
+}
+
+.nav-span {
+	display: inline-block; /* or block */
+    transform: translateY(1px) !important; /* 아래로 3px 이동 */
+    margin-left: 4px;
+}
+
+/* 네비게이션 링크 공통 스타일 */
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white !important;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white !important;
+}
+
+/* 아이콘 공통 스타일 */
+.navbar .fa {
+    font-size: 1.2rem;
+    color: white;
+    vertical-align: middle;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover .fa {
+    color: #b3b3ff;
+}
+
+
+/* 알림 관련 스타일 */
+.notification-badge {
+    position: relative;
+}
+
+.notification-count {
+    position: absolute;
+    top: 4px;
+    right: 47px;
+    color: #ff6348;
+    border-radius: 50%;
+    padding: 1px 5px;
+    font-size: 0.8rem;
+    min-width: 16px;
+    text-align: center;
+    line-height: 1.1;
+    font-weight: bold;
+}
+
+/* 알림 드롭다운 내부 아이콘 */
+.notif-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #6c63ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.notif-icon .fa {
+    color: white;
+    font-size: 1rem;
+}
+
+/* 사용자 프로필 관련 */
+.profile-pic .fa {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+    color: white;
+}
+
+/* 드롭다운 메뉴 내부 링크 */
+.dropdown-menu a {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+    color: #6c63ff;
+}
+
+.see-all {
+	display: block;
+	text-align: left;
+	padding-left: 0;
+	margin-left: 5px !important; /* 또는 음수 값도 가능: margin-left: -5px; */
+}
+
+/* 모바일 반응형 대응 */
+@media (max-width: 768px) {
+    .navbar .fa {
+        font-size: 1rem;
+    }
+    
+    .navbar-nav .nav-item {
+        margin-left: 0.8rem;
+    }
+    
+    .nav-link {
+        padding: 0.4rem 0.8rem;
+    }
+}

@@ -1,0 +1,71 @@
+package kr.or.ddit.pfcp.staff.subject.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 교직원 액터 교과목 관리
+ * 교수가 개설 신청한 교과목을 관리 (일단 CRUD 전부 넣음. 추후 필요 시 수정 예정)
+ * 
+ * @author seokyungdeok
+ * @since 250628
+ * 
+ * << 개정이력(Modification Information) >>
+ * 수정일	|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 250628	|	서경덕	|	최초 생성
+ */
+@Controller
+@RequestMapping("/staff")
+public class StaffSubjectController {
+	/**
+	 * 교과목 등록
+	 * 
+	 * @return
+	 */
+	@GetMapping("subjectInsert.do")
+	public String subjectInsert() {
+		return "pfcp/staff/subject/subjectInsertForm";
+	}
+	
+	/**
+	 * 교과목 목록 조회 (List)
+	 * 
+	 * @return
+	 */
+	@GetMapping("subjectList.do")
+	public String subjectList() {
+		return "pfcp/staff/subject/subjectList";
+	}
+	
+	/**
+	 * 교과목 상세 조회 (Detail)
+	 * 
+	 * @return
+	 */
+	@GetMapping("subjectDetail.do")
+	public String subjectDetail() {
+		return "pfcp/staff/subject/subjectDetail";
+	}
+	
+	/**
+	 * 교과목 수정
+	 * 
+	 * @return
+	 */
+	@GetMapping("subjectUpdate.do")
+	public String subjectUpdate() {
+		return "pfcp/staff/subject/subjectUpdateForm";
+	}
+	
+	/**
+	 * 교과목 삭제
+	 * 
+	 * @return
+	 */
+	@GetMapping("subjectDelete.do")
+	public String subjectDelete() {
+		return "redirect:/staff/subjectList.do";
+	}
+}

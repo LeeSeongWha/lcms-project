@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.scholarshipApply.mapper.StaffScholarshipApplyMapper">
+
+<resultMap id="scholarshipApplyMap" type="kr.or.ddit.pfcp.common.vo.ScholarshipApplyVO">
+	    <id property="applyNo" column="APPLY_NO"/>
+	    <result property="userNo" column="USER_NO"/>
+	    <result property="schTypeNo" column="SCH_TYPE_NO"/>
+	    <result property="requestDate" column="REQUEST_DATE"/>
+	    <result property="applyDate" column="APPLY_DATE"/>
+	    <result property="applyStatus" column="APPLY_STATUS"/>
+	    <result property="approveDate" column="APPROVE_DATE"/>
+	    <result property="requestComment" column="REQUEST_COMMENT"/>
+	    <result property="fileRefNo" column="FILE_REF_NO"/>
+	    <result property="applyComment" column="APPLY_COMMENT"/>
+	
+	    <association property="scholarshipType" javaType="kr.or.ddit.pfcp.common.vo.ScholarshipTypeVO">
+	        <id property="schTypeNo" column="SCH_TYPE_NO"/>
+	        <result property="schName" column="SCH_NAME"/>
+	    </association>
+	</resultMap>
+
+
+	<select id="selectScholarshipApplyList" resultMap="scholarshipApplyMap">
+		SELECT APPLY_NO
+		       , USER_NO
+		       , SCH_TYPE_NO
+		       , SCH_NAME
+		       , REQUEST_DATE
+		       , APPLY_DATE
+		       , APPLY_STATUS
+		       , APPROVE_DATE
+		       , REQUEST_COMMENT
+		       , FILE_REF_NO
+		       , APPLY_COMMENT
+          FROM SCHOLARSHIP_APPLY
+  NATURAL JOIN SCHOLARSHIP_TYPE
+     	 WHERE APPLY_STATUS!='삭제됨' AND SCH_TYPE_NO=#{schTypeNo}
+      ORDER BY REQUEST_DATE DESC
+      OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+	</select>
+	
+	<select id="selectApplyTotalCount">
+		SELECT COUNT(*) AS SCOUNT
+		FROM SCHOLARSHIP_APPLY
+		WHERE APPLY_STATUS!='삭제됨' AND SCH_TYPE_NO=#{schTypeNo}
+	</select>
+	
+	<update id="updateScholarshipApply" parameterType="kr.or.ddit.pfcp.common.vo.ScholarshipApplyVO">
+		UPDATE SCHOLARSHIP_APPLY
+		   SET APPLY_STATUS = #{applyStatus},
+		   	   APPLY_COMMENT = #{applyComment},
+		   	   APPLY_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+		 WHERE APPLY_NO=#{applyNo}
+	</update>
+
+</mapper>

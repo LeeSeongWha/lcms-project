@@ -1,0 +1,69 @@
+package kr.or.ddit.pfcp.staff.applyGraduation.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import kr.or.ddit.common.PaginationInfo;
+import kr.or.ddit.pfcp.common.vo.GraduationRequirementVO;
+import kr.or.ddit.pfcp.staff.applyGraduation.service.ApplyGrdSerive;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/staff/applyGrd")
+public class ApplyGrdController {
+
+	@Autowired
+	private ApplyGrdSerive grdService;
+	@GetMapping("/graduateApply.do")
+	public String graduateList(
+	        @RequestParam(name = "page", defaultValue = "1") int currentPageNo,
+	        @RequestParam(name = "searchType", required = false) String searchType,
+	        @RequestParam(name = "keyword", required = false) String keyword,
+	        Model model
+	) {
+	    int totalCount = grdService.readTotalGradutionCount(searchType, keyword);
+
+	    // PaginationInfo 객체 생성 및 설정
+	    PaginationInfo paging = new PaginationInfo();
+	    paging.setCurrentPageNo(currentPageNo);
+	    paging.setTotalRecordCount(totalCount);
+	    
+	    log.debug("📦 totalCount = {}", totalCount);
+	    log.debug("📍 currentPageNo = {}", currentPageNo);
+	    log.debug("📍 firstPageNoOnPageList = {}", paging.getFirstPageNoOnPageList());
+	    log.debug("📍 lastPageNoOnPageList = {}", paging.getLastPageNoOnPageList());
+	    log.debug("📍 totalPageCount = {}", paging.getTotalPageCount());
+	    log.debug("📍 firstRecordIndex = {}", paging.getFirstRecordIndex());
+	    log.debug("📍 lastRecordIndex = {}", paging.getLastRecordIndex());
+
+	    // 조회 파라미터 구성
+	    Map<String, Object> paramMap = new HashMap<>();
+	    paramMap.put("searchType", searchType);
+	    paramMap.put("keyword", keyword);
+	    paramMap.put("start", paging.getFirstRecordIndex()); // Oracle: 시작 rownum
+	    paramMap.put("end", paging.getLastRecordIndex());    // Oracle: 끝 rownum
+
+	    List<GraduationRequirementVO> grdList = grdService.readGradutionList(paramMap);
+
+	    model.addAttribute("grdList", grdList);
+	    model.addAttribute("paging", paging);
+	    model.addAttribute("searchType", searchType);
+	    model.addAttribute("keyword", keyword);
+	    model.addAttribute("count", totalCount);
+
+	    return "pfcp/staff/college/graduateApply";
+	}
+	
+
+
+
+}

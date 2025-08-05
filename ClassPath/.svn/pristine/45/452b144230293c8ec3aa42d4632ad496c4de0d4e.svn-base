@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.common.zoomapi.mapper.SessionsMapper">
+ <!-- ResultMap 정의 -->
+	<resultMap id="SessionsResultMap"
+		type="kr.or.ddit.common.zoomapi.vo.SessionsVO">
+		<id property="sessionNo" column="SESSION_NO" />
+		<result property="sessionTitle" column="SESSION_TITLE" />
+		<result property="sessionType" column="SESSION_TYPE" />
+		<result property="startDate" column="START_DATE" />
+		<result property="sessionTh" column="SESSION_TH" />
+		<result property="attendanceRequired"
+			column="ATTENDANCE_REQUIRED" />
+		<result property="zoomMeetingId" column="ZOOM_MEETING_ID" />
+		<result property="joinUrl" column="JOIN_URL" />
+		<result property="joinPassword" column="JOIN_PASSWORD" />
+		<result property="hostEmail" column="HOST_EMAIL" />
+		<result property="timezone" column="TIMEZONE" />
+		<result property="agenda" column="AGENDA" />
+		
+		<association property="user" javaType="UserVO">
+			<id property="userNo" column="USER_NO" />
+			<result property="userName" column="USER_NAME" />
+			<result property="userRole" column="USER_ROLE" />
+		</association>
+		
+		<association property="lecNo" javaType="LectureVO">
+			<id property="lecNo" column="LEC_NO" />
+		</association>
+	</resultMap>
+	
+	<insert id="insertSession" parameterType="kr.or.ddit.common.zoomapi.vo.SessionsVO">
+	    <selectKey keyProperty="sessionNo" resultType="int" order="BEFORE">
+	        SELECT sessions_seq.NEXTVAL FROM DUAL
+	    </selectKey>
+	    INSERT INTO sessions (
+	        SESSION_NO, SESSION_TITLE, SESSION_TYPE, START_DATE, SESSION_TH, ATTENDANCE_REQUIRED,
+	        ZOOM_MEETING_ID, JOIN_URL, JOIN_PASSWORD, HOST_EMAIL,
+	        TIMEZONE, AGENDA, CREATED_AT, UPDATED_AT, STATUS, USER_NO
+	    ) VALUES (
+	        #{sessionNo}, #{sessionTitle}, #{sessionType},
+	         TO_TIMESTAMP(#{startDate}, 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+	        #{sessionTh}, #{attendanceRequired},
+	        #{zoomMeetingId}, #{joinUrl}, #{joinPassword}, #{hostEmail},
+	        #{timezone}, #{agenda}, SYSDATE, SYSDATE, 'ACTIVE', #{userNo}
+	    )
+	</insert>
+	
+	<select id="selectSessions">
+		SELECT 
+	        SESSION_NO as sessionNo,
+	        SESSION_TITLE as sessionTitle,
+	        SESSION_TYPE as sessionType,
+	        TO_CHAR(START_DATE, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') as startDate,
+	        SESSION_TH as sessionTh,
+	        ATTENDANCE_REQUIRED as attendanceRequired,
+	        ZOOM_MEETING_ID as zoomMeetingId,
+	        JOIN_URL as joinUrl,
+	        JOIN_PASSWORD as joinPassword,
+	        HOST_EMAIL as hostEmail,
+	        TIMEZONE as timezone,
+	        AGENDA as agenda,
+	        TO_CHAR(CREATED_AT, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') as createdAt,
+	        STATUS,
+	        USER_NO
+	    FROM sessions 
+	    WHERE STATUS = 'ACTIVE'
+	    ORDER BY CREATED_AT DESC
+	</select>
+	
+	<update id="updateSession">
+		UPDATE SESSIONS
+		   SET STATUS='DEACTIVATE'
+		 WHERE SESSION_NO=#{sessionNo}
+		   AND USER_NO=#{userNo}
+	</update>
+</mapper>

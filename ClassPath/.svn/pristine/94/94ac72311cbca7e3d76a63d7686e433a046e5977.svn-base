@@ -1,0 +1,18 @@
+package kr.or.ddit.pfcp.videochat.controller;
+
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
+import kr.or.ddit.pfcp.common.vo.ChatMessageVO;
+
+@Controller
+public class ChatController {
+  
+  @MessageMapping("/chat/{sessionNo}")
+  @SendTo("/meeting/chat/{sessionNo}")
+  public ChatMessageVO send(@DestinationVariable Integer sessionNo, ChatMessageVO message) {
+    return message;
+  }
+  
+}

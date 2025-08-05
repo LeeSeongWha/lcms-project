@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.or.ddit.pfcp.staff.dashBoard.mapper.LectureStatisticsMapper">
+	<!-- 1. 학기별 개설 강의 수 -->
+	<select id="selectLectureCountBySemester"
+		resultType="kr.or.ddit.pfcp.common.vo.StaffSemesterStatVO">
+		SELECT
+		S.YEAR || '-' || S.TERM AS semester,
+		COUNT(*) AS lectureCount
+		FROM
+		LECTURE L
+		JOIN
+		LECTURE_REQ REQ ON REQ.REQ_NO = L.REQ_NO
+		JOIN
+		SUBJECT SUB ON SUB.SUBJECT_CODE = REQ.SUBJECT_CODE
+		JOIN
+		SEMESTER S ON S.SEMESTER_NO = SUB.SEMESTER_NO
+		GROUP BY
+		S.YEAR, S.TERM
+		ORDER BY
+		S.YEAR, S.TERM
+	</select>
+
+	<!-- 2. 강의 유형별 비율 -->
+	<select id="selectLectureTypeRatio"
+		resultType="kr.or.ddit.pfcp.common.vo.StaffTypeRatioVO">
+		SELECT
+		LEC_CATEGORY AS lectureType,
+		COUNT(*) AS typeCount
+		FROM
+		LECTURE_REQ
+		GROUP BY
+		LEC_CATEGORY
+	</select>
+
+	<!-- 3. 계열별 교수당 평균 강의 수 -->
+	<select id="selectAvgLecturePerProfessorByDeptGroup"
+		resultType="kr.or.ddit.pfcp.common.vo.StaffProfessorGroupAvgVO">
+		SELECT
+		D.DEPARTMENT_NAME AS departmentGroup,
+		ROUND(COUNT(L.LEC_NO) * 1.0 / COUNT(DISTINCT P.USER_NO), 2) AS avgLecturePerProfessor
+		FROM
+		LECTURE L
+		JOIN
+		PROFESSOR P ON L.USER_NO = P.USER_NO
+		JOIN
+		DEPARTMENT D ON P.DEPARTMENT_NO = D.DEPARTMENT_NO
+		GROUP BY
+		D.DEPARTMENT_NAME
+	</select>
+
+	<!-- 4. 유형별 수강 정원 대비 수강률 -->
+	<select id="selectEnrollmentRateByLectureType"
+		resultType="kr.or.ddit.pfcp.common.vo.StaffLectureCapacityRateVO">
+		SELECT
+		LR.LEC_CATEGORY AS typeName,
+		SUM(LR.MAX_CAPACITY) AS totalCapacity,
+		SUM(
+		(SELECT COUNT(*)
+		FROM LECTURE_ENR E
+		WHERE E.LEC_NO = L.LEC_NO)
+		) AS totalEnrolled
+		FROM
+		LECTURE L
+		JOIN
+		LECTURE_REQ LR ON L.REQ_NO = LR.REQ_NO
+		GROUP BY
+		LR.LEC_CATEGORY
+	</select>
+
+	<!-- 5. 통계 카드: 총 강의 수 -->
+	<select id="selectTotalLectureCount" resultType="int">
+		SELECT COUNT(*)
+		FROM LECTURE_REQ R
+		JOIN SUBJECT S ON S.SUBJECT_CODE = R.SUBJECT_CODE
+		JOIN SEMESTER SM ON SM.SEMESTER_NO = S.SEMESTER_NO
+		WHERE SM.SEMESTER_ACT = 'Y' AND R.STATUS = '승인'
+	</select>
+
+	<!-- 6. 통계 카드: 총 교수 수 -->
+	<select id="selectTotalProfessorCount" resultType="int">
+		SELECT COUNT(*)
+		FROM PROFESSOR
+		WHERE PRO_STATUS = '재직'
+	</select>
+
+	<!-- 7. 통계 카드: 총 재학생 수 -->
+	<select id="selectTotalStudentCount" resultType="int">
+		SELECT COUNT(*)
+		FROM STUDENT
+		WHERE STU_STATUS = '재학'
+	</select>
+
+</mapper>

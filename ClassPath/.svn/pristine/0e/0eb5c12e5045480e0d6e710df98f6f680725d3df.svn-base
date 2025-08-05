@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.professor.evaluation.mapper.ProfessorLectureEvalMapper">
+	
+	<select id="selectEvals" resultType="kr.or.ddit.pfcp.common.vo.LectureEvalVO">
+        SELECT
+            LE.EVAL_NO,
+            LE.ENROLL_NO,
+            LE.EVAL_DATE,
+            LE.OVERALL_SCORE,
+            LE.EVAL_COMMENT AS evalComment,
+            S.STD_NAME,
+            S.STD_NO,
+            SJ.SUBJECT_NAME
+        FROM
+            LECTURE_EVAL LE
+        INNER JOIN ENROLLMENT E ON LE.ENROLL_NO = E.ENROLL_NO
+        INNER JOIN LECTURE_REQ LR ON E.LEC_NO = LR.LEC_NO
+        INNER JOIN SUBJECT SJ ON LR.SUBJECT_NO = SJ.SUBJECT_NO
+        INNER JOIN STUDENT S ON E.STD_ID = S.STD_ID
+        WHERE
+            LR.LEC_NO = #{lecNo}
+        ORDER BY LE.EVAL_DATE DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
+    </select>
+
+    <select id="countEvals" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            LECTURE_EVAL LE
+        INNER JOIN ENROLLMENT E ON LE.ENROLL_NO = E.ENROLL_NO
+        INNER JOIN LECTURE_REQ LR ON E.LEC_NO = LR.LEC_NO
+        WHERE
+            LR.LEC_NO = #{lecNo}
+    </select>
+	
+	<select id="totalScore" resultType="java.lang.Integer">
+        SELECT
+            NVL(SUM(OVERALL_SCORE), 0)
+        FROM
+            LECTURE_EVAL LE
+        INNER JOIN ENROLLMENT E ON LE.ENROLL_NO = E.ENROLL_NO
+        INNER JOIN LECTURE_REQ LR ON E.LEC_NO = LR.LEC_NO
+        WHERE
+            LR.LEC_NO = #{lecNo}
+    </select>
+	
+</mapper>

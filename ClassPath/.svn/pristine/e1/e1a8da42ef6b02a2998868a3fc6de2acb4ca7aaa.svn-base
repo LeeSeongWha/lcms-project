@@ -1,0 +1,20 @@
+package kr.or.ddit.pfcp.staff.dashBoard.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import kr.or.ddit.pfcp.common.vo.LectureDashBoardVO;
+import kr.or.ddit.pfcp.staff.dashBoard.service.LectureStatisticsService;
+
+@RestController
+public class StaffLectureStatisticsController {
+	
+	@Autowired
+	private LectureStatisticsService service; 
+	
+	@GetMapping("/rest/staff/statistics/lecture")
+	public LectureDashBoardVO getLectureStatistics() {
+		return service.getLectureStatisticsDashboard();
+	}
+}

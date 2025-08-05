@@ -1,0 +1,211 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<!DOCTYPE html>
+<html>
+<head>
+<title>일정 관리</title>
+
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+<link
+	href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css"
+	rel="stylesheet" />
+<script
+	src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/locales-all.min.js"></script>
+
+<style>
+#calendar {
+	max-width: 900px;
+	margin: 50px auto;
+}
+
+.error {
+	color: red;
+	font-size: 0.9em;
+}
+
+#schedulePopup {
+	display: none;
+	position: fixed;
+	top: 20%;
+	left: 50%;
+	transform: translateX(-50%);
+	background: #fff;
+	padding: 20px;
+	border: 2px solid #333;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+	z-index: 9999;
+	min-width: 300px;
+	border-radius: 8px;
+}
+</style>
+</head>
+<body>
+	<h2 style="text-align: center;">📅 교직원 일정 관리</h2>
+
+	<div id="calendar"></div>
+
+	<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'ko',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth'
+        },
+        events: '/staff/schedule/list',
+        eventDataTransform: function(e){
+        	//console.log(e)
+        	return {
+        		id: e.scheduleNo,
+        		title: e.scheduleTitle,
+        		start: e.startDate,
+        	    end: e.endDate,
+        	    extendeProps: {
+        	    	 scheduleDesp: e.scheduleDesp,
+        	         type: e.type
+        		}
+        	};
+     	 },
+      
+        
+        eventClick: function (info) {
+          const data = info.event.extendedProps;
+          const popup = document.getElementById("schedulePopup");
+          console.log("info>>", info)
+          console.log("data -->", data)
+          const content = `
+        	  <strong>📌 제목:</strong> \${info.event.title}<br>
+        	  <strong>📅 시작일:</strong> \${data.startDate}<br>
+        	  <strong>📅 종료일:</strong> \${data.endDate}<br>
+        	  <strong>📂 일정 유형:</strong> \${(data.type && data.type.scheduleTypeName) ? data.type.scheduleTypeName : '없음'}<br>
+        	  <strong>📝 설명:</strong> \${data.scheduleDesp || '없음'}<br>
+        	`;
+          document.getElementById("popupContent").innerHTML = content;
+
+          // 수정 버튼
+          document.getElementById("editBtn").onclick = function () {
+            fetch(`/staff/schedule/\${info.event.id}`)
+              .then(res => res.json())
+              .then(data => {
+            	  console.log("resjson", data)
+                document.querySelector("#scheduleNo").value = data.scheduleNo;
+                document.querySelector("#scheduleTitle").value = data.scheduleTitle;
+                document.querySelector("#startDate").value = data.startDate;
+                document.querySelector("#endDate").value = data.endDate;
+                document.querySelector("#scheduleType").value = data.scheduleType;
+                document.querySelector("#scheduleDesp").value = data.scheduleDesp;
+                document.querySelector("#formMode").value = "update";
+                document.querySelector("#submitBtn").textContent = "수정";
+                document.querySelector("#resetBtn").style.display = "inline-block";
+                document.querySelector("#regititle").innerHTML  = "일정 수정";
+                closePopup();
+              });
+          };
+          // 📌 등록/수정 폼 초기화 버튼 이벤트
+          document.querySelector("#resetBtn").addEventListener("click", function () {
+            document.querySelector("#scheduleNo").value = "";
+            document.querySelector("#scheduleTitle").value = "";
+            document.querySelector("#startDate").value = "";
+            document.querySelector("#endDate").value = "";
+            document.querySelector("#scheduleType").value = "";
+            document.querySelector("#scheduleDesp").value = "";
+            document.querySelector("#formMode").value = "insert";
+            document.querySelector("#submitBtn").textContent = "저장";
+            document.querySelector("#resetBtn").style.display = "none";
+            document.querySelector("#regititle").innerHTML  = "일정 등록";
+          });
+
+          // 삭제 버튼
+          document.getElementById("deleteBtn").onclick = function () {
+            if (confirm("정말 삭제하시겠습니까?")) {
+              fetch(`/staff/schedule/\${info.event.id}`, {
+                method: 'DELETE'
+              })
+              .then(res => res.json())
+              .then(result => {
+                if (result.result === 1) {
+                  alert("삭제되었습니다.");
+                  calendar.refetchEvents(); // 삭제 후 새로고침
+                  closePopup();
+                } else {
+                  alert("삭제에 실패했습니다.");
+                }
+              });
+            }
+          };
+
+          popup.style.display = "block";
+        }
+      });
+
+      calendar.render();
+    });
+
+    function closePopup() {
+      document.getElementById("schedulePopup").style.display = "none";
+    }
+  </script>
+
+	<h3 style="text-align: center;" id="regititle">📥 일정 등록</h3>
+	<button class="btn btn-secondary" type="button" id="resetBtn"
+		style="display: none;">등록으로</button>
+
+	<form:form modelAttribute="scheduleVO" action="/staff/schedule/save"
+		method="post" style="width:900px; margin: 0 auto;">
+		<form:hidden path="scheduleNo" id="scheduleNo" />
+		<input type="hidden" name="formMode" id="formMode" value="insert" />
+
+		<fieldset style="padding: 20px; border: 1px solid #ccc;">
+			<table style="width: 100%; border-collapse: collapse;">
+				<tr>
+					<td><label for="scheduleTitle">일정 제목</label></td>
+					<td><form:input path="scheduleTitle" id="scheduleTitle" /> <form:errors
+							path="scheduleTitle" cssClass="error" /></td>
+				</tr>
+				<tr>
+					<td><label for="startDate">시작일</label></td>
+					<td><form:input path="startDate" id="startDate" type="date" />
+						<form:errors path="startDate" cssClass="error" /></td>
+				</tr>
+				<tr>
+					<td><label for="endDate">종료일</label></td>
+					<td><form:input path="endDate" id="endDate" type="date" /> <form:errors
+							path="endDate" cssClass="error" /></td>
+				</tr>
+				<tr>
+					<td><label for="scheduleType">일정 유형</label></td>
+					<td><form:select path="type.scheduleTypeNo" id="scheduleType"
+							items="${scheduleTypes}" itemValue="scheduleTypeNo"
+							itemLabel="scheduleTypeName" /> <form:errors
+							path="type.scheduleTypeNo" cssClass="error" /></td>
+				</tr>
+				<tr>
+					<td><label for="scheduleDesp">일정 설명</label></td>
+					<td><form:textarea path="scheduleDesp" id="scheduleDesp"
+							rows="3" cols="40" /> <form:errors path="scheduleDesp"
+							cssClass="error" /></td>
+				</tr>
+			</table>
+			<div style="text-align: right; margin-top: 15px;">
+				<button class="btn btn-primary" type="submit" id="submitBtn">저장</button>
+			</div>
+		</fieldset>
+	</form:form>
+
+	<!-- 📋 일정 상세 팝업 모달 -->
+	<div id="schedulePopup">
+		<div id="popupContent" style="line-height: 1.6;"></div>
+		<div style="text-align: right; margin-top: 12px;">
+			<button id="editBtn" style="margin-right: 6px;">✏️ 수정</button>
+			<button id="deleteBtn" style="margin-right: 6px;">🗑️ 삭제</button>
+			<button onclick="closePopup()">닫기</button>
+		</div>
+	</div>
+</body>
+</html>

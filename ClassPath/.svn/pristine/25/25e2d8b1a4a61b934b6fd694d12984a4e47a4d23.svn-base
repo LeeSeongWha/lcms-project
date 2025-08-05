@@ -1,0 +1,13 @@
+package kr.or.ddit.pfcp.common.service;
+
+import kr.or.ddit.pfcp.common.vo.UserVO;
+import kr.or.ddit.vo.MemberVO;
+
+public interface UserService {
+//  public void createMember(MemberVO member);
+//  public readMemberList()
+  public UserVO readMember(String username);
+//  public void modifyMember(MemberVO member);
+//  public void removeMember(String username, String password);
+  
+}

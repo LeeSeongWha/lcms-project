@@ -1,0 +1,122 @@
+package kr.or.ddit.common.component;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Supplier;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
+import kr.or.ddit.pfcp.common.service.NotificationServiceImpl;
+import kr.or.ddit.pfcp.common.service.UserService;
+import kr.or.ddit.pfcp.common.vo.NotificationVO;
+import kr.or.ddit.pfcp.common.vo.StudentVO;
+import kr.or.ddit.pfcp.common.vo.UserVO;
+
+/**
+ * == 이렇게 쓰시지요 ==
+ * 
+ * NotificationUtils.sendTo[액터명]("[알림으로 보내고 싶은 메시지]", "[알림을 클릭했을 때 사용자가 이동할 링크]");
+ * 
+ * ex) 공지사항이 등록됐을 때 모든 액터에게 알림 보내기
+ * - kr.or.ddit.pfcp.staff.notice.controller -> noticeInsertProcessUI()
+ * 
+ * NotificationUtils.sendToStudent("새로운 공지사항이 등록되었습니다", "/staff/notice/noticeDetail.do?what=" + board.getBoardNo());
+ * NotificationUtils.sendToProfessor("새로운 공지사항이 등록되었습니다", "/staff/notice/noticeDetail.do?what=" + board.getBoardNo());
+ * NotificationUtils.sendToStaff("새로운 공지사항이 등록되었습니다", "/staff/notice/noticeDetail.do?what=" + board.getBoardNo());
+ * 
+ * @author seokyungdeok
+ * @since 2025. 7. 18.
+ *
+ * << 개정이력(Modification Information) >>
+ * 수정일		|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 2025. 7. 18.	|	서경덕	|	최초 생성
+ */
+@Component
+public class NotificationUtils {
+	private static NotificationServiceImpl staticNotificationService;
+	private static UserService staticUserService;
+	
+	static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd, HH:mm");
+	
+	@Autowired
+    private NotificationServiceImpl notificationService;
+	
+    @Autowired
+    private UserService userService;
+    
+    @PostConstruct
+    public void init() {
+        staticNotificationService = notificationService;
+        staticUserService = userService;
+    }
+    
+    public static void sendNotificationToUsers(Supplier<List<String>> userListSupplier, String message, String linkUrl) {
+        List<String> userList = userListSupplier.get();
+
+        for (String userNo : userList) {
+            NotificationVO noti = new NotificationVO();
+            noti.setNotiNo("NT" + UUID.randomUUID().toString().replace("-", "").substring(0, 12));
+            noti.setUserNo(userNo);
+            noti.setMessage(message);
+            noti.setLinkUrl(linkUrl);
+            noti.setFaIcon("fa-bell");
+            noti.setIconClass("notif-info");
+            noti.setTimeAgo(LocalDateTime.now().format(formatter));
+
+            staticNotificationService.createNotification(noti);
+            staticNotificationService.notifyUser(userNo, noti);
+        }
+    }
+    
+    public static void sendNotificationStudent(Supplier<UserVO> userSupplier, String message, String linkUrl) {
+    	UserVO user = userSupplier.get();
+    	
+    	NotificationVO noti = new NotificationVO();
+        noti.setNotiNo("NT" + UUID.randomUUID().toString().replace("-", "").substring(0, 12));
+        noti.setUserNo(user.getUserNo());
+        noti.setMessage(message);
+        noti.setLinkUrl(linkUrl);
+        noti.setFaIcon("fa-bell");
+        noti.setIconClass("notif-info");
+        noti.setTimeAgo(LocalDateTime.now().format(formatter));
+
+        staticNotificationService.createNotification(noti);
+        staticNotificationService.notifyUser(user.getUserNo(), noti);
+    }
+    
+    public static void sendToOneStudent(String userNo, String message, String linkUrl) {
+        sendNotificationStudent(() -> staticUserService.readMember(userNo), message, linkUrl);
+    }
+    
+    /**
+     * 학생에게 알림 전송 메서드
+     * 
+     * @param message 전송하고자 하는 메시지
+     */
+    public static void sendToStudent(String message, String linkUrl) {
+    	sendNotificationToUsers(staticUserService::readAllStudentList, message, linkUrl);
+    }
+    
+    /**
+     * 교수에게 알림 전송 메서드
+     * 
+     * @param message 전송하고자 하는 메시지
+     */
+    public static void sendToProfessor(String message, String linkUrl) {
+    	sendNotificationToUsers(staticUserService::readAllProfessorList, message, linkUrl);
+    }
+    
+    /**
+     * 교직원에게 알림 전송 메서드
+     * 
+     * @param message 전송하고자 하는 메시지
+     */
+    public static void sendToStaff(String message, String linkUrl) {
+    	sendNotificationToUsers(staticUserService::readAllStaffList, message, linkUrl);
+    }
+}

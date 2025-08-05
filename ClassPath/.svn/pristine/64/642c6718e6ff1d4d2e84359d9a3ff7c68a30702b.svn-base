@@ -1,0 +1,103 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %> 
+<%--  
+	파일명 : departmentInsert.jsp
+	프로그램명 : 학과 등록
+	설명 : 
+	작성자 : 김규민
+	작성일 : 2025. 07. 09
+--%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>학과 등록</title>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+</head>
+<body>
+
+	<h1>학과 등록</h1>
+    <p>새로운 학과를 입력하세요.</p>
+    
+    <form action="/staff/college/insertDepartment.do" method="post">
+        <%-- 컨트롤러의 departmentInsert.do GET 메서드에서 collegeNo를 모델에 담아서 넘겨준다고 가정 --%>
+       	<%--  <input type="hidden" name="collegeNo" value="${collegeNo}"> --%>
+
+        <div>
+            <label for="departmentName">학과 :</label>
+            <input type="text" id="departmentName" name="departmentName" required>
+        </div>
+
+        <div>
+            <label for="departmentTuition">등록금 :</label>
+            <input type="text" id="departmentTuition" name="departmentTuition" required>
+        </div>
+
+		<div>
+            <label for="departmentDesc">단과 대학 :</label> 
+            <select id="" name="collegeNo" required>
+				<option value="" disabled selected>단과 대학 선택</option>
+				<option value="CL001">공과대학</option>
+				<option value="CL002">인문대학</option>
+				<option value="CL003">사회과학대학</option>
+				<option value="CL004">자연과학대학</option>
+				<option value="CL005">예술대학</option>
+				<option value="CL008">경상대학</option>
+				<option value="CL009">법과대학</option>
+			</select>
+        </div>
+
+        <div>
+            <label for="departmentDesc">학과 정보 :</label>
+            <input type="text" id="departmentDesc" name="departmentDesc" required>
+        </div>
+        
+    </form>
+        <hr>
+<form action="/staff/college/insertDepartment.do">
+		<div>
+            <label for="dgrGrade">졸업 요구 학점 :</label>
+            <input type="text" id="dgrGrade" name="dgrGrade" required>
+        </div>
+        
+        <div>
+            <label for="dgrMc">전공학점 :</label>
+            <input type="text" id="dgrMc" name="dgrMc" required>
+        </div>
+        
+        <div>
+            <label for="dgrLac">교양학점 :</label>
+            <input type="text" id="dgrLac" name="dgrLac" required>
+        </div>
+        
+        <div>
+            <label for="dgrFcc">자유이수학점 :</label>
+            <input type="text" id="dgrFcc" name="dgrFcc" required>
+        </div>
+        
+        <div>
+            <label for="dgrVolunteerHour">봉사시간 :</label>
+            <input type="text" id="dgrVolunteerHour" name="dgrVolunteerHour" required>
+        </div>
+</form>
+		<hr>
+
+        <div>
+            <button type="submit">등록</button>
+            <button type="button" onclick="location.href='/staff/college/collegeList.do'">목록으로</button> <%-- 목록으로 버튼 경로에도 컨텍스트 패스 추가 --%>
+        </div>
+        	
+    
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

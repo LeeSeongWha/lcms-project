@@ -1,0 +1,27 @@
+package kr.or.ddit.pfcp.staff.lecturemanage.attendance.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.vo.AttendanceVO;
+import kr.or.ddit.pfcp.staff.lecturemanage.attendance.mapper.AttendanceMapper;
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class AttendanceServiceImpl implements AttendanceService {
+
+	private final AttendanceMapper mapper;
+	
+	@Override
+	public List<AttendanceVO> readAttendanceList(String enrNo, String userNo) {
+		return mapper.selectAttendanceList(enrNo, userNo);
+	}
+
+	@Override
+	public int modifyAttendance(List<AttendanceVO> attendanceList) {
+		return mapper.updateAttendanceList(attendanceList);
+	}
+
+}

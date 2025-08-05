@@ -1,0 +1,351 @@
+package kr.or.ddit.pfcp.student.program.controller;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import jakarta.servlet.http.HttpServletResponse;
+import kr.or.ddit.common.util.FileUploadRequest;
+import kr.or.ddit.common.util.FileUtils;
+import kr.or.ddit.pfcp.common.service.AtchFileService;
+import kr.or.ddit.pfcp.common.service.FileRefService;
+import kr.or.ddit.pfcp.common.vo.AtchFileVO;
+import kr.or.ddit.pfcp.common.vo.EvalCriteriaVO;
+import kr.or.ddit.pfcp.common.vo.FileRefVO;
+import kr.or.ddit.pfcp.common.vo.ProgramEnrollVO;
+import kr.or.ddit.pfcp.common.vo.ProgramEvalScoreVO;
+import kr.or.ddit.pfcp.common.vo.ProgramEvalVO;
+import kr.or.ddit.pfcp.common.vo.ProgramVO;
+import kr.or.ddit.pfcp.student.certificate.service.StudentCertificateService;
+import kr.or.ddit.pfcp.student.program.service.StudentProgramService;
+import kr.or.ddit.validate.utils.ErrorsUtils;
+
+/**
+ * @author seokyungdeok
+ * @since 250701
+ * 
+ * << 개정이력(Modification Information) >>
+ * 수정일	|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 250701	|	서경덕	|	최초 생성
+ */
+@Controller
+@RequestMapping("/student/program")
+public class StudentProgramController {
+	@Autowired
+	private StudentProgramService studentProgramService;
+	
+	@Autowired
+	private StudentCertificateService studentCertificateService;
+	
+	@Autowired
+	private FileRefService fileRefService;
+	
+	@Autowired
+	private AtchFileService atchFileService;
+	
+	static final String MODEL_NAME = "programEnroll";
+	
+	@Autowired
+	private ErrorsUtils errorsUtils;
+	
+	@ModelAttribute(MODEL_NAME)
+	public ProgramEnrollVO programEnroll() {
+		return new ProgramEnrollVO();
+	}
+	
+	/**
+	 * 비교과 프로그램 목록 조회 (List)
+	 * 
+	 * @return
+	 */
+	@GetMapping("programApplList.do")
+	public String programApplList(
+		Model model,
+		Principal principal
+	) {
+		List<ProgramVO> programList = studentProgramService.readProgramList();
+		
+		for (ProgramVO programVO : programList) {
+			int cnt = studentProgramService.countEnrollNo(programVO.getProgramNo());
+			
+			programVO.setEnrollCount(cnt);
+		}
+		
+		model.addAttribute("programList", programList);
+		
+		return "pfcp/student/program/programAppl";
+	}
+	
+	/**
+	 * 비교과 프로그램 상세 조회 (Detail)
+	 * -> 신청 현황, 신청 가능 여부, 취소/변경 기간 조회, 승인 여부, 
+	 *    일정, 장소, 출석 기록 조회, 참여 현황, 활동 점수, 평가 기준 조회 가능
+	 * 
+	 * @return
+	 */
+	@GetMapping("programApplDetail.do")
+	public String programApplDetail(
+		@RequestParam String no,
+		Model model
+	) {
+		ProgramVO program = studentProgramService.readProgramDetail(no);
+		
+		System.out.println("facility === " + program.getFacility());
+		
+		model.addAttribute("program", program);
+		
+		return "pfcp/student/program/programApplDetail";
+	}
+	
+	/**
+	 * 비교과 프로그램 신청 등록
+	 * 
+	 * @return
+	 * @throws IOException 
+	 */
+	@PostMapping("programApplInsert.do")
+	public String programApplInsert(
+		@RequestParam String no, 
+		Principal principal,
+		@ModelAttribute(MODEL_NAME) ProgramEnrollVO programEnroll,
+		BindingResult errors,
+		RedirectAttributes redirectAttributes
+	) throws IOException {
+		String lvn;
+		
+		programEnroll.setProgramNo(no);
+		programEnroll.setUserNo(principal.getName());
+		
+		if (!errors.hasErrors()) {
+			if (programEnroll.getUploadFile() != null && !programEnroll.getUploadFile().isEmpty()) {
+				FileUploadRequest req = new FileUploadRequest(
+					programEnroll.getUploadFile(),
+					"PROGRAM_ENROLL",
+					programEnroll.getEnrollNo(),
+					programEnroll::setFileRefNo
+				);
+				FileUtils.uploadFile(req);
+			}
+			
+			boolean success = studentProgramService.createProgram(programEnroll);
+			
+			if (!success) {
+				redirectAttributes.addFlashAttribute("message", "이미 신청한 프로그램입니다.");
+			} else {
+				redirectAttributes.addFlashAttribute("message", "프로그램 신청이 완료되었습니다.");
+			}
+			
+			lvn = "redirect:/student/program/programApplDetail.do?no=" + no;
+		} else {
+			redirectAttributes.addFlashAttribute(MODEL_NAME, programEnroll);
+			
+			MultiValueMap<String, String> customErrors = errorsUtils.errorsToMap(errors);
+			redirectAttributes.addFlashAttribute("errors", customErrors);
+			
+			lvn = "redirect:/student/program/programApplDetail.do?no=" + no;
+		}
+		
+		return lvn;
+	}
+	
+	/**
+	 * 비교과 프로그램 신청 삭제
+	 * 
+	 * @return
+	 */
+	@GetMapping("programApplDelete.do")
+	public String programApplDelete() {
+		return "redirect:/student/programApplList.do";
+	}
+	
+	/**
+	 * 참여 중인 비교과 프로그램 목록 조회 (List)
+	 * -> 프로그램 별 참여 횟수, 성취도 조회 가능
+	 * 
+	 * @return
+	 */
+	@GetMapping("myParticipationList.do")
+	public String participationProgramList(
+		Principal principal,
+		Model model
+	) {
+		String userNo = principal.getName();
+		
+		List<ProgramVO> programList = studentCertificateService.readProgramList(userNo);
+		
+		model.addAttribute("programList", programList);
+		
+		return "pfcp/student/program/participationProgram/participationProgram";
+	}
+	
+	/**
+	 * 참여 중인 비교과 프로그램 상세 조회 (Detail)
+	 * -> 프로그램 이수 여부, 이수 기준 조회, 이수 인증서 발급 요청 등록 가능 
+	 * 
+	 * @return
+	 */
+	@GetMapping("myParticipationDetail.do")
+	public String participationProgramDetail(
+		@RequestParam(value = "no") String no,
+		Principal principal,
+		Model model
+	) {
+		Map<String, Object> paramMap = new HashMap<>();
+		
+		paramMap.put("programNo", no);
+		paramMap.put("userNo", principal.getName());
+		
+		ProgramVO program = studentProgramService.readProgramDetail(no);
+		ProgramEnrollVO programEnroll = studentProgramService.readProgramEnrollDetail(paramMap);
+		
+		model.addAttribute("program", program);
+		model.addAttribute("programEnroll", programEnroll);
+		
+		return "pfcp/student/program/participationProgram/participationProgramDetail";
+	}
+	
+	/**
+	 * 프로그램 성과 분석 및 피드백 조회
+	 * 
+	 * @return
+	 */
+	@GetMapping("feedbackAnalysis.do")
+	public String feedbackAnalysis() {
+		return "pfcp/student/program/participationProgram/participationProgramFeedbackAnalysis";
+	}
+	
+	/**
+	 * 프로그램 만족도 조사 등록
+	 * 
+	 * @return
+	 */
+	@GetMapping("surveyInsert.do")
+	public String satisfactionSurveyInsert(
+		Model model,
+		@RequestParam(value = "no") String enrollNo,
+		RedirectAttributes redirectAttributes
+	) {
+		List<EvalCriteriaVO> evalCriteriaList = studentProgramService.readProgramEvaluationList();
+		
+		boolean alreadyExists = studentProgramService.existsEvalByEnrollNo(enrollNo);
+		
+		String programNo = studentProgramService.readProgramEnrollDetailByEnrollNo(enrollNo);
+		
+		if (alreadyExists) {
+	    	redirectAttributes.addFlashAttribute("message", "이미 조사를 완료했습니다.");
+            return "redirect:/student/program/myParticipationDetail.do?no=" + programNo;
+	    }
+		
+		model.addAttribute("evalList", evalCriteriaList);
+		model.addAttribute("enrollNo", enrollNo);
+		
+		return "pfcp/student/program/participationProgram/participationProgramServeyForm";
+	}
+	
+	@PostMapping("completeEvaluation.do")
+	public String satisfactionSurveyInsertFormProcess(
+		Principal principal,
+        @RequestParam Map<String, String> paramMap
+	) {
+		String enrollNo = paramMap.get("no");
+		
+		int sum = 0;
+		
+		String evalNo = "EV" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+		String comment = paramMap.get("comment");
+		
+		ProgramEvalScoreVO evalScore = new ProgramEvalScoreVO();
+		ProgramEvalVO eval = new ProgramEvalVO();
+		
+		evalScore.setEvalNo(evalNo);
+		
+		for (String key : paramMap.keySet()) {
+	        if (key.startsWith("score_")) {
+	            String score = paramMap.get(key);
+	            String criteriaNoKey = "criteriaNo_" + key.split("_")[1];
+	            String criteriaNo = paramMap.get(criteriaNoKey);
+
+	            
+	            sum += Integer.parseInt(score);
+	            
+	            evalScore.setEvalScore(Integer.parseInt(score));
+	            evalScore.setCriteriaNo(criteriaNo);
+	            
+	            studentProgramService.createProgramEvalScore(evalScore);
+	        }
+	    }
+		
+		eval.setEvalNo(evalNo);
+		eval.setEnrollNo(enrollNo);
+		eval.setOverallScore(sum);
+		eval.setEvalComment(comment);
+		
+		studentProgramService.createProgramEval(eval);
+		
+		String programNo = studentProgramService.readProgramEnrollDetailByEnrollNo(enrollNo);
+		
+		return "redirect:/student/program/myParticipationDetail.do?no=" + programNo;
+	}
+	
+	/**
+	 * 역량 평가 결과 조회
+	 * 
+	 * @return
+	 */
+	@GetMapping("myEvaluationResult.do")
+	public String evaluationResult() {
+		return "pfcp/student/program/participationProgram/evaluationResult";
+	}
+	
+	@GetMapping("fileDownload.do")
+	public void fileDownload(
+		@RequestParam("fileRefNo") String fileRefNo,
+		HttpServletResponse response
+	) throws IOException {
+		// FILE_REF에서 ATCH_ID 가져오기
+		FileRefVO fileRef = fileRefService.readFileRef(fileRefNo);
+		
+		if (fileRef == null) {
+	        throw new RuntimeException("파일 참조 정보가 없습니다.");
+	    }
+		
+		String atchId = fileRef.getAtchId();
+		
+		// ATCH_FILE에서 파일 정보 가져오기
+	    AtchFileVO atchFile = atchFileService.readAtchFile(atchId);
+	    
+	    if (atchFile == null || atchFile.getAtchContent() == null) {
+	        throw new RuntimeException("파일 정보가 없습니다.");
+	    }
+	    
+	    // 응답 헤더 설정
+	    response.setContentType(atchFile.getAtchMime());
+	    response.setHeader("Content-Disposition", "attachment; filename=\"" + 
+	        new String(atchFile.getAtchOriginName().getBytes("UTF-8"), "ISO-8859-1") + "\"");
+	    response.setContentLength((int) atchFile.getAtchSize());
+
+	    // 파일 데이터 쓰기
+	    try (OutputStream out = response.getOutputStream()) {
+	        out.write(atchFile.getAtchContent());
+	        out.flush();
+	    }
+	}
+}

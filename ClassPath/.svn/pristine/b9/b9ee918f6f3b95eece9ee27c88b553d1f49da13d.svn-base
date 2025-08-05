@@ -1,0 +1,24 @@
+package kr.or.ddit.pfcp.staff.schedule.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.vo.ScheduleRefVO;
+import kr.or.ddit.pfcp.common.vo.ScheduleVO;
+import kr.or.ddit.pfcp.staff.schedule.mapper.ScheduleMapper;
+
+@Service
+public class StaffScheduleServiceImpl implements StaffScheduleService {
+
+	@Autowired
+	private ScheduleMapper scheduleMapper;
+	
+	
+	@Override
+	public List<ScheduleVO> readScheduleList() {
+		return scheduleMapper.selectScheduleWithRef();
+	}
+
+}

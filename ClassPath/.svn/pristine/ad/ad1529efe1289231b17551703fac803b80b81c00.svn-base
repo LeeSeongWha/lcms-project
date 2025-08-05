@@ -1,0 +1,13 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of = "fileRefNo")
+public class FileRefVO {
+	private String fileRefNo;
+	private String fileRefType;
+	private String fileRefTargetId;
+	private String atchId;
+}

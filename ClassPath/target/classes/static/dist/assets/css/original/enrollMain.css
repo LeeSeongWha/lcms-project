@@ -1,0 +1,175 @@
+.container {
+	max-width: 1000px;
+	margin: 0 auto;
+	padding: 2rem;
+}
+
+.summary-grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin-bottom: 2rem;
+}
+
+.summary-grid>div {
+	flex: 1;
+	background: #fff;
+	padding: 1rem;
+	border: 1px solid #ddd;
+	border-radius: 0.5rem;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+	text-align: center;
+}
+
+.summary-grid span {
+	display: block;
+	margin-top: 0.5rem;
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: #2b77ef;
+}
+
+.tab-menu {
+	display: flex;
+	gap: 0.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.tab-menu button {
+	padding: 0.5rem 1rem;
+	background: #e9ecef;
+	border: none;
+	border-radius: 1.5rem;
+	cursor: pointer;
+	font-weight: 500;
+}
+
+.tab-menu button.active {
+	background: #2b77ef;
+	color: white;
+}
+
+.add-button {
+	text-align: right;
+	margin-bottom: 1rem;
+}
+
+.btn-add {
+	background: #2b77ef;
+	color: white;
+	padding: 0.5rem 1rem;
+	border: none;
+	border-radius: 0.5rem;
+	cursor: pointer;
+	font-size: 1rem;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	background-color: white;
+	border: 1px solid #dee2e6;
+}
+
+table th, table td {
+	padding: 0.75rem;
+	text-align: center;
+	border-bottom: 1px solid #dee2e6;
+}
+
+table th {
+	background-color: #f1f3f5;
+	font-weight: 600;
+}
+
+table td a {
+	margin: 0 0.25rem;
+	text-decoration: none;
+	font-size: 1.1rem;
+}
+
+tr.canceled {
+	background-color: #f1f3f5;
+	color: #888;
+}
+
+.timetable-table {
+	width: 100%;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+.timetable-table th, .timetable-table td {
+	border: 1px solid #ccc;
+	height: 80px;
+	text-align: center;
+	vertical-align: middle;
+	padding: 5px;
+	overflow-wrap: break-word;
+}
+
+.notice-banner {
+	background-color: #e6f2ff;
+	border-radius: 12px;
+	padding: 1rem 1.5rem;
+	margin: 1.5rem 0;
+	border: 1px solid #b3d7ff;
+	color: #003366;
+	font-size: 1rem;
+	line-height: 1.5;
+	box-shadow: 0 2px 4px rgba(0, 102, 204, 0.1);
+}
+
+.notice-banner strong {
+	font-size: 1.1rem;
+	color: #2b77ef;
+}
+
+.form-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
+.form-col {
+	flex: 1 1 calc(50% - 0.5rem); /* 두 개씩 나열되도록 설정 */
+	margin-bottom: 1rem; /* 각 항목의 아래 여백 */
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 0.5rem; /* 레이블과 입력 필드 사이의 간격 */
+}
+
+.form-control {
+	width: 100%;
+	padding: 0.5rem;
+	border: 1px solid #ddd;
+	border-radius: 0.25rem;
+}
+
+.button-group {
+	display: flex;
+	gap: 0.5rem;
+	justify-content: flex-start;
+}
+
+.cancelButton, .searchButton {
+	padding: 0.75rem 1.5rem;
+	border: 1px solid #007bff;
+	background-color: #007bff;
+	color: white;
+	border-radius: 0.25rem;
+	text-decoration: none;
+	text-align: center;
+}
+
+.cancelButton:hover, .searchButton:hover {
+	background-color: #0056b3; /* 버튼 hover 효과 */
+}
+
+.saveButton
+, .deleteButton
+, .submitButton {
+	cursor: pointer;
+}

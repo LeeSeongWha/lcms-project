@@ -1,0 +1,335 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+<title>시설 예약</title>
+
+<c:set var="days" value="${fn:split('MON,TUE,WED,THU,FRI', ',')}" />
+<c:set var="dayNames" value="${fn:split('월요일,화요일,수요일,목요일,금요일', ',')}" />
+
+<body class="bg-light text-dark font-sans">
+
+	<div class="container my-5 p-4 bg-white rounded shadow">
+		<h2 class="text-center fw-bold mb-4 pageTitle">시설 예약</h2>
+
+		<!-- 시설 정보 -->
+		<div class="text-center mb-4 p-4 card border-primary">
+			<h3 id="facilityName" class="fw-bold text-primary mb-2">
+				${facility.facilityName} <span class="fw-normal text-muted">
+					- ${facility.location}</span>
+			</h3>
+			<p id="facilityInfo" class="text-secondary mb-0">
+				${facility.facilityType} / ${facility.facilityMp}인 사용 가능</p>
+		</div>
+
+		<!-- 예약 안내 -->
+		<div class="noticeBox noticeInfo text-center mb-4">💡 예약 안내: 파란색
+			시간대를 클릭하여 예약하실 수 있습니다. 한 번에 최대 2시간까지 연속 예약 가능합니다.</div>
+
+		<!-- 예약 가능 시간표 -->
+		<div class="border-top pt-4 mt-4">
+			<h3 class="sectionTitle">예약 가능 시간표</h3>
+
+			<div class="tableContainer">
+				<table class="defaultTable table table-bordered text-center">
+					<thead class="tableHead">
+						<tr>
+							<th class="tableTh">시간</th>
+							<c:forEach var="dayName" items="${dayNames}">
+								<th class="tableTh">${dayName}</th>
+							</c:forEach>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach var="hour" begin="9" end="17">
+							<tr>
+								<td class="tableTd bg-light fw-bold">${hour}:00-
+									${hour+1}:00</td>
+								<c:forEach var="day" items="${days}">
+									<!-- 예약 가능 시간대인지 확인 -->
+									<c:set var="found" value="false" />
+									<c:forEach var="item" items="${facilityRT}">
+										<c:if
+											test="${item.reservationDay eq day && item.startHour eq hour}">
+											<c:set var="found" value="true" />
+										</c:if>
+									</c:forEach>
+
+									<!-- 이미 예약된 시간인지 확인 -->
+									<c:set var="reservedKey" value="${day}_${hour}" />
+									<c:choose>
+										<c:when test="${found and not fn:contains(reservedTimes, reservedKey)}">
+											<!-- 예약 가능 -->
+											<td class="tableTd text-primary fw-medium reservation-slot"
+												style="background-color: #bee3f8; cursor: pointer;"
+												onclick="selectTimeSlot(this, '${day}', ${hour})"
+												data-day="${day}" data-hour="${hour}"><span>예약가능</span>
+											</td>
+										</c:when>
+										<c:otherwise>
+											<!-- 예약 불가 -->
+											<td class="tableTd bg-secondary text-white" data-day="${day}"
+												data-hour="${hour}"><span>예약불가</span></td>
+										</c:otherwise>
+									</c:choose>
+								</c:forEach>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+			</div>
+
+			<!-- 범례 -->
+			<div class="d-flex justify-content-center gap-4 mt-4">
+				<div class="d-flex align-items-center">
+					<div class="me-2"
+						style="width: 16px; height: 16px; background-color: #bee3f8; border: 1px solid #ccc;"></div>
+					<span class="text-muted small">예약 가능</span>
+				</div>
+				<div class="d-flex align-items-center">
+					<div class="me-2"
+						style="width: 16px; height: 16px; background-color: #6c757d; border: 1px solid #ccc;"></div>
+					<span class="text-muted small">예약 불가</span>
+				</div>
+				<div class="d-flex align-items-center">
+					<div class="me-2"
+						style="width: 16px; height: 16px; background-color: #28a745; border: 1px solid #ccc;"></div>
+					<span class="text-muted small">선택된 시간</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- 선택된 예약 정보 -->
+		<div id="selectedInfo" class="mt-4 p-3 bg-light rounded d-none">
+			<h4 class="fw-bold mb-3">선택된 예약 정보</h4>
+			<div class="row">
+				<div class="col-md-6">
+					<p>
+						<strong>시설명:</strong> ${facility.facilityName}
+					</p>
+					<p>
+						<strong>위치:</strong> ${facility.location}
+					</p>
+				</div>
+				<div class="col-md-6">
+					<p>
+						<strong>선택된 시간:</strong> <span id="selectedTime"></span>
+					</p>
+					<p>
+						<strong>총 예약 시간:</strong> <span id="totalHours">0</span>시간
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- 버튼 영역 -->
+		<div class="text-center mt-5">
+			<button onclick="goBack()" class="cancelButton me-2">목록으로</button>
+			<button id="reserveButton" onclick="submitReservation()"
+				class="submitButton d-none">예약하기</button>
+		</div>
+
+		<!-- 나의 예약 목록 (취소용) -->
+		<c:if test="${not empty myReservations}">
+			<div class="mt-5">
+				<h4 class="fw-bold mb-3">내 예약 목록</h4>
+				<table class="table table-bordered text-center">
+					<thead>
+						<tr>
+							<th>예약일시</th>
+							<th>취소</th>
+						</tr>
+					</thead>
+					<tbody id="reservationTableBody">
+						<c:forEach var="reservation" items="${myReservations}">
+							<tr id="reservation-${reservation.reservationNo}">
+								<td>${reservation.preferredDate}</td>
+								<td>
+									<button type="button" class="btn btn-danger btn-sm"
+										onclick="cancelReservation('${reservation.reservationNo}')">
+										취소
+									</button>
+								</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+			</div>
+		</c:if>
+	</div>
+
+	<script>
+		let selectedSlots = [];
+		let selectedSlotsData = [];
+
+		function goBack() {
+			window.location.href = "/student/facility/studentFacilityList.do";
+		}
+
+		function selectTimeSlot(cell, day, hour) {
+			const key = day + '_' + hour;
+			const span = cell.querySelector('span');
+			
+			if (span.textContent === '예약가능') {
+				// 이미 선택된 시간인지 확인
+				const index = selectedSlots.indexOf(key);
+				if (index > -1) {
+					// 선택 해제
+					selectedSlots.splice(index, 1);
+					selectedSlotsData.splice(index, 1);
+					span.textContent = '예약가능';
+					span.className = 'text-primary fw-medium';
+					cell.style.backgroundColor = '#bee3f8';
+				} else {
+					// 최대 2시간까지만 선택 가능
+					if (selectedSlots.length >= 2) {
+						alert('최대 2시간까지만 연속 예약 가능합니다.');
+						return;
+					}
+					
+					// 선택 추가
+					selectedSlots.push(key);
+					selectedSlotsData.push({day: day, hour: hour});
+					span.textContent = '선택됨';
+					span.className = 'text-white fw-medium';
+					cell.style.backgroundColor = '#28a745';
+				}
+				
+				updateSelectedInfo();
+			}
+		}
+
+		function updateSelectedInfo() {
+			const selectedInfo = document.getElementById('selectedInfo');
+			const reserveButton = document.getElementById('reserveButton');
+
+			if (selectedSlots.length > 0) {
+				selectedInfo.classList.remove('d-none');
+				reserveButton.classList.remove('d-none');
+
+				const dayNames = {'MON': '월요일', 'TUE': '화요일', 'WED': '수요일', 'THU': '목요일', 'FRI': '금요일'};
+				let timeText = '';
+
+				selectedSlotsData.sort((a, b) => {
+					if (a.day !== b.day) return 0;
+					return a.hour - b.hour;
+				});
+
+				selectedSlotsData.forEach((slot, index) => {
+					if (index > 0) timeText += ', ';
+					timeText += dayNames[slot.day] + ' ' + slot.hour + ':00-' + (slot.hour + 1) + ':00';
+				});
+
+				document.getElementById('selectedTime').textContent = timeText;
+				document.getElementById('totalHours').textContent = selectedSlots.length;
+
+			} else {
+				selectedInfo.classList.add('d-none');
+				reserveButton.classList.add('d-none');
+			}
+		}
+		
+		function submitReservation() {
+			if (selectedSlots.length === 0) {
+				alert('예약할 시간을 선택해주세요.');
+				return;
+			}
+
+			const formData = new FormData();
+			formData.append('facilityNo', '${facility.facilityNo}');
+			formData.append('selectedSlots', JSON.stringify(selectedSlotsData));
+
+			if (confirm('예약하시겠습니까?')) {
+				fetch('/student/facility/reserve', {
+					method: 'POST',
+					body: formData
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						alert('예약이 완료되었습니다!');
+						window.location.reload();
+					} else {
+						alert('예약 중 오류가 발생했습니다: ' + (data.message || ''));
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					alert('예약 중 오류가 발생했습니다.');
+				});
+			}
+		}
+
+		// 비동기 예약 취소 함수
+		function cancelReservation(reservationNo) {
+			console.log('cancelReservation 함수 호출됨, reservationNo:', reservationNo);
+			
+			if (!confirm('정말 취소하시겠습니까?')) {
+				console.log('사용자가 취소를 선택함');
+				return;
+			}
+
+			// 버튼 비활성화 (중복 클릭 방지)
+			const cancelButton = event.target; // onclick으로 호출된 버튼
+			const originalText = cancelButton.textContent;
+			cancelButton.disabled = true;
+			cancelButton.textContent = '취소 중...';
+			
+			console.log('버튼 상태 변경 완료');
+
+			const formData = new FormData();
+			formData.append('reservationNo', reservationNo);
+			
+			console.log('FormData 생성 완료:', reservationNo);
+
+			fetch('/student/facility/cancel', {
+				method: 'POST',
+				body: formData
+			})
+			.then(response => {
+				console.log('응답 수신:', response.status);
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+				return response.json();
+			})
+			.then(data => {
+				console.log('응답 데이터:', data);
+				if (data.success) {
+					alert(data.message);
+					// 해당 예약 행을 DOM에서 제거
+					const reservationRow = document.getElementById(`reservation-${reservationNo}`);
+					if (reservationRow) {
+						reservationRow.remove();
+						console.log('예약 행 제거 완료');
+					}
+					window.location.reload();
+					
+					// 예약 목록이 모두 삭제되었는지 확인
+					const tableBody = document.getElementById('reservationTableBody');
+					if (tableBody && tableBody.children.length === 0) {
+						// 예약 목록 섹션 전체를 숨김
+						const reservationSection = tableBody.closest('.mt-5');
+						if (reservationSection) {
+							reservationSection.style.display = 'none';
+						}
+					}
+				} else {
+					alert(data.message || '예약 취소에 실패했습니다.');
+					// 버튼 상태 복원
+					cancelButton.disabled = false;
+					cancelButton.textContent = originalText;
+				}
+			})
+			.catch(error => {
+				console.error('Error:', error);
+				alert('예약 취소 중 오류가 발생했습니다: ' + error.message);
+				// 버튼 상태 복원
+				cancelButton.disabled = false;
+				cancelButton.textContent = originalText;
+			});
+		}
+	</script>
+</body>
+</html>

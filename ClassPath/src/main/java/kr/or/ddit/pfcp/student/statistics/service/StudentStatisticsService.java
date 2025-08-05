@@ -1,0 +1,9 @@
+package kr.or.ddit.pfcp.student.statistics.service;
+
+import java.util.List;
+import kr.or.ddit.pfcp.common.vo.StudentStatisticsVO;
+
+public interface StudentStatisticsService {
+  public List<StudentStatisticsVO> retrieveStudentStatistics(String studentId);
+  public List<StudentStatisticsVO> retrieveStudentGradeStatistics(String studentId);
+}

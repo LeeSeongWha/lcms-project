@@ -1,0 +1,33 @@
+package kr.or.ddit.pfcp.staff.college.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import kr.or.ddit.pfcp.common.vo.GraduationRequestVO;
+import kr.or.ddit.pfcp.common.vo.GraduationResultVO;
+
+/**
+ * @author KGM
+ * @since 250701
+ * @see
+ */
+@Mapper
+public interface GraduationRequestMapper {
+	
+	List<GraduationRequestVO> selectAllGraduationRequestList();
+
+	GraduationRequestVO selectGraduationRequest(String gradReqNo);
+	
+	int updateGraduationRequest(GraduationRequestVO gradReqNo);
+	
+	int deleteGraduationRequest(String gradReqNo);
+	
+	
+	
+	int insertGraduationResult(GraduationResultVO gradResultNo);
+	
+	int updateGraduationResult(GraduationResultVO gradResultNo);
+	
+	int deleteGraduationResult(String gradResultNo);
+}

@@ -1,0 +1,50 @@
+package kr.or.ddit.pfcp.staff.scholarship.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * @author YSM
+ * @since 250628
+ */
+@Controller
+@RequestMapping("/staff/scholarship")
+public class ScholarshipController {
+	
+	/**
+	 * 장학금 목록 전체 조회
+	 * @return
+	 */
+	@GetMapping("scholarshipList.do")
+	public String scholarshipListUI() {
+		return "pfcp/staff/scholarship/scholarshipList";
+	}
+	
+	/**
+	 * 장학금 목록 상세 조회
+	 * @return
+	 */
+	@GetMapping("scholarshipListDetail.do")
+	public String scholarshipDetailUI() {
+		return "pfcp/staff/scholarship/scholarshipListDetail";
+	}
+	
+	/**
+	 * 장학금 목록 등록
+	 * @return
+	 */
+	@GetMapping("scholarshipListInsert.do")
+	public String scholarshipInsertUI() {
+		return "pfcp/staff/scholarship/scholarshipListInsert";
+	}
+	
+	/**
+	 * 장학금 목록 수정
+	 * @return
+	 */
+	@GetMapping("scholarshipListUpdate.do")
+	public String scholarshipUpdatetUI() {
+		return "pfcp/staff/scholarship/scholarshipListDetail";
+	}
+}

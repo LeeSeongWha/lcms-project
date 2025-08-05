@@ -1,0 +1,41 @@
+package kr.or.ddit.pfcp.staff.lectureEvaluation.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * @author YSM
+ * @since 250628
+ */
+@Controller
+@RequestMapping("/staff/lectureEvaluation")
+public class StaffLectureEvaluationController {
+	
+	/**
+	 * 강의 평가 목록 전체 조회
+	 * @return
+	 */
+	@GetMapping("lectureEvalutaionForm.do")
+	public String lectureEvalutaionFromUI() {
+		return "pfcp/staff/lectureEvaluation/lectureEvalutaionForm";
+	}
+	
+	/**
+	 * 강의 평가 목록 등록
+	 * @return
+	 */
+	@GetMapping("lectureEvalutaionFormInsert.do")
+	public String lectureEvalutaionFormInsertUI() {
+		return "pfcp/staff/lectureEvaluation/lectureEvalutaionFormInsert";
+	}
+	
+	/**
+	 * 강의 평가 목록 삭제
+	 * @return
+	 */
+	@GetMapping("lectureEvalutaionFormDelete.do")
+	public String lectureEvalutaionFormDeleteUI() {
+		return "redirect:/staff/lectureEvaluation/lectureEvalutaionForm.do";
+	}
+}

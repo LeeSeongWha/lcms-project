@@ -1,0 +1,62 @@
+package kr.or.ddit.pfcp.staff.certification.controller;
+
+import java.io.IOException;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+
+import jakarta.servlet.http.HttpServletResponse;
+import kr.or.ddit.pfcp.staff.certification.service.StaffCertificationService;
+
+@RestController
+public class GenerateStudentCertificate {
+	
+	@GetMapping("/cert/student")
+	public void generateStudentCertificate(HttpServletResponse response) throws IOException {
+	    // 파일 이름과 타입 설정
+	    response.setContentType("application/pdf");
+	    response.setHeader("Content-Disposition", "attachment; filename=student_certificate.pdf");
+
+	    
+	    // PDF 문서 생성
+	    PdfWriter writer = new PdfWriter(response.getOutputStream());
+	    PdfDocument pdf = new PdfDocument(writer);
+	    Document document = new Document(pdf);
+
+	    String fontPath = new ClassPathResource("static/fonts/NanumGothic-Regular.ttf").getFile().getPath();
+	    PdfFont font = PdfFontFactory.createFont(fontPath, PdfEncodings.IDENTITY_H, pdf);
+
+	    document.setFont(font);
+
+
+	    // 내용 작성
+	    document.add(new Paragraph("재학 증명서").setFontSize(20).setBold());
+	    document.add(new Paragraph("이름: 양수민"));
+	    document.add(new Paragraph("학번: 202012345"));
+	    document.add(new Paragraph("학과: 멀티미디어공학과"));
+	    document.add(new Paragraph("발급일: 2025년 7월 19일"));
+
+	    document.close();
+	}
+	
+	@GetMapping("/cert/student/view")
+	public void previewStudentCertificate(@RequestParam String studentId, HttpServletResponse response) throws IOException {
+	    response.setContentType("application/pdf");
+	    // inline 으로 설정 → 브라우저 내 PDF 미리보기
+	    response.setHeader("Content-Disposition", "inline; filename=student_certificate.pdf");
+	    
+//	    StaffCertificationService.generateStudentCertificateById(studentId, response);
+	}
+
+
+}

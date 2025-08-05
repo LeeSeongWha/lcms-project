@@ -1,0 +1,16 @@
+package kr.or.ddit.pfcp.videochat.mapper;
+
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+import kr.or.ddit.pfcp.common.vo.OnlineSessionVO;
+
+@Mapper
+public interface SessionMapper {
+  
+  @Insert("INSERT INTO ONLINE_SESSIONS (SESSION_NO, OC_TITLE) VALUES(#{sessionNo}, #{ocTitle})")
+  void createSession(OnlineSessionVO session);
+  
+  @Select("SELECT * FROM ONLINE_SESSIONS WHERE SESSION_NO=#{sessionNo}")
+  OnlineSessionVO getSession(Integer sessionNo);
+}

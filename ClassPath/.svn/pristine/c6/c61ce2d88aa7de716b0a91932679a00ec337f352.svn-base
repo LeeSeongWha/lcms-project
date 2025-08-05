@@ -1,0 +1,235 @@
+package kr.or.ddit.pfcp.student.state.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 학생 액터 본인 학적 조회
+ * 
+ * @author seokyungdeok
+ * @since 250630
+ * 
+ * << 개정이력(Modification Information) >>
+ * 수정일	|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 250630	|	서경덕	|	최초 생성
+ */
+@Controller
+@RequestMapping("/student")
+public class StudentStateController {
+	/**
+	 * 학적 조회
+	 * 학적에서 전공 변경, 복수 전공, 휴학, 복학 관리 가능
+	 * 
+	 * @return
+	 */
+	@GetMapping("studentState.do")
+	public String studentState() {
+		return "pfcp/student/state/studentState";
+	}
+	
+	// 전공변경 CRUD start
+	/**
+	 * 전공 변경 신청 조회(List)
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/majorChangeList.do")
+	public String majorChangeList() {
+		return "pfcp/student/state/majorChange/majorChange";
+	}
+	
+	/**
+	 * 전공 변경 신청 상세 조회(Detail)
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/studentMajorDetail.do")
+	public String majorChangeDetail() {
+		return "pfcp/student/state/majorChange/majorChangeDetail";
+	}
+	
+	/**
+	 * 전공 변경 신청 등록
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/majorChangeInsert.do")
+	public String majorChangeInsert() {
+		return "pfcp/student/state/majorChange/majorChangeForm";
+	}
+	
+	/**
+	 * 전공 변경 신청 삭제
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/majorChangeDelete.do")
+	public String majorChangeDelete() {
+		return "redirect:/student/counsel/majorChangeList.do";
+	}
+
+	/**
+	 * 전공 변경 신청 수정
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/majorChangeUpdate.do")
+	public String majorChangeUpdate() {
+		return "pfcp/student/state/majorChange/majorChangeUpdate";
+	}
+	
+	// 복수 전공 CRUD start
+	/**
+	 * 복수 전공 조회 (List)
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/doubleMajor.do")
+	public String doubleMajor() {
+		return "pfcp/student/state/doubleMajor/doubleMajor";
+	}
+	
+	/**
+	 * 복수 전공 상세 조회 (Detail)
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/doubleMajorDetail.do")
+	public String doubleMajorDetail() {
+		return "pfcp/student/state/doubleMajor/doubleMajorDetail";
+	}
+	
+	/**
+	 * 복수 전공 신청 등록
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/doubleMajorInsert.do")
+	public String doubleMajorInsert() {
+		return "pfcp/student/state/doubleMajor/doubleMajorInsert";
+	}
+	
+	/**
+	 * 복수 전공 신청 수정
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/doubleMajorUpdate.do")
+	public String doubleMajorUpdate() {
+		return "pfcp/student/state/doubleMajor/doubleMajorUpdate";
+	}
+	
+	/**
+	 * 복수 전공 신청 삭제
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/doubleMajorDelete.do")
+	public String doubleMajorDelete() {
+		return "redirect:/student/counsel/doubleMajor.do";
+	}
+	
+	// 휴학 CRUD start
+	/**
+	 * 휴학 신청 조회 (List)
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/leaveApplyList.do")
+	public String leaveApply() {
+		return "pfcp/student/state/leaveApply/leaveApply";
+	}
+	
+	/**
+	 * 휴학 신청 상세 조회 (Detail)
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/leaveApplyDetail.do")
+	public String leaveApplyDetail() {
+		return "pfcp/student/state/leaveApply/leaveApplyDetail";
+	}
+	
+	/**
+	 * 휴학 신청 등록
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/leaveApplyInsert.do")
+	public String leaveApplyInsert() {
+		return "pfcp/student/state/leaveApply/leaveApplyForm";
+	}
+	
+	/**
+	 * 휴학 신청 삭제
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/leaveApplyDelete.do")
+	public String leaveApplyDelete() {
+		return "redirect:/student/counsel/leaveApplyList.do";
+	}
+	
+	/**
+	 * 휴학 신청 수정
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/leaveApplyUpdate.do")
+	public String leaveApplyUpdate() {
+		return "pfcp/student/state/leaveApply/leaveApplyUpdate";
+	}
+	
+	// 복학 신청 CRUD start
+	/**
+	 * 복학 신청 조회 (List)
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/returnApplyList.do")
+	public String returnApply() {
+		return "pfcp/student/state/returnApply/returnApply";
+	}
+	
+	/**
+	 * 복학 신청 상세 조회 (Detail)
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/returnApplyDetail.do")
+	public String returnApplyDetail() {
+		return "pfcp/student/state/returnApply/returnApplyDetail";
+	}
+	
+	/**
+	 * 복학 신청 등록
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/returnApplyInsert.do")
+	public String returnApplyInsert() {
+		return "pfcp/student/state/returnApply/returnApplyInsert";
+	}
+	
+	/**
+	 * 복학 신청 수정
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/returnApplyUpdate.do")
+	public String returnApplyUpdate() {
+		return "pfcp/student/state/returnApply/returnApplyUpdate";
+	}
+	
+	/**
+	 * 복학 신청 삭제
+	 * 
+	 * @return
+	 */
+	@GetMapping("counsel/returnApplyDelete.do")
+	public String returnApplyDelete() {
+		return "redirect:/student/counsel/returnApplyList.do";
+	}
+}

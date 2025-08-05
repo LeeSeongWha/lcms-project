@@ -1,0 +1,124 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+
+<title>교직원 목록 조회</title>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css"> 
+<link rel="stylesheet" href="/dist/assets/css/test/staffList2.css"> 
+
+<c:if test="${not empty success}">
+  <script>
+    alert("${success}");
+  </script>
+</c:if>
+
+
+<style>
+.staffList .editButton {
+        background: #4299e1;
+	    color: #ffffff;
+	    border: none;
+	    padding: 10px 20px;
+	    font-size: 0.9rem;
+	    font-weight: 600;
+	    border-radius: 4px;
+	    cursor: pointer;
+	    transition: all 0.2s ease;
+	    min-width: 50px;
+    }
+</style>
+
+<c:if test="${not empty errorMessage}">
+  <script>
+    alert("${errorMessage}");
+  </script>
+</c:if>
+<div class="staffList">
+	<!-- ======================================== -->
+	<div class="sectionHeaderLine">
+	  	<div>
+			<div class="sectionHeaderTitle">퇴직 교직원 목록 조회</div>
+			<div class="sectionHeaderDescription">전체 ${count}명의 교직원</div>
+		</div>
+		<button type="button" class="editButton" style="float:right" onclick="location.href='/staff/staffmanage/staffmanageList.do'">재직자 조회</button>
+	</div>
+	<!-- ======================================== -->
+
+	<form method="get" action="/staff/staffmanage/retiredList.do" style="margin-bottom: 1rem;">
+		<select name="searchType">
+			<option value="all" ${searchType == 'all' ? 'selected' : ''}>전체</option>
+			<option value="userNo" ${searchType == 'userNo' ? 'selected' : ''}>사번</option>
+			<option value="userName" ${searchType == 'userName' ? 'selected' : ''}>이름</option>
+			<option value="staffDepartment" ${searchType == 'staffDepartment' ? 'selected' : ''}>부서명</option>
+			<option value="staffPosition" ${searchType == 'staffPosition' ? 'selected' : ''}>직책</option>
+		</select>
+		<input type="text" name="keyword" id="keyword" value="${keyword}" placeholder="검색어 입력" />
+		<button type="submit" class="submitButton" >검색</button>
+	</form>
+
+	<div class="tableContainer">
+		<table class="defaultTable">
+			<thead class="tableHead">
+				<tr>
+					<th class="tableTh">번호</th>
+					<th class="tableTh">사번</th>
+					<th class="tableTh">이름</th>
+					<th class="tableTh">직책</th>
+					<th class="tableTh">부서</th>
+					<th class="tableTh">입사 일자</th>
+					<th class="tableTh">퇴사 일자</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:choose>
+					<c:when test="${not empty staff}">
+						<c:forEach items="${staff}" var="staff" varStatus="status">
+							<c:url value="/staff/staffmanage/staffDetail.do" var="detailURL">
+								<c:param name="no" value="${staff.userNo}" />
+							</c:url>
+							<tr onclick="location.href='${detailURL}'" class="tableRowHover">
+								<td class="tableTd">${status.index + 1}</td>
+								<td class="tableTd">${staff.userNo}</td>
+								<td class="tableTd">${staff.userName}</td>
+								<td class="tableTd">${staff.staffPosition}</td>
+								<td class="tableTd">${staff.staffDepartment}</td>
+								<td class="tableTd">${staff.staffHiredate}</td>
+								<td class="tableTd">
+									<c:choose>
+										<c:when test="${empty staff.staffRdate}">-</c:when>
+										<c:otherwise>${staff.staffRdate}</c:otherwise>
+									</c:choose>
+								</td>
+							</tr>
+						</c:forEach>
+					</c:when>
+					<c:otherwise>
+						<tr>
+							<td class="tableTd" colspan="7">퇴직한 교직원이 없습니다.</td>
+						</tr>
+					</c:otherwise>
+				</c:choose>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="pagination">
+		<c:if test="${paging.currentPageNo > 10}">
+			<a href="?page=${paging.firstPageNoOnPageList - paging.pageSize}&keyword=${keyword}" class="pageButton">이전</a>
+		</c:if>
+		
+		<c:forEach var="i" begin="${paging.firstPageNoOnPageList}" end="${paging.lastPageNoOnPageList}">
+			<c:choose>
+				<c:when test="${i == paging.currentPageNo}">
+					<strong class="pageButton active">${i}</strong>
+				</c:when>
+				<c:otherwise>
+					<a href="?page=${i}&keyword=${keyword}" class="pageButton">${i}</a>
+				</c:otherwise>
+			</c:choose>
+		</c:forEach>
+		
+		<c:if test="${paging.currentPageNo < paging.totalPageCount}">
+			<a href="?page=${paging.firstPageNoOnPageList + paging.pageSize}&keyword=${keyword}" class="pageButton">다음</a>
+		</c:if>
+	</div>
+</div>

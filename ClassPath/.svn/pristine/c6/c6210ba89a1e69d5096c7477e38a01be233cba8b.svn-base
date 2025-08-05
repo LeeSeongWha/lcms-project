@@ -1,0 +1,350 @@
+.calendar-container {
+    margin: 20px auto;
+    position: relative;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    color: #333;
+    padding: 30px;
+    box-sizing: border-box;
+    display: flex
+;
+    flex-direction: column;
+    gap: 30px;
+    width: 90%;
+    max-width: 1400px;
+}
+
+/* 페이지 제목 */
+.page-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--primary-color, #2b6cb0);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* 필터 섹션 */
+.filter-section {
+  background-color: white;
+  padding: 16px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05));
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  max-width: 220px;
+  font-size: 1rem;
+  color: var(--gray-700, #2d3748);
+}
+
+.filter-group label {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.form-control {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--gray-800, #1a202c);
+  outline-offset: 2px;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color, #2b6cb0);
+  box-shadow: 0 0 5px var(--primary-color, #2b6cb0);
+}
+
+/* 필터 버튼 그룹 */
+.filter-buttons {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.btn {
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  border: 2px solid transparent;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  user-select: none;
+  font-weight: 600;
+}
+
+.btn-outline-primary {
+  background-color: transparent;
+  border-color: var(--primary-color, #2b6cb0);
+  color: var(--primary-color, #2b6cb0);
+}
+
+.btn-outline-primary:hover {
+  color: #fff;
+}
+
+.btn-outline-secondary {
+  background-color: transparent;
+  border-color: var(--gray-600, #4a5568);
+  color: var(--gray-600, #4a5568);
+}
+
+.btn-outline-secondary:hover {
+  color: #fff;
+}
+
+.btn-primary {
+  background: linear-gradient(to right, #4A76FF, #8E44AD) !important;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+}
+
+/* 새 일정 등록 버튼 */
+.add-schedule-btn {
+  text-align: right;
+  background-color: linear-gradient(to right, #4A76FF, #8E44AD);
+}
+
+/* 메인 레이아웃 - 캘린더 영역 */
+.main-layout {
+  background-color: white;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-md, 0 1px 3px rgba(0,0,0,0.1));
+}
+
+/* 캘린더 div 기본 크기 설정 */
+#calendar {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* 모달 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.35);
+  display: none;
+  z-index: 1000;
+}
+
+/* 일정 등록 모달 */
+#scheduleModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 700px; /* ✅ 가로 길이 넓힘 */
+  max-width: 95vw;
+  max-height: 90vh;
+  background-color: var(--bg-primary, #fff);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg, 0 2px 8px rgba(0,0,0,0.15));
+  transform: translate(-50%, -50%);
+  display: none;
+  z-index: 1010;
+  padding: 24px 32px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  overflow-y: auto; /* ✅ 내부 높이 넘치면만 스크롤 */
+}
+
+/* 모달 헤더 */
+#scheduleModal .modal-header h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-color, #2b6cb0);
+  text-align: center;
+}
+
+/* 모달 바디 폼 그룹 */
+.form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 날짜/시간 그룹 */
+.datetime-group {
+  display: flex;
+  gap: 24px; /* ✅ 더 넓게 여유있게 */
+  justify-content: space-between;
+  flex-wrap: wrap; /* ✅ 작은 화면에서도 반응형 */
+}
+
+.datetime-group .form-group {
+  flex: 1 1 45%; /* ✅ 양쪽 반반 비율 유지 */
+}
+
+/* 모달 푸터 */
+.modal-footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+
+.form-group label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: var(--gray-700, #2d3748);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+  color: var(--gray-800, #1a202c);
+  outline-offset: 2px;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--primary-color, #2b6cb0);
+  box-shadow: 0 0 6px var(--primary-color, #2b6cb0);
+}
+
+
+/* 에러 메시지 */
+.error {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: var(--error-color, #e53e3e);
+}
+
+/* 버튼 크기 조정 */
+#scheduleModal .btn {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+
+/* 취소 버튼 */
+#scheduleModal .btn:first-child {
+  background-color: #6d6dde;
+  color: white;
+}
+
+
+/* 등록(수정) 버튼 */
+#scheduleModal .btn:last-child {
+  background-color: #2563eb;
+  color: white;
+}
+
+
+
+/* 일정 상세 팝업 */
+#schedulePopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 900px; /* ✅ 가로 길이 넓힘 */
+  max-width: 95vw; /* ✅ 반응형 대응 */
+  max-height: 90vh; /* ✅ 높이 제한 */
+  background-color: var(--bg-primary, #fff);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg, 0 2px 8px rgba(0,0,0,0.15));
+  transform: translate(-50%, -50%);
+  display: none;
+  z-index: 1020;
+  padding: 24px 28px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  color: var(--secondary-color, #4a5568);
+  overflow-y: auto; /* ✅ 내용 넘치면 스크롤 */
+}
+
+/* 팝업 헤더 */
+#schedulePopup .popup-header h3 {
+  margin: 0 0 16px 0;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--primary-color, #2b6cb0);
+  text-align: center;
+}
+
+/* 팝업 본문 */
+#schedulePopup .popup-body {
+  margin-bottom: 24px;
+  line-height: 1.6; /* ✅ 더 읽기 좋게 */
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 1.1rem; /* ✅ 텍스트 크기 키움 */
+}
+
+/* 팝업 푸터 */
+#schedulePopup .popup-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* 팝업 버튼 스타일 */
+#schedulePopup .btn {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.25s ease;
+}
+
+#schedulePopup .btn-primary {
+  background-color: var(--primary-color, #2b6cb0);
+  color: white;
+}
+
+
+#schedulePopup .btn-danger {
+  background-color: var(--error-color, #e53e3e);
+  color: white;
+}
+
+#schedulePopup .btn-danger:hover {
+  background-color: #b83232;
+}
+
+#schedulePopup .btn-secondary {
+  background-color: var(--gray-400, #a0aec0);
+  color: white;
+}
+
+#schedulePopup .btn-secondary:hover {
+  background-color: var(--gray-500, #718096);
+}
+
+.fc-daygrid-day {
+  cursor: pointer;
+}

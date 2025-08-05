@@ -1,0 +1,21 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of = "programNo")
+public class ProgramVO {
+	private String userNo;
+	private String programNo;
+	private String typeCode;
+	private String programTitle;
+	private String programDesp;
+	private Integer programCapacity;
+	private String startDate;
+	private String endDate;
+	private String place;
+	private String programActive;
+	
+	private TypeVO type;
+}

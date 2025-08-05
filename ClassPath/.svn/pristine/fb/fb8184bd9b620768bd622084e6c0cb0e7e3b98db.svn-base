@@ -1,0 +1,41 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * @author YSM
+ * @since 250722
+ * 
+ *        << 개정이력(Modification Information) >> 수정일 | 수정자 | 수정 내용
+ *        ----------------------------------------------- 250722 | 양수민 | 최초 생성
+ *        ----------------------------------------------- 250722 | 양수민 | 수정
+ *        
+ */
+
+@Data
+@EqualsAndHashCode(of="jobId")
+@Entity
+@Table(name = "job_posting")
+public class JobPostingVO {
+	@Id
+	private String jobId;
+	private String title;
+	private String companyName;
+	private String location;
+	private String careerLevel;
+	private String deadline;
+	private String category;
+	private String createdAt;
+	private String description;
+	private String isActive;
+	private String sourceFrom;
+	private String salaryStart;
+	private String salaryEnd;
+	private String companyMail;
+	private String companyTel;
+	private String website;
+}	

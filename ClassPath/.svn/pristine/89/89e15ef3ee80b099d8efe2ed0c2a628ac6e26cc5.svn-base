@@ -1,0 +1,13 @@
+package kr.or.ddit.pfcp.staff.schedule.service;
+
+import java.util.List;
+
+import kr.or.ddit.pfcp.common.vo.ScheduleRefVO;
+import kr.or.ddit.pfcp.common.vo.ScheduleVO;
+
+public interface StaffScheduleService {
+
+	public List<ScheduleVO> readScheduleList();
+	
+	
+}

@@ -1,0 +1,165 @@
+package kr.or.ddit.pfcp.professor.evaluation.controller;
+
+import java.security.Principal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import kr.or.ddit.pfcp.common.service.AtchFileService;
+import kr.or.ddit.pfcp.common.service.FileRefService;
+import kr.or.ddit.pfcp.common.vo.AtchFileVO;
+import kr.or.ddit.pfcp.common.vo.FileRefVO;
+import kr.or.ddit.pfcp.common.vo.LectureEnrVO;
+import kr.or.ddit.pfcp.common.vo.LectureEvalVO;
+import kr.or.ddit.pfcp.common.vo.LectureReqVO;
+import kr.or.ddit.pfcp.professor.evaluation.service.ProfessorLectureEvalService;
+import kr.or.ddit.pfcp.professor.lecture.service.ProfessorLectureService;
+import kr.or.ddit.pfcp.professor.lecture.service.ProfessorLectureServiceImpl;
+
+/**
+*
+* @author 김태수
+* @since 2025.07.01
+* @see
+﻿ * << 개정이력(Modification Information) >>
+* 수정일		  |		수정자	|	수정 내용
+* -----------|-------------|--------------------------
+* 2025.07.01 | 	김태수   	|   최초 작성
+* 2025.07.18 | 	김태수   	|   조회 기능 구현
+* 
+*/
+@Controller
+@RequestMapping("/professor/evaluation")
+public class ProfessorEvaluationController {
+	
+	@Autowired
+	private ProfessorLectureService professorLectureService;
+	
+	@Autowired
+	private ProfessorLectureEvalService professorLectureEvalService;
+	
+	@Autowired
+    private FileRefService fileRefService;
+	
+    @Autowired
+    private AtchFileService atchFileService;
+	
+	@GetMapping("attendclassList.do")
+	public String attendclassList(
+			Principal principal,
+			Model model, 
+			@RequestParam(defaultValue = "1") int pageNo
+	) {
+		String currentUserNo = null;
+		if (principal != null) {
+			currentUserNo = principal.getName();
+			model.addAttribute("userNo", currentUserNo);
+		}
+
+		int pageSize = 100;
+		int offset = (pageNo - 1) * pageSize;
+
+		List<LectureReqVO> lectureList = null;
+		int totalCount = 0;
+
+		if (currentUserNo != null) {
+			totalCount = professorLectureService.readTotalLectureCntByPaging(currentUserNo);
+			lectureList = professorLectureService.readLectureListByPaging(currentUserNo, offset, pageSize);
+		} else {
+			totalCount = professorLectureService.readTotalLectureCnt();
+			lectureList = professorLectureService.readLectureList(offset, pageSize);
+		}
+
+		int totalPage = (int) Math.ceil((double) totalCount / pageSize);
+
+		model.addAttribute("count", totalCount);
+		model.addAttribute("lecture", lectureList);
+		model.addAttribute("pageNo", pageNo);
+		model.addAttribute("pageSize", pageSize);
+		model.addAttribute("totalPage", totalPage);
+
+		return "pfcp/professor/evaluation/attendclassList";
+	}
+	
+	
+	@GetMapping("attendclassDetail.do")
+    public String attendclassDetail(
+        @RequestParam(value = "no", required = false) String reqNo, 
+        Model model,
+        @RequestParam(defaultValue="1") int evalPageNo
+    ) {
+	 
+	 LectureReqVO lectureReq = professorLectureService.readLectureDetail(reqNo); 
+        if (lectureReq == null) {
+            model.addAttribute("evalList", null);
+            model.addAttribute("evalCount", 0);
+            model.addAttribute("totalScore", 0); 
+            return "pfcp/professor/evaluation/attendclassDetail";
+        	
+           
+        }
+        FileRefVO fileRef = fileRefService.readFileRef(lectureReq.getFileRefNo());
+        if (fileRef != null) {
+         AtchFileVO atchFile = atchFileService.readAtchFile(fileRef.getAtchId());
+         lectureReq.setAtchFile(atchFile);
+     }
+        model.addAttribute("lectureReq", lectureReq);
+
+        String lecNo = lectureReq.getLecNo();
+
+        if (lecNo != null && !lecNo.isEmpty()) {
+            int evalPageSize = 10; 
+            int evalOffset = (evalPageNo - 1) * evalPageSize;
+
+            int totalEvalCount = professorLectureEvalService.countEvals(lecNo);  
+            List<LectureEvalVO> evalList = professorLectureEvalService.readEvals(lecNo, evalOffset, evalPageSize); 
+
+            int totalEvalPages = (int) Math.ceil((double) totalEvalCount / evalPageSize);
+
+            model.addAttribute("evalList", evalList);
+            model.addAttribute("evalCount", totalEvalCount);
+
+            model.addAttribute("evalPageNo", evalPageNo);
+            model.addAttribute("evalPageSize", evalPageSize);
+            model.addAttribute("totalEvalPages", totalEvalPages);
+
+        } else {
+            model.addAttribute("evalList", null);
+            model.addAttribute("evalCount", 0);
+            
+            model.addAttribute("evalPageNo", 1);
+            model.addAttribute("evalPageSize", 5);
+            model.addAttribute("totalEvalPages", 1);
+        }
+        // -------------------------------------------------------------
+
+        return "pfcp/professor/evaluation/attendclassDetail";
+    
+    }
+	
+	/**
+	 * 강의 평가 상세 조회
+	 * @return
+	 */
+	@GetMapping("evaluationtDetail.do")
+	public String evaluationtInsert(
+			@RequestParam("evalNo") String evalNo
+			,Model model
+	) {
+		List<LectureEvalVO> evalDetails = professorLectureEvalService.evalDetail(evalNo);
+		model.addAttribute("evalDetails", evalDetails);
+		
+		String comment = professorLectureEvalService.evalComment(evalNo);
+        model.addAttribute("evalComment", comment); 
+        
+		return "pfcp/professor/evaluation/evaluationtDetail";
+	}
+	
+	
+	
+}

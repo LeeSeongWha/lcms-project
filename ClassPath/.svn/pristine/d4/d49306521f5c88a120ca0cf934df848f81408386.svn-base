@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.college.mapper.DGRRequestMapper">
+	
+	<select id="selectDGRRequest" resultType="DGRRequestVO">
+		SELECT
+            DR.DGR_NO,
+            DR.DGR_GRADE,
+            DR.DGR_MC,
+            DR.DGR_LAC,
+            DR.DGR_FCC,
+            DR.DGR_DATE,
+            DR.DGR_VOLUNTEER_HOUR
+        FROM
+            DEPARTMENT D         
+        JOIN
+            DGR_REQ DR ON D.DGR_NO = DR.DGR_NO 
+        WHERE
+            D.DEPARTMENT_NO = #{departmentNo}
+	</select>
+	
+</mapper>

@@ -1,0 +1,187 @@
+package kr.or.ddit.pfcp.staff.program.controller;
+
+import java.security.Principal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.pfcp.common.service.UserService;
+import kr.or.ddit.pfcp.common.vo.ProgramVO;
+import kr.or.ddit.pfcp.common.vo.UserVO;
+import kr.or.ddit.pfcp.staff.program.service.StaffProgramService;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * @author 이상진
+ * @since 20250701 < 개정이력(Modification Information) >> 수정일 수정자 수정 내용
+ *        --------------------------------------- 20250701 이상진 최초 생성
+ * 
+ */
+@Controller
+@Slf4j
+@RequestMapping("/staff/program")
+public class StaffProgramController {
+
+	@Autowired
+	private StaffProgramService programService;
+
+	@Autowired
+	private UserService userService;
+
+	private UserVO sessionUser;
+
+	@ModelAttribute
+	public void setSessionUser(Principal principal) {
+		if (principal != null) {
+			this.sessionUser = userService.readMember(principal.getName());
+		}
+	}
+
+	/**
+	 * 프로그램 목록 조회
+	 * 
+	 * @return
+	 */
+	@GetMapping("programList.do")
+	public String listPrograms(Model model) {
+		model.addAttribute("sessionUser", sessionUser);
+
+		List<ProgramVO> programList = programService.readProgramList();
+		model.addAttribute("programList", programList);
+
+		return "pfcp/staff/program/programList";
+	}
+
+	/**
+	 * 프로그램 등록 form 진입
+	 * 
+	 * @return
+	 */
+	@GetMapping("/form")
+	public String createProgramForm(Model model) {
+		ProgramVO program = new ProgramVO();
+
+		// 로그인 사용자 정보에서 userNo 설정
+		if (sessionUser != null) {
+			program.setUserNo(sessionUser.getUserNo());
+		}
+
+		model.addAttribute("program", program); 
+		model.addAttribute("typeList", programService.readProgramType()); 
+
+		model.addAttribute("sessionUser", sessionUser); 
+		return "pfcp/staff/program/programForm";
+	}
+
+	/**
+	 * 프로그램 수정 폼 진입(상세 조회 포함)
+	 * 
+	 * @return
+	 */
+	@GetMapping("/edit/{programNo}")
+	public String editProgramForm(@PathVariable String programNo, Model model) {
+		ProgramVO program = programService.readProgram(programNo);
+		model.addAttribute("program", program);
+		model.addAttribute("typeList", programService.readProgramType());
+		return "pfcp/staff/program/programForm";
+	}
+
+//
+//
+//	
+//	
+//	
+//	
+//	
+//	
+//	
+//	/**
+//	 * 신청자 관리
+//	 * @return
+//	 */
+//	@GetMapping("/applications")
+//	public String applicantList() {
+//		return "pfcp/staff/program/applicantList";
+//	}
+//
+//	@PutMapping("/applications/{id}")
+//	public String processApplication(@PathVariable String id, @RequestParam String action) {
+//		return"rediret:/staff/program/applications";
+//	}
+//
+//	@GetMapping("/approved")
+//	public String approvedList() {
+//		return "pfcp/staff/program/approvedList";
+//	}
+//
+//	
+//	/**
+//	 * 비교과 종합 평가
+//	 * @param type
+//	 * @return
+//	 */
+//	@GetMapping("/evaluation")
+//	public String evaluation(@RequestParam String type) {
+//		switch (type) {
+//		case "satisfaction":
+//			return "pfcp/staff/program/satisfaction";
+//		case "instructor":
+//			return "pfcp/staff/program/instructorEvaluation";
+//		case "engagement":
+//			return "pfcp/staff/program/engagementEvaluation";
+//		case "competency":
+//			return "pfcp/staff/program/competencyEvaluation";
+//		default:
+//			return "pfcp/staff/program/evaluation";
+//		}
+//	}
+//
+//	/**
+//	 * 피드백 관리
+//	 * @return
+//	 */
+//	@GetMapping("/feedback")
+//	public String feedbackList() {
+//		return "pfcp/staff/program/feedbackList";
+//	}
+//
+//	@PostMapping("/feedback/apply")
+//	public String applyFeedbackToNext() {
+//		return "redirect:/staff/program/feedback";
+//	}
+//
+//	/**
+//	 * 인증서발급
+//	 * @return
+//	 */
+//	@PostMapping("/certificate")
+//	public String issueCertificate() {
+//		return "redirect:/staff/program/feedback";
+//	}
+//
+//	/**
+//	 * 학생관리통합
+//	 * @return
+//	 */
+//	@GetMapping("/students")
+//	public String participantList() {
+//		return "pfcp/staff/program/studentList";
+//	}
+//
+//	@GetMapping("/students/{id}")
+//	public String studentDetail(@PathVariable String id) {
+//		return "pfcp/staff/program/studentDetail";
+//	}
+//
+//	@PutMapping("/students/{id}/attendance")
+//	public String recordAttendance(@PathVariable String id) {
+//		return "redirect:/staff/program/students/ + id";
+//	}
+
+}

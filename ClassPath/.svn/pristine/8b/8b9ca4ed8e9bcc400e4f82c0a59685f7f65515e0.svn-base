@@ -1,0 +1,36 @@
+/**
+ * 
+ */
+document.addEventListener("DOMContentLoaded", () => {
+	const IMP = window.IMP;
+	IMP.init("BuEong");
+	
+	document.getElementById("payButton").addEventListener("click", () => {
+		IMP.request_pay({
+			pg: "kakaopay",       // PG사: 카카오페이
+	        pay_method: "card",   // 결제 방식(카카오페이는 card로 설정)
+	        merchant_uid: "cert_" + new Date().getTime(),
+	        name: "졸업 증명서 발급",
+	        amount: 2000,
+	        buyer_email: "student@example.com",
+	        buyer_name: "홍길동",
+	        buyer_tel: "010-1234-5678"
+		}, function (rsp) {
+			if (rsp.success) {
+	            // 성공 시 서버에 전달
+	            fetch("/student/certificate/paymentComplete.do", {
+	                method: "POST",
+	                headers: { "Content-Type": "application/json" },
+	                body: JSON.stringify(rsp)
+	            })
+	            .then(r => r.json())
+	            .then(d => {
+	                alert("결제가 완료되었습니다.");
+	                location.href = "/student/certificate/issuedCertificateHistory.do";
+	            });
+	        } else {
+	            alert("결제 실패: " + rsp.error_msg);
+	        }
+		});
+	});
+});

@@ -1,0 +1,15 @@
+package kr.or.ddit.pfcp.staff.studentmanage.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import kr.or.ddit.pfcp.common.vo.DepartmentVO;
+import kr.or.ddit.pfcp.common.vo.StudentVO;
+import kr.or.ddit.pfcp.common.vo.UserVO;
+
+public interface StudentmanageService {
+	public List<StudentVO> readStudentList();
+	public StudentVO readStudent(String userNo);
+	public void createStudent(StudentVO student);
+	public void modifyStudent(StudentVO student);
+}

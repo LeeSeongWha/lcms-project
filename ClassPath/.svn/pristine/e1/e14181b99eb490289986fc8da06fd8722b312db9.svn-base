@@ -1,0 +1,27 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * @author YSM
+ * @since 2025. 7. 14.
+ *
+ * << 개정이력(Modification Information) >>
+ * 수정일		|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 2025. 7. 14.	|	양수민	|	최초 생성
+ */
+@Data
+@EqualsAndHashCode(of = "gradeNo")
+public class GradeVO {
+	private String gradeNo;
+	private String lecNo;
+	private String userNo;
+	private Integer finalGrade;
+	private String gradeDate;
+	private String midtermScore;
+	private Integer finalScore;
+	private String assignmentScore;
+	private String attendanceScore;
+}

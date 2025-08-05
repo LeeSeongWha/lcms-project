@@ -1,0 +1,9 @@
+package kr.or.ddit.pfcp.professor.data.service;
+
+import java.util.List;
+
+import kr.or.ddit.pfcp.common.vo.LectureEvalVO;
+
+public interface ProfessorLectureEvalDataServiceImpl {
+	public List<LectureEvalVO> readLectureEvalDataList();
+}

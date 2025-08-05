@@ -1,0 +1,20 @@
+package kr.or.ddit.pfcp.professor.attendclass.service;
+
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+
+/**
+ * @author 김태수
+ * @since 2025. 7. 14.
+ *
+ * << 개정이력(Modification Information) >>
+ * 	수정일		|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 2025. 7. 14.	|	김태수	|	최초 생성
+ */
+@Service(value = "attendClassService")
+@RequiredArgsConstructor
+public class ProfessorAttendClassServiceImpl implements ProfessorAttendClassService {
+
+}

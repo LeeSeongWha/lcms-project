@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="kr.or.ddit.pfcp.student.lecture.enroll.mapper.LectureEnrMapper">
+	<resultMap id="lectureEnrResultMap" type="LectureEnrVO">
+	    <id property="enrollNo" column="ENROLL_NO"/>
+	    <result property="lecNo" column="LEC_NO"/>
+	    <result property="userNo" column="USER_NO"/>
+	    <result property="enrollTime" column="ENROLL_TIME"/>
+	    <result property="enrollStatus" column="ENROLL_STATUS"/>
+	    <result property="enrollType" column="ENROLL_TYPE"/>
+	    <result property="priority" column="PRIORITY"/>
+	    <result property="attendance" column="ATTENDANCE"/>
+	    <result property="evalYn" column="EVAL_YN"/>
+	    <result property="grade" column="GRADE"/>
+	    <result property="gradePoint" column="GRADE_POINT"/>
+	    <result property="semesterName" column="SEMESTER_NAME"/>
+	
+	    <association property="subject" javaType="SubjectVO">
+	        <id property="subjectCode" column="SUBJECT_CODE"/>
+	        <result property="departmentNo" column="DEPARTMENT_NO"/>
+	        <result property="gradeLevel" column="GRADE_LEVEL"/>
+	        <result property="subjectName" column="SUBJECT_NAME"/>
+	        <result property="credit" column="CREDIT"/>
+	        <result property="subjectDesp" column="SUBJECT_DESP"/>
+	        <result property="semesterNo" column="SEMESTER_NO"/>
+	    </association>
+	</resultMap>
+	
+	<select id="selectLectureEnrollmentsByUserNo"
+        parameterType="string"
+        resultMap="lectureEnrResultMap">
+	    SELECT
+	        -- LECTURE_ENR
+	        e.ENROLL_NO,
+	        e.LEC_NO,
+	        e.USER_NO,
+	        e.ENROLL_TIME,
+	        e.ENROLL_STATUS,
+	        e.ENROLL_TYPE,
+	        e.PRIORITY,
+	        e.ATTENDANCE,
+	        e.EVAL_YN,
+	
+	        -- SUBJECT
+	        s.SUBJECT_CODE,
+	        s.DEPARTMENT_NO,
+	        s.GRADE_LEVEL,
+	        s.SUBJECT_NAME,
+	        s.CREDIT,
+	        s.SUBJECT_DESP,
+	        s.SEMESTER_NO
+	
+	    FROM
+	        LECTURE_ENR e
+	        JOIN LECTURE l ON e.LEC_NO = l.LEC_NO
+	        JOIN LECTURE_REQ r ON l.REQ_NO = r.REQ_NO
+	        JOIN SUBJECT s ON r.SUBJECT_CODE = s.SUBJECT_CODE
+	    WHERE
+	        e.USER_NO = #{userNo}
+	</select>
+</mapper>

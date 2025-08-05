@@ -1,0 +1,236 @@
+package kr.or.ddit.pfcp.staff.scholarshipApply.controller;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import kr.or.ddit.common.PaginationInfo;
+import kr.or.ddit.pfcp.common.service.AtchFileService;
+import kr.or.ddit.pfcp.common.service.FileRefService;
+import kr.or.ddit.pfcp.common.vo.AtchFileVO;
+import kr.or.ddit.pfcp.common.vo.DepartmentVO;
+import kr.or.ddit.pfcp.common.vo.FileRefVO;
+import kr.or.ddit.pfcp.common.vo.ScholarshipApplyVO;
+import kr.or.ddit.pfcp.common.vo.ScholarshipTypeVO;
+import kr.or.ddit.pfcp.staff.scholarshipApply.service.StaffScholarshipApplyService;
+import kr.or.ddit.validate.utils.ErrorsUtils;
+import lombok.extern.slf4j.Slf4j;
+
+
+/**
+ * @author YSM
+ * @since 250716
+ * 
+ * << 개정이력(Modification Information) >>
+ * 수정일	|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 250716	|	양수민	|	최초 생성
+ */
+@Slf4j
+@Controller
+@RequestMapping("/staff/scholarshipApply")
+public class StaffScholarshipApplyController {
+	
+//	@Autowired
+//	private StudentScholarshipService studentScholarshipService;
+
+	
+	@Autowired
+	private StaffScholarshipApplyService staffScholarshipApplyService;
+	
+	@Autowired
+	private FileRefService fileRefService;
+	
+	@Autowired
+	private AtchFileService atchFileService;
+	
+	private static final String MODEL_NAME = "scholarshipApply";
+	
+	@Autowired
+	private ErrorsUtils errorsUtils;
+	
+	@ModelAttribute(MODEL_NAME)
+	public ScholarshipApplyVO scholarshipApply() {
+		return new ScholarshipApplyVO();
+	}
+	
+	
+	/**
+	 * 장학금 신청 목록 조회
+	 * 
+	 * @return
+	 */
+	@GetMapping("staffScholarshipDetail.do")
+	public String staffScholarshipApply(
+	    @RequestParam String schTypeNo,
+	    @RequestParam(required = false) String applyStatus,
+	    Model model,
+	    @RequestParam(required = false, defaultValue = "1") int page,
+	    @RequestParam(required = false) String keyword,
+	    @RequestParam(required = false, defaultValue = "all") String searchType
+	) {
+	    PaginationInfo paging = new PaginationInfo();
+	    
+	    paging.setCurrentPageNo(page);
+
+	    int totalRecordCount;
+	    
+	    Map<String, Object> paramMap = new HashMap<>();
+
+	    paramMap.put("keyword", keyword);
+	    paramMap.put("searchType", searchType);
+	    paramMap.put("schTypeNo", schTypeNo);  // 이 부분 추가
+	    paramMap.put("applyStatus", applyStatus);  // 이 부분 추가
+
+	    if ((schTypeNo != null && !schTypeNo.trim().isEmpty()) || (keyword != null && !keyword.trim().isEmpty())) {
+	        totalRecordCount = staffScholarshipApplyService.readScholarshipApplyTotalCountByKeyword(paramMap);
+	        log.info("1번 실행됐다 ㅋㅋ : {}", totalRecordCount);
+	    } else {
+	        totalRecordCount = staffScholarshipApplyService.readScholarshipApplyTotalCount(paramMap);
+	        log.info("2번 실행됐다 ㅋㅋ : {}", totalRecordCount);
+	    }
+	    
+	    // 디버깅 로그 추가
+	    log.info("currentPageNo: {}", page);
+	    
+	    paging.setTotalRecordCount(totalRecordCount);
+	    
+	    // 디버깅 로그 추가
+	    log.info("firstRecordIndex: {}", paging.getFirstRecordIndex());
+	    log.info("lastRecordIndex: {}", paging.getLastRecordIndex());
+
+	    paramMap.put("firstRecordIndex", paging.getFirstRecordIndex());
+	    paramMap.put("lastRecordIndex", paging.getLastRecordIndex());
+
+	    log.info("schTypeNo: {}", schTypeNo);
+	    log.info("applyStatus: {}", applyStatus);
+
+	    String schTypeName = staffScholarshipApplyService.readScholarshipTypeName(schTypeNo);
+	    
+	    model.addAttribute("schTypeName", schTypeName);
+
+	    List<ScholarshipApplyVO> scholarshipApplyList = staffScholarshipApplyService.readScholarshipApplyList(paramMap);
+	    
+	    model.addAttribute("scholarshipApplyList", scholarshipApplyList);
+	    model.addAttribute("count", totalRecordCount);
+	    model.addAttribute("paging", paging);
+	    model.addAttribute("keyword", keyword);
+	    model.addAttribute("searchType", searchType);
+
+	    return "pfcp/staff/scholarshipApply/staffScholarshipApplyList";
+	}
+	
+	/**
+	 * 장학금 신청 목록 상태 수정
+	 * 
+	 * @return
+	 */
+	@GetMapping("staffScholarshipUpdate.do")
+	public String studentScholarshipUpdate(
+			String no,
+			Model model
+	) {
+		ScholarshipApplyVO scholarshipApply = staffScholarshipApplyService.readScholarshipApply(no);
+		
+		// fileRefNo가 있을 때만 파일 정보를 불러오기
+		if (scholarshipApply.getFileRefNo() != null) {
+	        FileRefVO fileRef = fileRefService.readFileRef(scholarshipApply.getFileRefNo());
+	        
+	        if (fileRef != null) {
+	            AtchFileVO atchFile = atchFileService.readAtchFile(fileRef.getAtchId());
+	            
+	            scholarshipApply.setAtchFile(atchFile);
+	        }
+	    }
+		
+		model.addAttribute("scholarship", scholarshipApply);
+		
+		return "pfcp/staff/scholarshipApply/staffScholarshipApplyDetail";
+	}
+	
+	/**
+	 * 장학금 신청 상태 변경(승인/반려)
+	 * 
+	 * @param no
+	 * @param scholarshipApply
+	 * @param errors
+	 * @param redirectAttributes
+	 * @return
+	 * @throws IOException 
+	 */
+	@PostMapping("staffScholarshipUpdateProcess.do")
+	public String studentScholarshipUpdateProcess(
+		String no,
+		@ModelAttribute(MODEL_NAME) ScholarshipApplyVO scholarshipApply,
+		BindingResult errors, 
+		RedirectAttributes redirectAttributes
+	) throws IOException {
+		String lvn;
+		
+		if (!errors.hasErrors()) {
+			Map<String, Object> paramMap = new HashMap<>();
+			
+			staffScholarshipApplyService.modifyScholarshipApply(scholarshipApply);
+			
+			String userNo = scholarshipApply.getUserNo();
+			
+			paramMap.put("userNo", userNo);
+			
+			DepartmentVO department = staffScholarshipApplyService.readDepartmentTuition(paramMap);
+			
+			System.out.println("scholartshipApply ==== " + scholarshipApply);
+			
+			String scholarshipNo = "SCH" + System.currentTimeMillis();
+			String schTypeNo = scholarshipApply.getSchTypeNo();
+			Integer tuitionAmount = department.getDepartmentTuition();
+			
+			ScholarshipTypeVO scholarshipType = staffScholarshipApplyService.readScholarshipType(schTypeNo);
+			
+			System.out.println("scholarshipType ===== " + scholarshipType);
+			
+			Integer rate = scholarshipType.getRate();
+			
+			Integer disAmount = (tuitionAmount * rate) / 100;
+			
+			String applyNo = scholarshipApply.getApplyNo();
+			
+			paramMap.put("scholarshipNo", scholarshipNo);
+			paramMap.put("schTypeNo", schTypeNo);
+			paramMap.put("tuitionAmount", tuitionAmount);
+			paramMap.put("disAmount", disAmount);
+			paramMap.put("applyNo", applyNo);
+			
+			staffScholarshipApplyService.createAcceptedScholarship(paramMap);
+			
+			redirectAttributes.addFlashAttribute("success", "처리가 완료되었습니다");
+			
+			lvn = "redirect:/staff/scholarshipApply/staffScholarshipUpdate.do?no=" + no;
+			
+		} else {
+			redirectAttributes.addFlashAttribute(MODEL_NAME, scholarshipApply);
+			
+			MultiValueMap<String, String> customErrors = errorsUtils.errorsToMap(errors);
+			
+			redirectAttributes.addFlashAttribute("errors", customErrors);
+			
+			redirectAttributes.addFlashAttribute("success", "처리에 실패하였습니다");
+			
+			lvn = "redirect:/staff/scholarshipApply/staffScholarshipUpdateProcess.do?no=" + no;
+		}
+		
+		return lvn;
+	}
+}

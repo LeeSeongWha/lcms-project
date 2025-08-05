@@ -1,0 +1,26 @@
+package kr.or.ddit.pfcp.staff.college.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import kr.or.ddit.pfcp.common.vo.DGRRequestVO;
+
+/**
+ * @author KGM
+ * @since 250701
+ * @see
+ */
+@Mapper
+public interface DGRRequestMapper {
+	
+	List<DGRRequestVO> selectAllDGRRequestList();
+
+	DGRRequestVO selectDGRRequest(String dgrNo);
+
+	int insertDGRRequest(DGRRequestVO dgr);
+
+	int updateDGRRequest(DGRRequestVO dgr);
+
+	int deleteDGRRequest(String dgrNo);
+}

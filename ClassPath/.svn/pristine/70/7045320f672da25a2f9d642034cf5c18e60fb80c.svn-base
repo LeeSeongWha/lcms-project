@@ -1,0 +1,19 @@
+package kr.or.ddit.pfcp.staff.job.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pfcp.common.vo.JobPostingVO;
+import kr.or.ddit.pfcp.staff.job.mapper.JobPostRepository;
+
+@Service
+public class JobPostService {
+    @Autowired
+    private JobPostRepository repository;
+
+    public List<JobPostingVO> getAllPosts() {
+        return repository.findAll();
+    }
+}

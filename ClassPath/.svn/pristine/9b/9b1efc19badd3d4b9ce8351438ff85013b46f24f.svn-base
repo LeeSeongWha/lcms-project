@@ -1,0 +1,122 @@
+package kr.or.ddit.pfcp.staff.scholarship.controller;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import jakarta.servlet.http.HttpServletResponse;
+import kr.or.ddit.pfcp.common.service.AtchFileService;
+import kr.or.ddit.pfcp.common.service.FileRefService;
+import kr.or.ddit.pfcp.common.vo.AtchFileVO;
+import kr.or.ddit.pfcp.common.vo.FileRefVO;
+import kr.or.ddit.pfcp.common.vo.ScholarshipApplyVO;
+import kr.or.ddit.pfcp.common.vo.ScholarshipTypeVO;
+import kr.or.ddit.pfcp.staff.scholarship.service.StaffScholarshipService;
+import kr.or.ddit.pfcp.student.bill.scholarship.service.StudentScholarshipService;
+import kr.or.ddit.validate.utils.ErrorsUtils;
+
+/**
+ * @author YSM
+ * @since 250628
+ * 
+ * << 개정이력(Modification Information) >>
+ * 수정일	|	수정자	|	수정 내용
+ * -----------------------------------------------
+ * 250628	|	양수민	|	최초 생성
+ * 250711	|	양수민	|	  수정
+ */
+@Controller
+@RequestMapping("/staff/scholarship")
+public class StaffScholarshipController {
+	
+	@Autowired
+	private StudentScholarshipService studentScholarshipService;
+	
+	@Autowired
+	private StaffScholarshipService staffScholarshipService;
+	
+	@Autowired
+	private FileRefService fileRefService;
+	
+	@Autowired
+	private AtchFileService atchFileService;
+	
+	private static final String MODEL_NAME = "scholarship";
+	
+	@Autowired
+	private ErrorsUtils errorsUtils;
+	
+	@ModelAttribute(MODEL_NAME)
+	public ScholarshipApplyVO scholarshipApply() {
+		return new ScholarshipApplyVO();
+	}
+	
+	/**
+	 * 장학금 목록 전체 조회
+	 * @return
+	 */
+	@GetMapping("staffScholarshipList.do")
+	public String scholarshipListUI(Model model) {
+		List<ScholarshipTypeVO> scholarshipTypeList = studentScholarshipService.readSholarshipTypeList();
+		model.addAttribute("scholarshipTypeList", scholarshipTypeList);
+		
+		return "pfcp/staff/scholarship/staffScholarshipList";
+	}
+	
+	/**
+	 * 장학금 목록 수정
+	 * @return
+	 */
+	@GetMapping("staffScholarshipListUpdate.do")
+	public String scholarshipUpdatetUI() {
+		return "pfcp/staff/scholarship/staffScholarshipListDetail";
+	}
+	
+	/**
+	 * 파일 다운로드
+	 * 
+	 * @param fileRefNo
+	 * @throws IOException 
+	 */
+	@GetMapping("fileDownload.do")
+	public void fileDownload(
+		@RequestParam("fileRefNo") String fileRefNo,
+		HttpServletResponse response
+	) throws IOException {
+		// FILE_REF에서 ATCH_ID 가져오기
+		FileRefVO fileRef = fileRefService.readFileRef(fileRefNo);
+		
+		if (fileRef == null) {
+	        throw new RuntimeException("파일 참조 정보가 없습니다.");
+	    }
+		
+		String atchId = fileRef.getAtchId();
+		
+		// ATCH_FILE에서 파일 정보 가져오기
+	    AtchFileVO atchFile = atchFileService.readAtchFile(atchId);
+	    
+	    if (atchFile == null || atchFile.getAtchContent() == null) {
+	        throw new RuntimeException("파일 정보가 없습니다.");
+	    }
+	    
+	    // 응답 헤더 설정
+	    response.setContentType(atchFile.getAtchMime());
+	    response.setHeader("Content-Disposition", "attachment; filename=\"" + 
+	        new String(atchFile.getAtchOriginName().getBytes("UTF-8"), "ISO-8859-1") + "\"");
+	    response.setContentLength((int) atchFile.getAtchSize());
+
+	    // 파일 데이터 쓰기
+	    try (OutputStream out = response.getOutputStream()) {
+	        out.write(atchFile.getAtchContent());
+	        out.flush();
+	    }
+	}
+}

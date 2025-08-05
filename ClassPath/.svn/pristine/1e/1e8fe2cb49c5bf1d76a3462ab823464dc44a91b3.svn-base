@@ -1,0 +1,36 @@
+package kr.or.ddit.pfcp.common.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import kr.or.ddit.member.service.MemberService;
+import kr.or.ddit.pfcp.common.service.UserService;
+import kr.or.ddit.pfcp.common.vo.UserVO;
+import kr.or.ddit.security.auth.RealUserWrapper;
+import kr.or.ddit.vo.MemberVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+public class MyPageController {
+
+  @Autowired
+  private UserService service;
+
+  @GetMapping("/mypage")
+  public String mypage(
+      Authentication authAuthentication,
+      @AuthenticationPrincipal RealUserWrapper<UserVO> principal,
+      @AuthenticationPrincipal(expression = "realUser") UserVO realUser,
+      Model model
+      ) {
+
+    String userId = authAuthentication.getName();
+
+    model.addAttribute("user", service.readMember(userId));
+    return "user/mypage";
+  }
+}

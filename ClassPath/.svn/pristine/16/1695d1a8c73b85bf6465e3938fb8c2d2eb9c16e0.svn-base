@@ -1,0 +1,36 @@
+package kr.or.ddit.common.util;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfWriter;
+
+import java.io.ByteArrayOutputStream;
+
+public class PdfCertGenerator {
+
+    public static byte[] generatePdf(String studentName, String programTitle, String issueDate) throws DocumentException {
+        Document document = new Document();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        PdfWriter.getInstance(document, out);
+        document.open();
+
+        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20);
+        Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
+
+        document.add(new Paragraph("이수증", titleFont));
+        document.add(new Paragraph(" ")); // 줄 간격
+
+        document.add(new Paragraph("수료자: " + studentName, bodyFont));
+        document.add(new Paragraph("프로그램명: " + programTitle, bodyFont));
+        document.add(new Paragraph("발급일자: " + issueDate, bodyFont));
+
+        document.add(new Paragraph("\n위 사람은 위 프로그램을 성공적으로 이수하였음을 증명합니다.", bodyFont));
+
+        document.close();
+        return out.toByteArray();
+    }
+}

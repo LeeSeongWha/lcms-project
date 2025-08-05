@@ -1,0 +1,70 @@
+package kr.or.ddit.pfcp.staff.reservationTimestamp.consult.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/staff/reservationTimestamp")
+public class ConsultRTController {
+//	@Autowired
+//	private StaffProfessorManageService professorService;
+//	
+//	@Autowired
+////	private ConsultRTService consultRTService;
+//	
+//	static final String MODELNAME = "ConsultReservationTimestamp";
+//	
+//	@Autowired
+//	private ErrorsUtils errorsUtils;
+//	
+//	@GetMapping("facility/facility.do")
+//	public String consultReservationTimestamp(
+//		@RequestParam String what,
+//		Model model
+//	) {
+//		List<ProfessorVO> professor = professorService.readProfessorList();
+//		model.addAttribute("professor", professor);
+//		log.info("professor" + professor);
+//
+////		List<ReservationTimestampVO> consultRT = consultRTService.readFacilityRT(what);
+////		model.addAttribute("consultRT", consultRT);
+////		log.info("consultRT" + consultRT);
+//		
+//		return "pfcp/staff/reservationTimestamp/consult/consultRT";
+//	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

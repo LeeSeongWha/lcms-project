@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.pfcp.staff.thesis.mapper.StaffThesisMapper">
+	
+	<sql id="thesisColumns">
+        THESIS_NO,
+        THESIS_TITLE,
+        SUBMIT_DATE,
+        T.USER_NO,
+        FILE_REF_NO,
+        STATUS,
+        REJ_REASON,
+        TU.USER_NAME  
+     </sql>
+     
+    
+
+    <resultMap id="thesisMap" type="kr.or.ddit.pfcp.common.vo.ThesisVO">
+        <id property="thesisNo" column="THESIS_NO"/>
+        <result property="thesisTitle" column="THESIS_TITLE"/>
+        <result property="submitDate" column="SUBMIT_DATE"/>
+        <result property="userNo" column="USER_NO"/>
+        <result property="fileRefNo" column="FILE_REF_NO"/>
+        <result property="status" column="STATUS"/>
+        <result property="rejReason" column="REJ_REASON"/>
+        <result property="userName" column="USER_NAME"/> 
+    </resultMap>
+
+    <select id="selectThesisList" parameterType="map" resultMap="thesisMap">
+        SELECT 
+	        T.THESIS_NO,
+	        T.THESIS_TITLE,
+	        T.SUBMIT_DATE,
+	        TU.USER_NAME,
+	        T.STATUS
+        FROM
+            THESIS T
+        JOIN
+            TB_USER TU ON T.USER_NO = TU.USER_NO
+        WHERE
+            T.STATUS = '대기'
+        ORDER BY
+            T.SUBMIT_DATE DESC, T.THESIS_NO DESC
+    </select>
+    
+     <update id="appThesisStatus" parameterType="String">
+        UPDATE THESIS
+        SET
+            STATUS = '승인',    REJ_REASON = NULL   WHERE
+            THESIS_NO = #{thesisNo}
+    </update>
+
+    <update id="rejThesisStatus" parameterType="map">
+        UPDATE THESIS
+        SET
+            STATUS = '반려',    REJ_REASON = #{rejReason}  WHERE
+            THESIS_NO = #{thesisNo}
+    </update>
+	
+</mapper>

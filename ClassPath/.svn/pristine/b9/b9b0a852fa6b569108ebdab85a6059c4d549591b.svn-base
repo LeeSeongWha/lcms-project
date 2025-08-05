@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+   namespace="kr.or.ddit.pfcp.student.facility.reservation.mapper.FacilityReservationMapper">
+   <!-- 중복 예약 확인 (FacilityReservation 테이블에서) -->
+    <!-- 시설 예약 등록 -->
+    <insert id="insertFacilityReservation" parameterType="FacilityReservationVO">
+        INSERT INTO FACILITY_RESERVATION (
+            RESERVATION_NO,
+            FACILITY_NO,
+            USER_NO,
+            PREFERRED_DATE
+        ) VALUES (
+            #{reservationNo},
+            #{facilityNo},
+            #{userNo},
+            #{preferredDate}
+        )
+    </insert>
+
+    <!-- 예약 중복 여부 확인 -->
+    <select id="selectReservationByDate" resultType="FacilityReservationVO">
+        SELECT *
+        FROM FACILITY_RESERVATION
+        WHERE FACILITY_NO = #{facilityNo}
+          AND PREFERRED_DATE = #{preferredDate}
+          AND USER_NO = #{userNo}
+    </select>
+    
+    <select id="selectReservationsByFacilityNo" resultType="FacilityReservationVO">
+	    SELECT *
+	    FROM FACILITY_RESERVATION
+	    WHERE FACILITY_NO = #{facilityNo}
+	</select>
+	
+	<select id="selectReservationByNo">
+	  SELECT * FROM FACILITY_RESERVATION WHERE RESERVATION_NO = #{reservationNo}
+	</select>
+	
+	<delete id="deleteReservation">
+	  DELETE FROM FACILITY_RESERVATION WHERE RESERVATION_NO = #{reservationNo}
+	</delete>
+	
+	<select id="selectReservationByUserNo">
+		SELECT *
+		  FROM FACILITY_RESERVATION
+		 WHERE USER_NO=#{userNo}
+	</select>
+
+</mapper>

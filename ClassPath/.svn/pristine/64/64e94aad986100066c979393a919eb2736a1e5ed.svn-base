@@ -1,0 +1,93 @@
+package kr.or.ddit.pfcp.professor.evaluation.controller;
+
+import java.security.Principal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import kr.or.ddit.pfcp.common.vo.LectureReqVO;
+import kr.or.ddit.pfcp.professor.lecture.service.ProfessorLectureService;
+import kr.or.ddit.pfcp.professor.lecture.service.ProfessorLectureServiceImpl;
+
+/**
+*
+* @author 김태수
+* @since 2025.07.01
+* @see
+﻿ * << 개정이력(Modification Information) >>
+* 수정일		  |		수정자	|	수정 내용
+* -----------|-------------|--------------------------
+* 2025.07.01 | 	김태수   	|   최초 작성
+* 2025.07.18 | 	김태수   	|   조회 기능 구현
+* 
+*/
+@Controller
+@RequestMapping("/professor/evaluation")
+public class ProfessorEvaluationController {
+	
+	@Autowired
+	ProfessorLectureService professorLectureService;
+	
+	@GetMapping("attendclassList.do")
+	public String attendclassList(
+			Principal principal,
+			Model model, 
+			@RequestParam(defaultValue = "1") int pageNo
+	) {
+		String currentUserNo = null;
+		if (principal != null) {
+			currentUserNo = principal.getName();
+			model.addAttribute("userNo", currentUserNo);
+		}
+
+		int pageSize = 100;
+		int offset = (pageNo - 1) * pageSize;
+
+		List<LectureReqVO> lectureList = null;
+		int totalCount = 0;
+
+		if (currentUserNo != null) {
+			totalCount = professorLectureService.readTotalLectureCntByPaging(currentUserNo);
+			lectureList = professorLectureService.readLectureListByPaging(currentUserNo, offset, pageSize);
+		} else {
+			totalCount = professorLectureService.readTotalLectureCnt();
+			lectureList = professorLectureService.readLectureList(offset, pageSize);
+		}
+
+		int totalPage = (int) Math.ceil((double) totalCount / pageSize);
+
+		model.addAttribute("count", totalCount);
+		model.addAttribute("lecture", lectureList);
+		model.addAttribute("pageNo", pageNo);
+		model.addAttribute("pageSize", pageSize);
+		model.addAttribute("totalPage", totalPage);
+
+		return "pfcp/professor/evaluation/attendclassList";
+	}
+
+	/**
+	 * 강의 평가 조회
+	 * @return
+	 */
+	@GetMapping("evaluationtList.do")
+	public String evaluationtList() {
+		return "pfcp/professor/evaluation/evaluationtList";
+	}
+	
+	/**
+	 * 강의 평가 상세 조회
+	 * @return
+	 */
+	@GetMapping("evaluationtdetail.do")
+	public String evaluationtInsert() {
+		return "pfcp/professor/evaluation/evaluationtdetail";
+	}
+	
+	
+	
+}

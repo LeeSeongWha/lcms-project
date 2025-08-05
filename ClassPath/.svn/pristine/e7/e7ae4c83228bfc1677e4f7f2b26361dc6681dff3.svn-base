@@ -1,0 +1,486 @@
+<%--
+    파일명 : computerPage.jsp
+    프로그램명 : 컴퓨터 공학과 상세 페이지
+    설명 : 컴퓨터 공학과의 소개, 교육과정, 진로 등을 표시
+    작성자 : 김규민
+    작성일 : 2025. 07. 21
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${department.departmentName}-상세</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="/dist/assets/css/staff/departmentDetailTest.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+
+</head>
+<body>
+	<header class="header">
+		<div class="container">
+			<div class="header-content">
+<%-- 				<h5 class="subtitle">학과 번호: ${department.departmentNo}</h5> --%>
+				<h2 class="main-title">${department.departmentName}</h2>
+			</div>
+		</div>
+	</header>
+
+	<!-- 학과 이미지 -->
+	 <main class="main-content">
+		<div class="container">
+			<section class="section department-image-section">
+				<div class="department-image">
+					<c:choose>
+						<c:when test="${department.departmentNo eq 'DP001'}">
+							<img src="/dist/assets/img/department/DP001.png" width="100%"
+								alt="컴퓨터공학과">
+						</c:when>
+
+
+						<c:otherwise>
+							<img src="/dist/assets/img/department/dDepartment.png"
+								width="100%" alt="기본 학과 이미지">
+						</c:otherwise>
+					</c:choose>
+				</div>
+			</section>
+
+<!-- ==================================================================================================== -->
+				<div class="card">
+				  <div class="card-content">
+				    <div style="display: flex; align-items: center; gap: 16px;">
+				    
+				      <div style="flex-shrink: 0; font-weight: bold;">
+				        <h2 class="section-title" style="margin: 0; font-size:2rem;">소개</h2>
+				      </div>
+				      
+				      <div style="width: 1px; height: 40px; background-color: #ccc; margin: 0 20px;"></div>
+				      
+				      <div style="flex: 1;">
+				        <p class="intro-main" style="margin: 0;">
+				          <c:out value="${department.departmentDesc != null ? department.departmentDesc : '정보 없는 학과입니다.'}" />
+				        </p>
+				      </div>
+				      
+				    </div>
+				  </div>
+				</div>
+<!-- ==================================================================================================== -->
+<div style="display: flex; gap: 20px; align-items: flex-start;">
+ <!-- 진로 섹션 -->
+  <section class="section career-section" style="flex: 1;">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="section-title">졸업 후 진로</h2>
+      </div>
+      <div class="card-content">
+        <div class="career-section-grid">
+          <div class="career-grid-wrapper">
+            <c:choose>
+              <c:when test="${department.departmentNo eq 'DP001' or department.departmentNo eq 'DP004' or department.departmentNo eq 'DP096' or department.departmentNo eq 'DP069' or department.departmentNo eq 'DP071'}">
+                <%-- 관련 학과 --%>
+                <div class="career-grid">
+                  <div class="career-item">
+                    <i class="fas fa-code"></i>
+                    <h3>소프트웨어 개발자</h3>
+                    <p>웹/앱 개발, 시스템 개발, 게임 개발</p>
+                  </div>
+                  <div class="career-item">
+                    <i class="fas fa-database"></i>
+                    <h3>데이터 사이언티스트</h3>
+                    <p>빅데이터 분석, AI/ML 엔지니어</p>
+                  </div>
+                  <div class="career-item">
+                    <i class="fas fa-server"></i>
+                    <h3>시스템 엔지니어</h3>
+                    <p>네트워크 관리, 클라우드 아키텍트</p>
+                  </div>
+                  <div class="career-item">
+                    <i class="fas fa-globe"></i>
+                    <h3>IT 컨설턴트</h3>
+                    <p>기술 컨설팅, 프로젝트 매니저</p>
+                  </div>
+                  <div class="career-item">
+                    <i class="fas fa-rocket"></i>
+                    <h3>창업가</h3>
+                    <p>스타트업 창업, 기술 기업가</p>
+                  </div>
+                  <div class="career-item">
+                    <i class="fas fa-microscope"></i>
+                    <h3>연구원</h3>
+                    <p>대학원 진학, 연구소 연구원</p>
+                  </div>
+                </div>
+              </c:when>
+
+              <c:otherwise>
+                <div class="info-missing">
+                  <p>등록된 진로 정보가 없습니다.</p>
+                </div>
+              </c:otherwise>
+            </c:choose>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- 소개 섹션 -->
+  <section class="section intro-section" style="flex: 1;">
+    <div class="card">
+    	  <div class="card-header">
+	        <h2 class="section-title">학과 현황 지표</h2>
+	      </div>
+	      <div class="card-content">
+	      <div class="career-grid-wrapper">
+      <c:choose>
+        <c:when test="${department.departmentNo eq 'DP001'}">
+          <%-- 컴퓨터공학과 --%>
+          <div class="stats-grid">
+            <div class="stat-item stat-blue" style="box-shadow: 8px 5px 5px gray">
+              <i class="fas fa-users"></i>
+              <div class="stat-number">300+</div>
+              <div class="stat-label">재학생 수</div>
+            </div>
+            <div class="stat-item stat-green" style="box-shadow: 8px 5px 5px gray">
+              <i class="fas fa-chalkboard-teacher"></i>
+              <div class="stat-number">15+</div>
+              <div class="stat-label">전임교수</div>
+            </div>
+            <div class="stat-item stat-purple" style="box-shadow: 8px 5px 5px gray">
+              <i class="fas fa-building"></i>
+              <div class="stat-number">10+</div>
+              <div class="stat-label">시설</div>
+            </div>
+            <div class="stat-item stat-orange" style="box-shadow: 8px 5px 5px gray">
+              <i class="fas fa-briefcase"></i>
+              <div class="stat-number">95%</div>
+              <div class="stat-label">취업률</div>
+            </div>
+          </div>
+        </c:when>
+
+        <c:otherwise>
+          <div class="info-missing">
+            <p>통계 정보가 없습니다.</p>
+          </div>
+        </c:otherwise>
+      </c:choose>
+      </div>
+      </div>
+    </div>
+  </section>
+
+ 
+</div>
+
+<!-- ==================================================================================================== -->
+<section class="section career-section">
+<div class="card">
+<div class="employment-companies">
+							<h3>주요 취업 기업</h3>
+
+							<div class="company-grid">
+								<c:choose>
+									<%-- 컴퓨터공학과(DP001), 소프트웨어학과(DP004) --%>
+									<c:when
+										test="${department.departmentNo eq 'DP001' or department.departmentNo eq 'DP004'}">
+										<div class="company-item">삼성전자</div>
+										<div class="company-item">LG전자</div>
+										<div class="company-item">SK하이닉스</div>
+										<div class="company-item">네이버</div>
+										<div class="company-item">카카오</div>
+										<div class="company-item">쿠팡</div>
+									</c:when>
+
+									<%-- 그 외 학과 --%>
+									<c:otherwise>
+                                            <div class="company-item" style="grid-column: 1/-1;">주요 취업 기업 정보가 없습니다.</div>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                            </div>
+                            </div>
+                            </section>
+
+		<!-- 커리큘럼 -->
+			<section class="section curriculum-section">
+				<div class="card">
+					<div class="card-header">
+						<h2 class="section-title">${department.departmentName} 커리큘럼</h2>
+							<button class="submitButton" onclick="location.href='/staff/college/curriculumInsert.do?departmentNo=${department.departmentNo}'">
+								커리큘럼 등록
+							</button>
+						</div>
+
+						<div class="card-content">
+							<c:choose>
+								<c:when test="${not empty curriculumList}">
+									<table class="w-full defaultTable">
+										<thead class="tableHead">
+											<tr>
+												<th class="p-3 border tableTh">코드</th>
+												<th class="p-3 border tableTh">과목명</th>
+												<th class="p-3 border tableTh">필수여부</th>
+											</tr>
+										</thead>
+										<tbody class="text-sm">
+											<c:forEach var="curriculum" items="${curriculumList}" varStatus="status">
+
+												<tr>
+													<td class="p-3 border tableTd">${status.index+1}</td>
+													<td class="p-3 border tableTd">${curriculum.subjectName}</td>
+													<td class="p-3 border tableTd">
+													<c:choose>
+															<c:when test="${curriculum.reqCode eq 'REQ_MANDATORY'}">
+            													필수
+        													</c:when>
+															<c:when test="${curriculum.reqCode eq 'REQ_SELECTIVE'}">
+            													선택
+        													</c:when>
+															<c:otherwise>
+            													${curriculum.reqCode} 
+        													</c:otherwise>
+													</c:choose>
+													</td>
+												</tr>
+											</c:forEach>
+										</tbody>
+									</table>
+								</c:when>
+								<c:otherwise>
+                                <div class="info-missing">
+                                    <p>등록된 커리큘럼이 없습니다.</p>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
+            </section>
+
+
+
+			<!-- 졸업 요건 -->
+			<section class="section graduation-requirements-section">
+                <div class="card">
+					<div class="card-header">
+						<h2 class="section-title">학과 졸업 요건</h2>
+					</div>
+
+					<div class="card-content">
+
+							<c:if test="${not empty dgrList}">
+							<div class="graduation-info-wrapper">
+								<div class="form-fields-wrapper">
+									<div class="form-row">
+										<!-- 1행 -->
+										<div class="form-group">
+											<label for="subjectName" class="inputLabel">졸업 학점</label> <input
+												type="text" id="subjectName" name="subjectName"
+												class="inputField" value="${dgrList.dgrGrade}" readonly>
+										</div>
+
+										<div class="form-group" style="flex: 1; min-width: 250px;">
+											<label for="lecCategory" class="inputLabel">전공 이수 학점</label>
+											<input type="text" id="lecCategory" name="lecCategory"
+												class="inputField" value="${dgrList.dgrMc}" readonly>
+										</div>
+									</div>
+
+									<!-- 2행 -->
+									<div class="form-row">
+										<div class="form-group">
+											<label for="lecName" class="inputLabel">교양 이수 학점</label> <input
+												type="text" id="lecName" name="lecName" class="inputField"
+												value="${dgrList.dgrLac}" readonly>
+										</div>
+
+										<div class="form-group">
+											<label for="preTime" class="inputLabel">자유 선택 학점</label> <input
+												type="text" id="preTime" name="preTime" class="inputField"
+												value="${dgrList.dgrFcc}" readonly>
+										</div>
+									</div>
+
+									<!-- 3행 -->
+									<div class="form-row">
+										<div class="form-group">
+											<label for="preClassrm" class="inputLabel">적용 일자</label> <input
+												type="text" id="preClassrm" name="preClassrm"
+												class="inputField" value="${dgrList.dgrDate}" readonly>
+										</div>
+
+										<div class="form-group">
+											<label for="maxCapacity" class="inputLabel">봉사 시간</label> <input
+												type="text" id="maxCapacity" name="maxCapacity"
+												class="inputField" value="${dgrList.dgrVolunteerHour}"
+												readonly>
+										</div>
+									</div>
+								</div>
+
+								<!-- 오른쪽 도넛 차트 + 범례 -->
+								<div class="chart-legend-wrapper">
+									<div class="chart-content-wrapper">
+										<h4>졸업 학점 구성 비율</h4>
+										<canvas id="graduationChart"></canvas>
+									</div>
+								</div>
+							</div>
+
+							<script>
+									// 이미지에서 가져온 학점 데이터
+							        const majorCredits = "${dgrList.dgrMc}";
+							        const generalCredits = "${dgrList.dgrLac}";
+							        const electiveCredits = "${dgrList.dgrFcc}";
+							        
+							        // 차트를 그릴 canvas 요소 선택
+							        const ctx = document.getElementById('graduationChart').getContext('2d');
+							
+							        // 새로운 차트 인스턴스 생성
+							        new Chart(ctx, {
+							            type: 'doughnut',
+							            data: {
+							                labels: ['전공 이수 학점', '교양 이수 학점', '자유 선택 학점'], // 라벨
+							                datasets: [{
+							                    label: '졸업 학점 구성',
+							                    data: [majorCredits, generalCredits, electiveCredits],
+							                    backgroundColor: [
+							                        '#4dc9f6', // 파란색
+							                        '#f67019', // 주황색
+							                        '#f53794'  // 분홍색
+							                    ],
+							                    borderColor: [
+							                        '#fff',
+							                        '#fff',
+							                        '#fff'
+							                    ],
+							                    borderWidth: 2,
+							                    hoverOffset: 8
+							                }]
+							            },
+							            options: {
+							                responsive: true,
+							                plugins: {
+							                    legend: {
+							                        position: 'left', // 범례 위치
+							                    },
+							                    tooltip: {
+							                        callbacks: {
+							                            label: function(tooltipItem) {
+							                                const label = tooltipItem.label || '';
+							                                const value = tooltipItem.raw;
+							                                return `${label}: ${value}학점`;
+							                            }
+							                        }
+							                    },
+							                    title: {
+							                        display: true,
+							                        text: '',
+							                        font: {
+							                            size: 18
+							                        }
+							                    }
+							                }
+							            }
+							        });
+				    	</script>
+					</c:if>
+
+
+
+							<!-- 졸업 요건 정보 없을 때 -->
+							<c:if test="${empty dgrList}">
+                            <div class="info-missing">
+                                <p>졸업 요건 정보가 없습니다.</p>
+                            </div>
+                        </c:if>
+                    </div>
+                </div>
+            </section>
+
+
+
+
+			
+
+
+			<!-- 학과 활동 및 시설 -->
+			<section class="section activities-section">
+				<div class="card">
+					<div class="card-header">
+					
+						<h2 class="section-title">활동 및 시설</h2>
+					
+					</div>
+					<div class="card-content">
+					<c:choose>
+						<c:when test="${department.departmentNo eq 'DP001'}">
+                                <div class="activities-grid">
+                                    <div class="activities-column">
+                                        <h3>학과 활동</h3>
+                                        <ul class="activity-list" >
+                                            <li style="margin: 10px 10px 10px 0">
+                                                <img src="/dist/assets/img/computerEngineering/1-1.png" alt="" style="height:95px;">
+                                            </li>
+                                            <li style="margin: 10px 10px 10px 0">
+                                                <img src="/dist/assets/img/computerEngineering/1-2.png" alt="" style="height:95px;">
+                                            </li>
+                                            <li style="margin: 10px 10px 10px 0">
+                                                <img src="/dist/assets/img/computerEngineering/1-3.png" alt="" style="height:95px;">
+                                            </li>
+                                            <li style="margin: 10px 10px 10px 0">
+                                                <img src="/dist/assets/img/computerEngineering/1-4.png" alt="" style="height:95px;">
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="activities-column">
+                                        <h3>주요 시설</h3>
+                                        <ul class="facility-list">
+                                            <li style="margin: 10px 10px 10px 0">
+                                                <img src="/dist/assets/img/computerEngineering/2-1.png" alt="" style="height:95px;">
+                                            </li>
+                                            <li style="margin: 10px 10px 10px 0">
+                                                <img src="/dist/assets/img/computerEngineering/2-2.png" alt="" style="height:95px;">
+                                            </li>
+                                            <li style="margin: 10px 10px 10px 0">
+                                                <img src="/dist/assets/img/computerEngineering/2-3.png" alt="" style="height:95px;">
+                                            </li>
+                                            <li style="margin: 10px 10px 10px 0">
+                                                <img src="/dist/assets/img/computerEngineering/2-4.png" alt="" style="height:95px;">
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </c:when>
+						
+						
+
+						<c:otherwise>
+                                <div class="info-missing">
+                                    <p>학과 활동 및 시설 정보가 없습니다.</p>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+
+
+
+<%-- <script src="<c:url value='/js/app/pfcp/staff/departmentDetailTest.js'/>"> --%>
+
+<!-- </script> -->
+        
+        
+     
+
+</html>

@@ -1,0 +1,81 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+
+<title>Insert title here</title>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+	    var IMP = window.IMP;
+	    
+	    IMP.init("imp31705713");
+	});
+	
+	function requestPay() {
+		const certName = "${certificateInfo.certName}";
+        const amount = ${certificateInfo.issueFee};
+        
+	    IMP.request_pay({
+	        pg: "kakaopay.TC0ONETIME",
+	        pay_method: "card",
+	        merchant_uid: Date.now().toString(),
+	        name: certName,
+	        amount: amount,
+	        buyer_email: "good@portone.io",
+	        buyer_name: "포트원 기술지원팀",
+	        buyer_tel: "010-1234-5678",
+	        buyer_addr: "서울특별시 강남구 삼성동",
+	        buyer_postcode: "123-456"
+	    }, function (rsp) {
+	        if (rsp.success) {
+	            const path = window.location.pathname; 
+                const certCode = path.split("/").pop().replace(".do", "");
+                
+	            axios.post("/student/certificate/paymentComplete", {
+		                imp_uid: rsp.imp_uid,
+		                merchant_uid: rsp.merchant_uid,
+		                certCode: certCode 
+		            }, 
+		            { 
+						responseType: 'arraybuffer' 
+					}
+	            ).then(res => {
+	                const blob = new Blob(
+	                	[res.data], 
+	                	{ 
+							type: 'application/pdf' 
+						}
+	                );
+	                const url = URL.createObjectURL(blob);
+	                
+	                window.open(url, "_blank");
+	            })
+	            .catch(err => {
+	                console.error("서버 요청 실패", err);
+	                
+	                alert("서버 결제 처리 중 오류가 발생했습니다.");
+	            });
+	        } else {
+	            alert("결제 실패: " + rsp.error_msg);
+	        }
+	    });
+	}
+</script>
+
+
+<div class="section">
+	<h5>${certificateInfo.certName } 신청</h5>
+	
+	<div>
+		<p>${certificateInfo.certName } 발급 비용: ${certificateInfo.issueFee }원</p>
+        <button type="button" onclick="requestPay()">결제하기</button>
+	</div>
+	
+	<div id="certificate">
+	
+	</div>
+</div>
+
+
+<!-- <script src="/js/app/pfcp/student/studentPayment.js"></script> -->

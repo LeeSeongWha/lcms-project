@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pfcp.staff.facility.mapper.FacilityMapper">
+
+	<select id="selectFacilityList">
+	SELECT
+	    FACILITY_NO,
+	    FACILITY_NAME,
+	    FACILTY_TYPE,
+	    LOCATION,
+	    FACILTY_MP,
+	    FACILITY_STATUS
+	FROM
+	    FACILITY
+	</select>
+	
+	<select id="selectFacility">
+	
+	</select>
+	
+	<insert id="insertFacility">
+	
+	</insert>
+	
+	<update id="updateFacility">
+	
+	</update>
+
+</mapper>

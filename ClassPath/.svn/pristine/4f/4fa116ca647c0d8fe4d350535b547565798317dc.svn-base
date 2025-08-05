@@ -1,0 +1,395 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학적 변경 신청 관리 시스템</title>
+    <link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+    <link rel="stylesheet" href="/dist/assets/css/staff/requestCollection.css">
+<!--     <link rel="stylesheet" href="/dist/assets/css/test/requestCollection2.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+</head>
+
+<c:if test="${not empty success}">
+	<script>
+    alert("${success}");
+  </script>
+</c:if>
+
+<body>
+    <div class="container">
+        <h1 class="pageTitle">
+            <i class="fas fa-graduation-cap"></i>
+            학적 변경 신청 관리 시스템
+        </h1>
+
+        <!-- 통계 카드 -->
+        <div class="stats-grid">
+            <div class="stat-card" style="height:100px; align-items:center; display: flex; justify-content: center; flex-direction: column;">
+                <div class="stat-number">${requestStatus.total }</div>
+                <div class="stat-label">전체 신청</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); height:100px; align-items:center; display: flex; justify-content: center; flex-direction: column;">
+                <div class="stat-number">${requestStatus.waiting }</div>
+                <div class="stat-label">대기 중</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); height:100px; align-items:center; display: flex; justify-content: center; flex-direction: column;">
+                <div class="stat-number">${requestStatus.processing }</div>
+                <div class="stat-label">처리 중</div>
+            </div>
+            <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); height:100px; align-items:center; display: flex; justify-content: center; flex-direction: column;">
+                <div class="stat-number">${requestStatus.complete }</div>
+                <div class="stat-label">처리 완료</div>
+            </div>
+        </div>
+
+        <!-- 탭 네비게이션 -->
+        <div class="tabContainer">
+            <a class="tabButton ${empty typeCode ? 'tabButtonActive' : ''}" href="?typeCode=">
+                <i class="fas fa-list"></i> 전체 신청
+            </a>
+            <a class="tabButton ${typeCode == 'AC_MAJOR' ? 'tabButtonActive' : ''}" href="?typeCode=AC_MAJOR">
+                <i class="fas fa-book"></i> 전과
+            </a>
+            <a class="tabButton ${typeCode == 'AC_DOUBLE' ? 'tabButtonActive' : ''}" href="?typeCode=AC_DOUBLE">
+                <i class="fas fa-bookmark"></i> 복수전공
+            </a>
+            <a class="tabButton ${typeCode == 'AC_SUSPEND' ? 'tabButtonActive' : ''}" href="?typeCode=AC_SUSPEND">
+                <i class="fas fa-exchange-alt"></i> 휴학
+            </a>
+            <a class="tabButton ${typeCode == 'AC_RETURN' ? 'tabButtonActive' : ''}" href="?typeCode=AC_RETURN">
+                <i class="fas fa-user-minus"></i> 복학
+            </a>
+            <a class="tabButton ${typeCode == 'AC_GRADSUS' ? 'tabButtonActive' : ''}" href="?typeCode=AC_GRADSUS">
+                <i class="fas fa-door-open"></i> 졸업 유예
+            </a>
+        </div>
+
+        <!-- 검색 및 필터 -->
+        <div class="card">
+            <h2 style="margin-bottom:0px">
+                <i class="fas fa-search"></i>
+                검색 및 필터
+            </h2>
+            <form method="get" action="/staff/requestCollection/requestCollection.do">
+                <!-- 현재 선택된 typeCode를 hidden으로 전달 -->
+                <input type="hidden" name="typeCode" value="${typeCode}"/>
+                
+                <div class="form-row" style="margin-bottom:0px">
+                    <div class="form-group">
+                        <label class="inputLabel">처리 상태</label>
+                        <select class="selectBox" id="statusFilter" name="status" >
+                            <option value="" ${empty status ? 'selected' : ''}>전체</option>
+                            <option value="대기중" ${status == '대기중' ? 'selected' : ''}>대기 중</option>
+                            <option value="처리중" ${status == '처리중' ? 'selected' : ''}>처리 중</option>
+                            <option value="승인" ${status == '승인' ? 'selected' : ''}>승인</option>
+                            <option value="반려" ${status == '반려' ? 'selected' : ''}>반려</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="inputLabel">검색 항목</label>
+                        <select class="selectBox" name="searchType">
+                            <option value="all" ${searchType == 'all' ? 'selected' : ''}>전체</option>
+                            <option value="requestNo" ${searchType == 'requestNo' ? 'selected' : ''}>신청번호</option>
+                            <option value="userNo" ${searchType == 'userNo' ? 'selected' : ''}>학번</option>
+                            <option value="userName" ${searchType == 'userName' ? 'selected' : ''}>학생명</option>
+                            <option value="departmentName" ${searchType == 'departmentName' ? 'selected' : ''}>학과</option>
+<%--                             <option value="collegeName" ${searchType == 'collegeName' ? 'selected' : ''}>단과대학</option> --%>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="inputLabel">검색어</label>
+                        <input type="text" class="inputField" name="keyword" id="searchInput" placeholder="학번 또는 이름을 입력하세요" value="${keyword}">
+                    </div>
+                    <div class="form-group">
+                        <button class="searchButton" type="submit" class="submitButton">
+                            <i class="fas fa-search"></i> 검색
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 신청 목록 -->
+        <div class="card">
+            <div class="sectionHeaderLine">
+                <div>
+                    <h2 class="sectionHeaderTitle" style="margin-bottom:0px;">학적 변경 신청 목록</h2>
+                    <p class="sectionHeaderDescription">학생들의 학적 변경 신청을 관리하고 처리할 수 있습니다.</p>
+                </div>
+            </div>
+
+            <div class="tableContainer">
+                <table class="defaultTable" id="applicationsTable">
+                    <thead class="tableHead">
+                        <tr>
+                            <th class="tableTh">번호</th>
+							<th class="tableTh">신청일</th>     
+							<th class="tableTh">신청번호</th>
+							<th class="tableTh">학과</th>
+							<th class="tableTh">학번</th>
+							<th class="tableTh">이름</th>
+							<th class="tableTh">신청 유형</th>
+							<th class="tableTh">처리 상태</th>
+							<th class="tableTh">처리자</th>
+							
+<!--                             <th class="tableTh">단과대학</th> -->
+<!--                             <th class="tableTh">신청 내용</th> -->
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="request" items="${requestList}" varStatus="status">
+							<tr class="clickable-row"
+								onclick="viewDetail('${request.requestNo}', '${request.userNo}', 
+										'${request.studentName}', '${request.type.typeName}', 
+										'${request.requestDate}', '${request.reason}', 
+										'${request.status}', '${request.statusComment}',
+										'${request.requestDepartmentName}', '${request.decisionDate}',
+										'${request.department.departmentName}', '${request.requestThing}',
+										'${request.typeCode}')"
+										data-request-no="${request.requestNo}">
+								<td class="tableTd">${status.index + 1}</td>
+								<td class="tableTd">${request.requestDate}</td>
+								<td class="tableTd">${request.requestNo}</td>
+								<td class="tableTd">${request.department.departmentName}</td>
+								<td class="tableTd">${request.userNo}</td>
+								<td class="tableTd">${request.studentName}</td>
+<%-- 								<td class="tableTd">${request.college.collegeName}</td> --%>
+								<td class="tableTd">${request.type.typeName}</td>
+<%-- 								<td class="tableTd">${request.reason}</td> --%>
+								<td class="tableTd"><c:choose>
+										<c:when test="${request.status == '대기중'}">
+											<span class="status-waiting badge badgeWhite text-black">대기중</span>
+										</c:when>
+										<c:when test="${request.status == '처리중'}">
+											<span class="status-processing badge badgeBlue">처리중</span>
+										</c:when>
+										<c:when test="${request.status == '반려'}">
+											<span class="status-processing badge badgeRed">반려</span>
+										</c:when>
+										<c:when test="${request.status == '승인'}">
+											<span class="status-complete badge badgeGreen">승인</span>
+										</c:when>
+										<c:otherwise>
+                                            ${request.status}
+                                        </c:otherwise>
+									</c:choose>
+								</td>
+								<td class="tableTd">
+									<c:if test="${not empty request.staffName}">
+										${request.staffName}
+									</c:if>
+									<c:if test="${empty request.staffName}">
+										-
+									</c:if>
+								</td>
+								
+							</tr>
+						</c:forEach>
+                    </tbody>
+                </table>
+            </div>
+            
+           <!-- 페이지네이션 -->
+            <div class="pagination">
+				<c:if test="${paging.currentPageNo > 10}">
+					<a href="?page=${paging.firstPageNoOnPageList - paging.pageSize}&keyword=${keyword}" class="pageButton">이전</a>
+				</c:if>
+			
+				<c:forEach var="i" begin="${paging.firstPageNoOnPageList}" end="${paging.lastPageNoOnPageList}">
+					<c:choose>
+						<c:when test="${i == paging.currentPageNo}">
+							<strong class="pageButton active">${i}</strong>
+						</c:when>
+						<c:otherwise>
+							<a href="?page=${i}&keyword=${keyword}" class="pageButton">${i}</a>
+						</c:otherwise>
+					</c:choose>
+				</c:forEach>
+			
+				<c:if test="${paging.currentPageNo < paging.totalPageCount}">
+					<a href="?page=${paging.firstPageNoOnPageList + paging.pageSize}&keyword=${keyword}" class="pageButton">다음</a>
+				</c:if>
+			</div>
+        </div>
+    </div>
+    
+    <!-- 상세보기 모달 -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-alt"></i> 신청 상세 정보</h2>
+                <span class="close" onclick="closeModal('detailModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+<!--             	신청정보 -->
+	            <div class="form-row">
+	                <div class="form-group">
+	                    <label class="inputLabel">신청번호</label>
+	                    <input type="text" class="inputField" id="detailAppNo" readonly>
+	                </div>
+	                <div class="form-group">
+	                    <label class="inputLabel">신청일</label>
+	                    <input type="text" class="inputField" id="detailDate" readonly>
+	                </div>
+	            </div>
+<!--             	신청자 정보 -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="inputLabel">학과</label>
+                        <input type="text" class="inputField" id="detailDepartmentName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="inputLabel">학번</label>
+                        <input type="text" class="inputField" id="detailStudentId" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="inputLabel">이름</label>
+                        <input type="text" class="inputField" id="detailStudentName" readonly>
+                    </div>
+                </div>
+<!--             	신청 내용 -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="inputLabel">신청 유형</label>
+                        <input type="text" class="inputField" id="detailType" readonly>
+                    </div>
+                    <div class="form-group" id="requestThingArea">
+                        <label class="inputLabel">희망 학과</label>
+                        <input type="text" class="inputField" id="detailRequestDepartmentName" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="inputLabel">신청 내용</label>
+                    <textarea class="textareaField" id="detailReason" readonly style="height: 100px;"></textarea>
+                </div>
+<!--             	처리 -->
+                <form method="post" action="/staff/requestCollection/requestUpdateProcess.do">
+                	<input type="hidden" name="requestNo" id="detailRequestNo">
+                	<input type="hidden" name="requestDepartmentNo" id="detailRequestThing">
+                	<input type="hidden" name="typeCode" id="detailTypeCode">
+                	<input type="hidden" name="studentNo" id="detailUserNo">
+		                <div class="form-row">
+			                <div class="form-group">
+			                    <label class="inputLabel">상태</label>
+			                    <select class="selectBox" id="detailStatus" name="status">
+			                        <option value="처리중" class="tooltip-test" title="당장 승인/반려 처리를 할 수 없는 상태에 사용하십시오">처리중</option>
+			                        <option value="승인">승인</option>
+			                        <option value="반려">반려</option>
+			                    </select>
+			                </div>
+		                    <div class="form-group" id="decisionDateArea">
+			                    <label class="inputLabel">처리 완료</label>
+			                    <input type="text" class="inputField" id="detailDecisionDate" readonly>
+			                </div>
+			            </div>
+		                <div class="form-group">
+		                    <label class="inputLabel">처리 의견</label>
+		                    <textarea class="textareaField" name="statusComment" id="detailStatusComment" placeholder="처리 의견을 입력하세요..."></textarea>
+		                </div>
+		                <div class="button-group" style="float:right;">
+		                    <button class="editButton" onclick="sendNotification()">
+		                        <i class="fas fa-envelope"></i> 알림 발송
+		                    </button>
+		                    <button type="submit" class="submitButton" id="saveButton">
+		                        <i class="fas fa-save"></i> 저장
+		                    </button>
+		                </div>
+	            </form>
+	            
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function viewDetail(requestNo, userNo, studentName, typeName, requestDate, 
+        					reason, status, statusComment, requestDepartmentName, 
+        					decisionDate, departmentName, requestThing, typeCode) {
+            document.getElementById('detailAppNo').value = requestNo;
+            document.getElementById('detailStudentId').value = userNo;
+            document.getElementById('detailUserNo').value = userNo;
+            document.getElementById('detailStudentName').value = studentName;
+            document.getElementById('detailType').value = typeName;
+            document.getElementById('detailDate').value = requestDate;
+            document.getElementById('detailReason').value = reason;
+            document.getElementById('detailStatusComment').value = statusComment;
+            document.getElementById('detailRequestDepartmentName').value = requestDepartmentName;
+            document.getElementById('detailDecisionDate').value = decisionDate;
+            document.getElementById('detailDepartmentName').value = departmentName;
+            document.getElementById('detailRequestThing').value = requestThing;
+            document.getElementById('detailTypeCode').value = typeCode;
+            
+       
+            const detailStatusSelect = document.getElementById('detailStatus');
+            const saveButton = document.getElementById('saveButton');
+            const requestThingArea = document.getElementById('requestThingArea');
+            
+            if(typeName == '복수전공' || typeName == '전과'){
+            	requestThingArea.style.display = 'inline-block';
+            }else{
+            	requestThingArea.style.display = 'none';
+            }
+            
+            if (status) {
+                detailStatusSelect.value = status;
+                
+                
+                if (status === '승인' || status === '반려') {
+                	decisionDateArea.style.display = 'inline-block';
+                    saveButton.style.display = 'none';
+                    detailStatusSelect.disabled = true;
+                    document.getElementById('detailStatusComment').readOnly = true;
+                } else {
+                	decisionDateArea.style.display = 'none';
+                    saveButton.style.display = 'inline-block';
+                    detailStatusSelect.disabled = false;
+                    document.getElementById('detailStatusComment').readOnly = false;
+                }
+            } else {
+                detailStatusSelect.value = '처리중';
+                decisionDateArea.style.display = 'none';
+                saveButton.style.display = 'inline-block';
+                detailStatusSelect.disabled = false;
+                document.getElementById('detailStatusComment').readOnly = false;
+            }
+            
+            
+            document.getElementById('detailRequestNo').value = requestNo;
+
+            document.getElementById('detailModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+
+        function sendNotification() {
+            // 알림 발송 로직 구현
+            alert('알림이 발송되었습니다.');
+        }
+
+        // 모달 외부 클릭시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+
+    <style>
+        .clickable-row {
+            cursor: pointer;
+        }
+        
+        .clickable-row:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+</body>
+</html>

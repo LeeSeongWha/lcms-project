@@ -1,0 +1,12 @@
+package kr.or.ddit.pfcp.common.vo;
+
+import lombok.Data;
+
+@Data
+public class ScheduleRefVO {
+
+	private String scheduleNo;
+	private String refType;
+	private String refTargetId;
+	private String refNo;
+}

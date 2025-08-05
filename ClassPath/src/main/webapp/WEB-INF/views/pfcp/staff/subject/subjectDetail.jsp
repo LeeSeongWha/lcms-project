@@ -1,0 +1,108 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+
+<title>강의 신청 상세</title>
+<link rel="stylesheet" href="/dist/assets/css/bodyFormat.css">
+<link rel="stylesheet" href="/dist/assets/css/pdfView.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="<c:url value='/js/app/pfcp/common/pdfView.js'/>"></script>
+
+<h4>강의 신청 상세</h4>
+<div class="section">
+	<div class="card">
+		<form method="post" action="/staff/subject/subjectAccept.do" style="display:contents">
+			<div class="form-row" style="display: flex; gap: 20px;">
+				<input type="hidden" id="reqNo" name="reqNo" value="${lectureReq.reqNo }">
+				<input type="hidden" id="userNo" name="userNo" value="${lectureReq.userNo }">
+				
+				<div class="form-group" style="flex: 1;">
+					<label class="inputLabel" for="userName">교수명</label>
+					<input class="inputField" type="text" id="userName" name="userName" value="${lectureReq.userName }" readonly>
+				</div>
+				
+				<div class="form-group" style="flex: 1;">
+				</div>
+			</div>
+			
+			<div class="form-row" style="display: flex; gap: 20px;">
+				<div class="form-group" style="flex: 1;">
+					<label class="inputLabel" for="subjectName">과목명</label>
+					<input class="inputField" type="text" id="subjectName" name="subjectName" value="${lectureReq.subjectName }" readonly>
+				</div>
+				
+				<div class="form-group" style="flex: 1;">
+					<label class="inputLabel" for="lecName">강의명</label>
+					<input class="inputField" type="text" id="lecName" name="lecName" value="${lectureReq.lecName }" readonly>
+				</div>
+			</div>
+			
+			<div class="form-row" style="display: flex; gap: 20px;">
+				<div class="form-group" style="flex: 1;">
+					<label class="inputLabel" for="preDay">희망 요일</label>
+					<input class="inputField" type="text" id="preDay" name="preDay" value="${lectureReq.preDay }" readonly>
+				</div>
+				
+				<div class="form-group" style="flex: 1;">
+					<label class="inputLabel" for="preTime">희망 교시</label>
+					<input class="inputField" type="text" id="preTime" name="preTime" value="${lectureReq.preTime }" readonly>
+				</div>
+			</div>
+			
+			<div class="form-row" style="display: flex; gap: 20px;">
+				<div class="form-group" style="flex: 1;">
+					<label class="inputLabel" for="preDay">희망 강의실</label>
+					<input type="hidden" id="lrNo" name="lrNo" value="${lectureReq.lrNo }">
+					<input class="inputField" type="text" id="preClassrm" name="preClassrm" value="${lectureReq.preClassrm }" readonly>
+				</div>
+				
+				<div class="form-group" style="flex: 1;">
+					<label class="inputLabel" for="reqDate">신청 일자</label>
+					<input class="inputField" type="text" id="reqDate" name="reqDate" value="${lectureReq.reqDate }" readonly>
+				</div>
+			</div>
+			
+			<div class="form-row" style="display: flex; gap: 20px;">
+				<div class="form-group" style="flex: 1;">
+					<label class="inputLabel" for="lecCategory">강의 분류</label>
+					<input class="inputField" type="text" id="lecCategory" name="lecCategory" value="${lectureReq.lecCategory }" readonly>				
+				</div>
+				
+				<div class="form-group" style="flex: 1;">
+					<label class="inputLabel" for="fileRefNo">강의 계획서</label>
+					<c:if test="${not empty lectureReq.fileRefNo}">
+						<a href="/staff/subject/fileDownload.do?fileRefNo=${lectureReq.fileRefNo}" download class="download-button"> <i class="fas fa-download"></i> ${lectureReq.atchFile.atchOriginName}</a>
+						
+					</c:if>
+				</div>
+			</div>
+			
+			<div class="form-row" style="display: flex; gap: 20px;">
+				<div class="form-group" style="flex: 1;">
+					<label class="inputLabel" for="rejReason">반려 사유</label>
+					<textarea class="textareaField" name="rejReason" rows="" cols=""></textarea>
+				</div>
+				
+			</div>
+			<div class="form-row" style="display: flex; gap: 20px;">
+				<div class="form-group" style="flex: 1;">
+					<button class="submitButton" type="submit">승인</button>
+					<button class="cancelButton" type="submit" formaction="/staff/subject/subjectReturn.do">반려</button>
+					<button class="deleteButton" type="button" onclick="history.back()">취소</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	
+	<div class="card">
+		<div id="pdfViewerArea">
+            <div class="detail-placeholder">
+                <span style="font-size: 1.2em;">첨부파일을 불러오는 중...</span>
+                <p style="color: red; font-size: 0.1;">* PDF 파일만 미리보기가 지원됩니다.</p>
+                <input type="hidden" id="pdfFileRefNo" value="${lectureReq.fileRefNo}">
+                <input type="hidden" id="pdfMimeType" value="${lectureReq.atchFile.atchMime}">
+            </div>
+		</div>
+	</div>
+	
+</div>
